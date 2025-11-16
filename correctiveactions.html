@@ -328,13 +328,15 @@
             formDataFile.append("action", "attachmentFile");
             formDataFile.append("station", document.getElementById("station").value);
             formDataFile.append("branch", document.getElementById("branch").value);
-            formDataFile.append("attachment", attachmentInput.files[0]);
+            formData.append("attachment", fileInput.files[0]);
+            formData.append("attachmentName", fileInput.files[0].name);
     
             try {
                 const uploadResp = await fetch(scriptURL, {
                     method: "POST",
                     body: formDataFile
                 });
+              
                 const uploadResult = await uploadResp.json();
                 if (uploadResult.status === "success") {
                     attachmentLink = uploadResult.link;
@@ -587,6 +589,7 @@
 
 </body>
 </html>
+
 
 
 
