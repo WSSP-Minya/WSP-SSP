@@ -1,17 +1,4 @@
-body::before{
-  background-image: url("**https://www.projectmanager.com/wp-content/uploads/2024/10/Corrective-action-plan-template-featured-image.jpg**");
-  background-repeat: no-repeat;
-  background-size: cover;
-  position: fixed;
-  background-position: center;
-  width: 100vw; /*ضرورى*/
-  height: 100vh; /*ضرورى*/
-  content:"";
-  top: 0;
-  bottom: 0;
-  opacity:0.85;
-  z-index:-1;
-}
+
 
 
 
