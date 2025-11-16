@@ -325,7 +325,7 @@
         let attachmentLink = "";
         if (attachmentInput.files.length > 0) {
             const formDataFile = new FormData();
-            formDataFile.append("action", "uploadFile");
+            formDataFile.append("action", "attachmentFile");
             formDataFile.append("station", document.getElementById("station").value);
             formDataFile.append("branch", document.getElementById("branch").value);
             formDataFile.append("attachment", attachmentInput.files[0]);
@@ -587,6 +587,7 @@
 
 </body>
 </html>
+
 
 
 
