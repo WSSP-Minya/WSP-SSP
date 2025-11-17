@@ -273,102 +273,7 @@
       });
     };
 
-
-    
-    async function uploadAttachment(file) {
-        if (!file) return "";
-    
-        let processedFile = file;
-    
-        // ضغط الصور
-        if (file.type.startsWith("image/")) {
-            processedFile = await compressImage(file);
-        }
-    
-        // ضغط PDF
-        if (file.type === "application/pdf") {
-            processedFile = await compressPDF(file);
-        }
-    
-        // تحويل Base64
-        const base64Data = await fileToBase64(processedFile);
-    
-        // إعداد البيانات للإرسال
-        const formData = new URLSearchParams();
-        formData.append("action", "attachmentFile");  // مهم جدًا
-        formData.append("filename", file.name);
-        formData.append("filedata", base64Data);
-    
-        try {
-            const response = await fetch(scriptURL, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/x-www-form-urlencoded"
-                },
-                body: formData.toString()
-            });
-    
-            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
-    
-            const textResp = await response.text();
-    
-            let result;
-            try {
-                result = JSON.parse(textResp);
-            } catch (err) {
-                console.error("❌ JSON parse error:", err, "Raw text:", textResp);
-                throw new Error("خطأ في تحليل الاستجابة من السيرفر");
-            }
-    
-            if (result.status === "success") {
-                return result.link; // رابط المرفق بعد الرفع
-            } else {
-                console.warn("⚠️ Upload failed:", result);
-                throw new Error("حدث خطأ أثناء رفع الملف");
-            }
-    
-        } catch (err) {
-            console.error("🔥 Error during file upload:", err);
-            alert("حدث خطأ أثناء رفع الملف. راجع الكونسول للتفاصيل.");
-            return "";
-        }
-    }
-    async function compressImage(file, maxWidth = 1024, maxHeight = 1024, quality = 0.7) {
-        return new Promise((resolve, reject) => {
-            const img = new Image();
-            img.onload = () => {
-                let canvas = document.createElement('canvas');
-                let ctx = canvas.getContext('2d');
-    
-                let ratio = Math.min(maxWidth / img.width, maxHeight / img.height, 1);
-                canvas.width = img.width * ratio;
-                canvas.height = img.height * ratio;
-    
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                canvas.toBlob(blob => {
-                    if (blob) resolve(new File([blob], file.name, { type: file.type }));
-                    else reject(new Error('Compression failed'));
-                }, file.type, quality);
-            };
-            img.onerror = reject;
-            img.src = URL.createObjectURL(file);
-        });
-    }
-    function fileToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result.split(',')[1]); // لإزالة prefix "data:*/*;base64,"
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
-
-
-
-
-
-
-    
+ 
     async function sendCommentsData(event, action) {
         event = event || window.event; // ضمان وجود event
         const email = sessionStorage.getItem("email");
@@ -702,6 +607,7 @@
 
 </body>
 </html>
+
 
 
 
