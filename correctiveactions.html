@@ -458,51 +458,6 @@
             if (result.result === "Updated") {
               alert("تم تحديث البيانات بنجاح ✅");
               
-              // 🔹 تحديث الفورم تلقائياً مباشرة
-              const stationName = document.getElementById("station").value;
-              try {
-                  const resp = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(stationName)}`);
-                  const stationData = await resp.json();
-  
-                  if (stationData && stationData.status !== "unauthorized") {
-                      // إعادة بناء خيارات الموقع
-                      locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-                      locationSelect.detailsMap = {};
-                      const option = document.createElement("option");
-                      option.value = 0;
-                      option.textContent = stationData.location || "Unnamed Location";
-                      locationSelect.appendChild(option);
-                      locationSelect.detailsMap[0] = stationData;
-  
-                      locationSelect.value = 0;
-                      riskInput.value = stationData.risk || "";
-                      corractionInput.value = stationData.corraction || "";
-                      durationInput.value = stationData.duration || "";
-  
-                      let status = (stationData.status || "").trim();
-                      switch(true){
-                          case /تم/.test(status): status = "تم"; break;
-                          case /جار/.test(status): status = "جارى"; break;
-                          case /لم/.test(status): status = "لم يتم"; break;
-                          default: status = "";
-                      }
-                      statusSelect.value = status;
-  
-                      branchcomment.value = stationData.branchcomment || "";
-                      wspcomment.value = stationData.wspcomment || "";
-  
-                      if(stationData.attachment){
-                          document.getElementById("filename").innerHTML = `<a href="${stationData.attachment}" target="_blank">Show File</a>`;
-                      } else {
-                          document.getElementById("filename").textContent = "No File";
-                      }
-                  }
-  
-              } catch(err) {
-                  console.error("خطأ أثناء جلب بيانات المحطة:", err);
-              }
-
-              
                // 🔹 إذا كان الزر المستخدم هو WSP، نعرض رسالة اعتماد الاجراء
               if (event.target.classList.contains("wspbutton")) {
                   const approve = confirm("هل تريد اعتماد الاجراء؟");
@@ -524,45 +479,7 @@
                       .then(res => res.json())
                       .then(res => {
                           if (res.result === "Approved") {
-                              alert("تم اعتماد الاجراء بنجاح ✅");
-                            
-                                 // 🔹 إعادة تحديث الفورم بعد الاعتماد
-                              const resp2 = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(stationName)}`);
-                              const stationData2 = await resp2.json();
-  
-                              if (stationData2 && stationData2.status !== "unauthorized") {
-                                  // تحديث القيم مباشرة
-                                  locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-                                  locationSelect.detailsMap = {};
-                                  const option = document.createElement("option");
-                                  option.value = 0;
-                                  option.textContent = stationData2.location || "Unnamed Location";
-                                  locationSelect.appendChild(option);
-                                  locationSelect.detailsMap[0] = stationData2;
-  
-                                  locationSelect.value = 0;
-                                  riskInput.value = stationData2.risk || "";
-                                  corractionInput.value = stationData2.corraction || "";
-                                  durationInput.value = stationData2.duration || "";
-  
-                                  let status2 = (stationData2.status || "").trim();
-                                  switch(true){
-                                      case /تم/.test(status2): status2 = "تم"; break;
-                                      case /جار/.test(status2): status2 = "جارى"; break;
-                                      case /لم/.test(status2): status2 = "لم يتم"; break;
-                                      default: status2 = "";
-                                  }
-                                  statusSelect.value = status2;
-  
-                                  branchcomment.value = stationData2.branchcomment || "";
-                                  wspcomment.value = stationData2.wspcomment || "";
-  
-                                  if(stationData2.attachment){
-                                      document.getElementById("filename").innerHTML = `<a href="${stationData2.attachment}" target="_blank">Show File</a>`;
-                                  } else {
-                                      document.getElementById("filename").textContent = "No File";
-                                  }
-                              }
+                              alert("تم اعتماد الاجراء بنجاح ✅");                            
                           } else {
                               alert("حدث خطأ أثناء اعتماد الاجراء.");
                           }
@@ -697,3 +614,4 @@
 
 </body>
 </html>
+
