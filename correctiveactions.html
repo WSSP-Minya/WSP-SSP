@@ -302,7 +302,6 @@
         try {
             const response = await fetch(scriptURL, {
                 method: "POST",
-                mode: "cors",  // مهم لتجاوز مشاكل CORS إذا تم تفعيلها في Apps Script
                 headers: {
                     "Content-Type": "application/x-www-form-urlencoded"
                 },
@@ -703,6 +702,7 @@
 
 </body>
 </html>
+
 
 
 
