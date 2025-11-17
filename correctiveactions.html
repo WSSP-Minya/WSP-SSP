@@ -273,52 +273,68 @@
       });
     };
 
-    //لضغط الصور بدون فقد الجودة
-    function compressImage(file) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            const reader = new FileReader();
+
     
-            reader.onload = (e) => { img.src = e.target.result; };
+    async function uploadAttachment(file) {
+        if (!file) return "";
     
-            img.onload = () => {
-                const canvas = document.createElement("canvas");
-                canvas.width = img.width;
-                canvas.height = img.height;
+        let processedFile = file;
     
-                const ctx = canvas.getContext("2d");
-                ctx.drawImage(img, 0, 0);
+        // ضغط الصور
+        if (file.type.startsWith("image/")) {
+            processedFile = await compressImage(file);
+        }
     
-                canvas.toBlob((blob) => {
-                    resolve(blob);
-                }, file.type, 1.0);
-            };
+        // ضغط PDF
+        if (file.type === "application/pdf") {
+            processedFile = await compressPDF(file);
+        }
     
-            reader.readAsDataURL(file);
-        });
+        // تحويل Base64
+        const base64Data = await fileToBase64(processedFile);
+    
+        // إعداد البيانات للإرسال
+        const formData = new URLSearchParams();
+        formData.append("action", "attachmentFile");  // مهم جدًا
+        formData.append("filename", file.name);
+        formData.append("filedata", base64Data);
+    
+        try {
+            const response = await fetch(scriptURL, {
+                method: "POST",
+                mode: "cors",  // مهم لتجاوز مشاكل CORS إذا تم تفعيلها في Apps Script
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded"
+                },
+                body: formData.toString()
+            });
+    
+            if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+    
+            const textResp = await response.text();
+    
+            let result;
+            try {
+                result = JSON.parse(textResp);
+            } catch (err) {
+                console.error("❌ JSON parse error:", err, "Raw text:", textResp);
+                throw new Error("خطأ في تحليل الاستجابة من السيرفر");
+            }
+    
+            if (result.status === "success") {
+                return result.link; // رابط المرفق بعد الرفع
+            } else {
+                console.warn("⚠️ Upload failed:", result);
+                throw new Error("حدث خطأ أثناء رفع الملف");
+            }
+    
+        } catch (err) {
+            console.error("🔥 Error during file upload:", err);
+            alert("حدث خطأ أثناء رفع الملف. راجع الكونسول للتفاصيل.");
+            return "";
+        }
     }
 
-    //ضغط pdf بدون فقد الجودة
-    async function compressPDF(file) {
-        const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
-    
-        const compressedBytes = await pdfDoc.save({
-            useObjectStreams: true,
-            addDefaultPage: false
-        });
-    
-        return new Blob([compressedBytes], { type: "application/pdf" });
-    }
-
-    //تحويل ملف الصور إلى base64 لسهولة الارسال والاستقبال
-    function fileToBase64(file) {
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.onloadend = () => resolve(reader.result.split(",")[1]);
-            reader.readAsDataURL(file);
-        });
-    }
 
 
 
@@ -371,26 +387,14 @@
           return;
         }
       
-        // 🔹 رفع الملف بعد ضغطه + Base64
+        // 🔹 رفع الملف بعد ضغطه + Base64 باستخدام الدالة الجديدة
         let attachmentLink = "";
         if (attachmentInput.files.length > 0) {
+            attachmentLink = await uploadAttachment(attachmentInput.files[0]);
+            if (!attachmentLink) return; // إذا فشل الرفع، أوقف العملية
+        }
         
-            const originalFile = attachmentInput.files[0];
-            let processedFile = originalFile;
-        
-            // ضغط الصور
-            if (originalFile.type.startsWith("image/")) {
-                processedFile = await compressImage(originalFile);
-            }
-        
-            // ضغط PDF
-            if (originalFile.type === "application/pdf") {
-                processedFile = await compressPDF(originalFile);
-            }
-        
-            // تحويل Base64
-            const base64Data = await fileToBase64(processedFile);
-        
+                
             const formDataFile = new URLSearchParams();
             formDataFile.append("action", "attachmentFile");
             formDataFile.append("filename", originalFile.name);
@@ -668,6 +672,7 @@
 
 </body>
 </html>
+
 
 
 
