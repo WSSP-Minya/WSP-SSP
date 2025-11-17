@@ -483,10 +483,10 @@
                           } else {
                               alert("حدث خطأ أثناء اعتماد الاجراء.");
                           }
-                      .catch(err) {
+                      })
+                      .catch(err => {  
                           console.error("Approval error:", err);
-                      }
-                  }
+                      });
               }
 
             } else if (result.result === "Location not found") {
@@ -614,5 +614,6 @@
 
 </body>
 </html>
+
 
 
