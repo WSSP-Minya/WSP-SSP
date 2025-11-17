@@ -413,8 +413,8 @@
                     alert("خطأ في تحليل الاستجابة من السيرفر.");
                     return;
                 }
-                const uploadResult = await uploadResp.json();
                 console.log("📤 Upload result:", uploadResult);
+
         
                 if (uploadResult.status === "success") {
                     attachmentLink = uploadResult.link;
@@ -667,6 +667,7 @@
 
 </body>
 </html>
+
 
 
 
