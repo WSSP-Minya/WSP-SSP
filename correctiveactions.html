@@ -271,7 +271,55 @@
       });
     };
 
-      
+    //لضغط الصور بدون فقد الجودة
+    function compressImage(file) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            const reader = new FileReader();
+    
+            reader.onload = (e) => { img.src = e.target.result; };
+    
+            img.onload = () => {
+                const canvas = document.createElement("canvas");
+                canvas.width = img.width;
+                canvas.height = img.height;
+    
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0);
+    
+                canvas.toBlob((blob) => {
+                    resolve(blob);
+                }, file.type, 1.0);
+            };
+    
+            reader.readAsDataURL(file);
+        });
+    }
+
+    //ضغط pdf بدون فقد الجودة
+    async function compressPDF(file) {
+        const arrayBuffer = await file.arrayBuffer();
+        const pdfDoc = await PDFLib.PDFDocument.load(arrayBuffer);
+    
+        const compressedBytes = await pdfDoc.save({
+            useObjectStreams: true,
+            addDefaultPage: false
+        });
+    
+        return new Blob([compressedBytes], { type: "application/pdf" });
+    }
+
+    //تحويل ملف الصور إلى base64 لسهولة الارسال والاستقبال
+    function fileToBase64(file) {
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result.split(",")[1]);
+            reader.readAsDataURL(file);
+        });
+    }
+
+
+
     
     async function sendCommentsData(event, action) {
         event = event || window.event; // ضمان وجود event
@@ -320,43 +368,53 @@
           alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
           return;
         }
-
-
       
-       
-      
-        // 🔹 رفع الملف أولاً إذا تم اختياره
+        // 🔹 رفع الملف بعد ضغطه + Base64
         let attachmentLink = "";
         if (attachmentInput.files.length > 0) {
+        
+            const originalFile = attachmentInput.files[0];
+            let processedFile = originalFile;
+        
+            // ضغط الصور
+            if (originalFile.type.startsWith("image/")) {
+                processedFile = await compressImage(originalFile);
+            }
+        
+            // ضغط PDF
+            if (originalFile.type === "application/pdf") {
+                processedFile = await compressPDF(originalFile);
+            }
+        
+            // تحويل Base64
+            const base64Data = await fileToBase64(processedFile);
+        
             const formDataFile = new FormData();
             formDataFile.append("action", "attachmentFile");
-            formDataFile.append("station", document.getElementById("station").value);
-            formDataFile.append("branch", document.getElementById("branch").value);
-            formDataFile.append("attachment", attachmentInput.files[0]);
-            formDataFile.append("attachmentName", attachmentInput.files[0].name);
-    
+            formDataFile.append("filename", originalFile.name);
+            formDataFile.append("filedata", base64Data);
+        
             try {
                 const uploadResp = await fetch(scriptURL, {
                     method: "POST",
                     body: formDataFile
                 });
-              
+        
                 const uploadResult = await uploadResp.json();
+        
                 if (uploadResult.status === "success") {
                     attachmentLink = uploadResult.link;
                 } else {
-                    console.error("Upload error:", uploadResult);
                     alert("حدث خطأ أثناء رفع الملف.");
                     return;
                 }
             } catch (err) {
-                console.error("Upload exception:", err);
                 alert("حدث خطأ أثناء رفع الملف.");
                 return;
             }
         }
-          
-              
+
+                      
         const formData = new URLSearchParams();
         formData.append("action", "updatestation");  // 🆕 مهم جدًا
         formData.append("station", document.getElementById("station").value);
@@ -593,6 +651,7 @@
 
 </body>
 </html>
+
 
 
 
