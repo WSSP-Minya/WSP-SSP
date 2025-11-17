@@ -391,7 +391,7 @@
             // تحويل Base64
             const base64Data = await fileToBase64(processedFile);
         
-            const formDataFile = new FormData();
+            const formDataFile = new URLSearchParams();
             formDataFile.append("action", "attachmentFile");
             formDataFile.append("filename", originalFile.name);
             formDataFile.append("filedata", base64Data);
@@ -668,6 +668,7 @@
 
 </body>
 </html>
+
 
 
 
