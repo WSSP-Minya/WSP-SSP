@@ -456,6 +456,22 @@
       
             if (result.result === "Updated") {
               alert("تم تحديث البيانات بنجاح ✅");
+              
+              // 🔹 التحديث التلقائي (الديناميكي) للفورم باستخدام fillStationDetails
+              fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(document.getElementById("station").value)}`)
+                  .then(resp => resp.json())
+                  .then(stationData => {
+                      if (stationData && stationData.status !== "unauthorized") {
+                          // تحويل البيانات لمحاذاة fillStationDetails
+                          fillStationDetails([stationData]); // مصفوفة لمحطة واحدة
+                          // تعيين الخيار الأول وتفعيل change لتحديث الفورم تلقائيًا
+                          locationSelect.value = 0;
+                          locationSelect.dispatchEvent(new Event('change'));
+                      }
+                  })
+                  .catch(err => console.error("خطأ أثناء جلب بيانات المحطة:", err));
+
+              
                // 🔹 إذا كان الزر المستخدم هو WSP، نعرض رسالة اعتماد الاجراء
               if (event.target.classList.contains("wspbutton")) {
                   const approve = confirm("هل تريد اعتماد الاجراء؟");
@@ -478,6 +494,18 @@
                       .then(res => {
                           if (res.result === "Approved") {
                               alert("تم اعتماد الاجراء بنجاح ✅");
+                            
+                               // 🔹 إعادة التحديث التلقائي بعد الاعتماد
+                              fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(document.getElementById("station").value)}`)
+                                  .then(resp => resp.json())
+                                  .then(stationData => {
+                                      if (stationData && stationData.status !== "unauthorized") {
+                                          fillStationDetails([stationData]);
+                                          locationSelect.value = 0;
+                                          locationSelect.dispatchEvent(new Event('change'));
+                                      }
+                                  })
+                                  .catch(err => console.error("خطأ أثناء جلب بيانات المحطة:", err));                           
                           } else {
                               console.error("حدث خطأ أثناء اعتماد الاجراء.",result);
                               alert("حدث خطأ أثناء اعتماد الاجراء.");
@@ -611,6 +639,7 @@
 
 </body>
 </html>
+
 
 
 
