@@ -399,6 +399,7 @@
             try {
                 const uploadResp = await fetch(scriptURL, {
                     method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: formDataFile
                 });
                 console.log("✅ Fetch done, status:", uploadResp.status);
@@ -667,6 +668,7 @@
 
 </body>
 </html>
+
 
 
 
