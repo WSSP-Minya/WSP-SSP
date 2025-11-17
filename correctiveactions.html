@@ -343,7 +343,7 @@
             // 🔹 تحديد القسم الحقيقي الذي يرسل (حسب الزر)
         let currentDepartment = department;
         if (event.target.classList.contains("branchbutton")) {
-          currentDepartment = "branch";
+          currentDepartment =  document.getElementById("branch").value;  // ← اسم الفرع الحقيقي;
         } else if (event.target.classList.contains("wspbutton")) {
           currentDepartment = "wsp";
         }
@@ -638,6 +638,7 @@
 
 </body>
 </html>
+
 
 
 
