@@ -524,6 +524,11 @@
       
             clearForm();  
             fetchData(email, department);
+            })
+            .catch(error => {  // هذا catch يتبع fetch الأصلي
+                console.error("💥 Exception caught:", error);
+                alert("حدث خطأ أثناء تنفيذ العملية. راجع الـ Console لمعرفة التفاصيل.");
+            });
                   
       }
 
@@ -635,6 +640,7 @@
 
 </body>
 </html>
+
 
 
 
