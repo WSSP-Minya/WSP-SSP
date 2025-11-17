@@ -322,52 +322,6 @@
           return;
         }
       
-        // 🔹 رفع الملف بعد ضغطه + Base64 باستخدام الدالة الجديدة
-        let attachmentLink = "";
-        if (attachmentInput.files.length > 0) {
-            attachmentLink = await uploadAttachment(attachmentInput.files[0]);
-            if (!attachmentLink) return; // إذا فشل الرفع، أوقف العملية
-        }
-        
-                
-            const formDataFile = new URLSearchParams();
-            formDataFile.append("action", "attachmentFile");
-            formDataFile.append("filename", originalFile.name);
-            formDataFile.append("filedata", base64Data);
-        
-            try {
-                const uploadResp = await fetch(scriptURL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: formDataFile
-                });
-                console.log("✅ Fetch done, status:", uploadResp.status);
-                const textResp = await uploadResp.text();
-                console.log("📄 Raw response text:", textResp);
-        
-                let uploadResult;
-                try {
-                    uploadResult = JSON.parse(textResp);
-                } catch (jsonErr) {
-                    console.error("❌ JSON parse error:", jsonErr, "Raw text:", textResp);
-                    alert("خطأ في تحليل الاستجابة من السيرفر.");
-                    return;
-                }
-                console.log("📤 Upload result:", uploadResult);
-
-        
-                if (uploadResult.status === "success") {
-                    attachmentLink = uploadResult.link;
-                } else {
-                    console.warn("⚠️ Upload failed:", uploadResult);
-                    alert("حدث خطأ أثناء رفع الملف.");
-                    return;
-                }
-            } catch (err) {
-                console.error("🔥 Error during file upload:", err);
-                alert("حدث خطأ أثناء رفع الملف.");
-                return;
-            }
         
 
                       
@@ -607,6 +561,7 @@
 
 </body>
 </html>
+
 
 
 
