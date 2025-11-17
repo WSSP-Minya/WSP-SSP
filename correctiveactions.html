@@ -487,23 +487,22 @@
                       .catch(err => {  
                           console.error("Approval error:", err);
                       });
+                    } // ← إغلاق if (approve)
+                  } // ← إغلاق if WSP
+              } else if (result.result === "Location not found") {
+                  alert("❌ لم يتم العثور على الموقع المحدد في الشيت.");
+              } else {
+                  console.warn("⚠️ Unexpected result object:", result);
+                  alert("حدث خطأ أثناء التحديث.");
               }
-
-            } else if (result.result === "Location not found") {
-              alert("❌ لم يتم العثور على الموقع المحدد في الشيت.");
-            } else {
-              console.warn("⚠️ Unexpected result object:", result);
-              alert("حدث خطأ أثناء التحديث.");
-            }
       
-            clearForm();  
-            fetchData(email, department);
-            })
-            .catch(error => {  // هذا catch يتبع fetch الأصلي
-                console.error("💥 Exception caught:", error);
-                alert("حدث خطأ أثناء تنفيذ العملية. راجع الـ Console لمعرفة التفاصيل.");
-            });
-                  
+              clearForm();
+              fetchData(email, department);
+          })
+          .catch(error => {
+              console.error("💥 Exception caught:", error);
+              alert("حدث خطأ أثناء تنفيذ العملية. راجع الـ Console لمعرفة التفاصيل.");
+          });
       }
 
 
@@ -614,6 +613,7 @@
 
 </body>
 </html>
+
 
 
 
