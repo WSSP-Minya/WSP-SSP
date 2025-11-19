@@ -572,10 +572,17 @@
               <style>
                   body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
                   table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                  th, td { border: 1px solid #000; padding: 5px; }
+                  th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
                   th { background-color: #f0f0f0; }
                   h2 { text-align: center; }
                   p { text-align: center;}
+                  /* تحديد أقل عرض لكل عمود (يمكن تعديلها كما تريد) */
+                  th:nth-child(1), td:nth-child(1) { width: 10%; } /* الموقع */
+                  th:nth-child(2), td:nth-child(2) { width: 15%; } /* الخطر */
+                  th:nth-child(3), td:nth-child(3) { width: 25%; } /* الإجراء التصحيحي */
+                  th:nth-child(4), td:nth-child(4) { width: 10%; } /* المدة */
+                  th:nth-child(5), td:nth-child(5) { width: 10%; } /* الموقف التنفيذي */
+                  th:nth-child(6), td:nth-child(6) { width: 25%; } /* الملاحظات */
               </style>
           </head>
           <body>
@@ -615,6 +622,7 @@
 
 </body>
 </html>
+
 
 
 
