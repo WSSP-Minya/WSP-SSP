@@ -550,11 +550,13 @@
         const allLocations = Object.values(detailsMap) || [];
         
         // 1) إجمالي عدد الإجراءات التصحيحية
-        const totalActions = allLocations.length;
+        const totalActions = doneAction+inProgressCount+notDoneCount;
         // 2) عدد الاجراءات المنفذة 
-        const doneActions = Object.values(detailsMap).filter(detail => detail.checkbox === true).length;              
+        const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;      
         // 2) عدد الإجراءات الجارية
         const inProgressCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+        // 4) عدد الإجراءات لم يتم التنفيذ
+        const notDoneCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
   
       // تصفية المواقع المعتمدة فقط (checkbox = false)
       const approvedLocations = Object.values(detailsMap).filter(detail => detail.checkbox === false);
@@ -607,6 +609,8 @@
                   <strong>عدد الإجراءات المنفذة:</strong> ${doneActions}
                   &nbsp;&nbsp;&nbsp;
                   <strong>عدد الإجراءات الجارية:</strong> ${inProgressCount}
+                  &nbsp;&nbsp;&nbsp;
+                  <strong>عدد الإجراءات لم يتم التنفيذ:</strong> ${notDone}
               </p>
               
 
@@ -644,6 +648,7 @@
 
 </body>
 </html>
+
 
 
 
