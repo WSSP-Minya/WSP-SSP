@@ -550,13 +550,13 @@
         const allLocations = Object.values(detailsMap) || [];
         
         // 1) إجمالي عدد الإجراءات التصحيحية
-        const totalActions = doneAction+inProgressCount+notDoneCount;
+        const totalActionsCount = doneActionsCount+inProgressActionsCount+notDoneActionsCount;
         // 2) عدد الاجراءات المنفذة 
-        const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;      
+        const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;      
         // 2) عدد الإجراءات الجارية
-        const inProgressCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+        const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
         // 4) عدد الإجراءات لم يتم التنفيذ
-        const notDoneCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+        const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
   
       // تصفية المواقع المعتمدة فقط (checkbox = false)
       const approvedLocations = Object.values(detailsMap).filter(detail => detail.checkbox === false);
@@ -604,13 +604,13 @@
               <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
               <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${station} &nbsp;&nbsp;&nbsp;&nbsp <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
               <p>
-                  <strong>عدد الإجراءات التصحيحية:</strong> ${totalActions}
+                  <strong>عدد الإجراءات التصحيحية:</strong> ${totalActionsCount}
                   &nbsp;&nbsp;&nbsp;
-                  <strong>عدد الإجراءات المنفذة:</strong> ${doneActions}
+                  <strong>عدد الإجراءات المنفذة:</strong> ${doneActionsCount}
                   &nbsp;&nbsp;&nbsp;
-                  <strong>عدد الإجراءات الجارية:</strong> ${inProgressCount}
+                  <strong>عدد الإجراءات الجارية:</strong> ${inProgressActionsCount}
                   &nbsp;&nbsp;&nbsp;
-                  <strong>عدد الإجراءات لم يتم التنفيذ:</strong> ${notDone}
+                  <strong>عدد الإجراءات لم يتم التنفيذ:</strong> ${notDoneActionsCount}
               </p>
               
 
@@ -648,6 +648,7 @@
 
 </body>
 </html>
+
 
 
 
