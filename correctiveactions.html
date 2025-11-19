@@ -545,6 +545,16 @@
           alert("لا توجد بيانات مواقع للطباعة!");
           return;
       }
+        
+      // جميع الإجراءات
+        const allLocations = Object.values(detailsMap) || [];
+        
+        // 1) إجمالي عدد الإجراءات التصحيحية
+        const totalActions = allLocations.length;
+        // 2) عدد الاجراءات المنفذة 
+        const doneActions = Object.values(detailsMap).filter(detail => detail.checkbox === true).length;              
+        // 2) عدد الإجراءات الجارية
+        const inProgressCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
   
       // تصفية المواقع المعتمدة فقط (checkbox = false)
       const approvedLocations = Object.values(detailsMap).filter(detail => detail.checkbox === false);
@@ -565,15 +575,7 @@
           </tr>
       `).join("");
 
-        // جميع الإجراءات
-        const allLocations = Object.values(detailsMap) || [];
         
-        // 1) إجمالي عدد الإجراءات التصحيحية
-        const totalActions = allLocations.length;
-        // 2) عدد الاجراءات المنفذة 
-        const doneActions = Object.values(detailsMap).filter(detail => detail.checkbox === true).length;              
-        // 2) عدد الإجراءات الجارية
-        const inProgressCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
 
   
       const htmlContent = `
@@ -642,6 +644,7 @@
 
 </body>
 </html>
+
 
 
 
