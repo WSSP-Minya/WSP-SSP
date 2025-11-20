@@ -34,52 +34,53 @@
       </form>
     </div>
 
-    <script>
-        const scriptURL = "https://script.google.com/macros/s/AKfycbzO-08tYEmf5ZUflvAD4-26UYco3TIR6_P91sOgK4N6lcyj57d7F5BJTj_7ccj2Vn_2/exec";
-        
-        document.getElementById("loginForm").addEventListener("submit", async (e) => {
-          e.preventDefault();
-        
-          const email = document.getElementById("login-email").value.trim();
-          const password = document.getElementById("login-password").value;
-          const msg = document.getElementById("login-message");
-        
-          msg.textContent = "Processing...";
-        
-          try {
-            const response = await fetch(scriptURL, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json"
-              },
-              body: JSON.stringify({
-                action: "login",
-                email: email,
-                password: password
-              })
-            });
-
-        
-            const data = await response.json();
-        
-            if (data.status?.toLowerCase() === "authorized") {
-              // لا نخزن كلمة السر أبداً
-              sessionStorage.setItem("email", data.email);
-              sessionStorage.setItem("token", data.token); // إن وجد
-        
-              window.location = "mainpage.html";
-            } else {
-              msg.textContent = "Unauthorized";
-            }
-          } catch (error) {
-            console.error(error);
-            msg.textContent = "Connection Error";
+ <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzO-08tYEmf5ZUflvAD4-26UYco3TIR6_P91sOgK4N6lcyj57d7F5BJTj_7ccj2Vn_2/exec";
+    
+    document.addEventListener("DOMContentLoaded", function() {
+      const loginForm = document.getElementById("loginForm");
+      const msg = document.getElementById("login-message");
+    
+      loginForm.addEventListener("submit", function(e) {
+        e.preventDefault();
+    
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+    
+        msg.textContent = "Processing...";
+    
+        fetch(scriptURL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            action: "login",
+            email: email,
+            password: password
+          })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.status && data.status.toLowerCase() === "authorized") {
+            sessionStorage.setItem("email", data.email);
+            sessionStorage.setItem("token", data.token || "");
+            window.location = "mainpage.html";
+          } else {
+            msg.textContent = "Unauthorized";
+            console.log(data); // لمعرفة debug إذا أردت
           }
+        })
+        .catch(err => {
+          console.error(err);
+          msg.textContent = "Connection Error";
         });
+      });
+    });
     </script>
 
 
+
 </body>
+
 
 
 
