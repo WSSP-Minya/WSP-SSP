@@ -49,6 +49,8 @@
           try {
             const response = await fetch(scriptURL, {
               method: "POST",
+              headers: {
+                "Content-Type": "application/json"   // ← الحل هنا
               body: JSON.stringify({
                 action: "login",
                 email: email,
@@ -76,6 +78,7 @@
 
 
 </body>
+
 
 
 
