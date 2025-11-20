@@ -9,34 +9,30 @@
   
 </head>
 <body>
-    <img src= "https://miniawater.com/public/img/uy.jpg" class="image1">
-    <img src= "https://miniawater.com/public/img/uy.jpg" class="image2">
-    <h1 class="heads">شركة المنيا لمياه الشرب والصرف الصحى</h1>
-    <h2 class="heads">قطاع المعامل والجودة وشئون البيئة</h2>
-    <h3 class="heads">الإدارة العامة لمأمونية المياه وتداول الصرف الصحى</h3>
+  <div class="container">
+    <div class="centeredarea">
+      <div class="images">
+        <img src= "https://wssp.hcww.com.eg/public/company_logo/menia.png" class="image1">
+        <img src= "https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="image2">
+        <img src= "https://wssp.hcww.com.eg/public/static/media/ssp.df572d889f76665a82d5.png" class="image3">
+      </div>
+      <h1 class="heads">شركة المنيا لمياه الشرب والصرف الصحى</h1>
+      <h2 class="heads">قطاع المعامل والجودة وشئون البيئة</h2>
+      <h3 class="heads">الإدارة العامة لمأمونية المياه وتداول الصرف الصحى</h3>
+    </div>
+      <form id="loginForm">
+          <label for="login-email"><b>Email</b></label>
+          <input required id="login-email" type="email" placeholder="Enter your mail">
 
-    <form id="loginForm">
-        <label for="login-email"><b>Email</b></label>
-        <input required id="login-email" type="email" placeholder="Enter your mail">
+          <label for="login-password"><b>Password</b></label>
+          <input required id="login-password" type="password" placeholder="Enter your password">
 
-        <label for="login-department"><b>Section</b></label>
-        <select required id="login-department">
-            <option value="">Choose your section</option>
-            <option value="العدوه">العدوه</option>
-            <option value="مغاغة">مغاغة</option>
-            <option value="بنى مزار">بنى مزار</option>
-            <option value="مطاى">مطاى</option>
-            <option value="سمالوط">سمالوط</option>
-            <option value="المنيا">المنيا</option>
-            <option value="ابوقرقاص">ابوقرقاص</option>
-            <option value="ملوى">ملوى</option>
-            <option value="ديرمواس">ديرمواس</option>
-            <option value="WSP">WSP</option>
-        </select>
+                
 
-        <button type="submit">LOG IN</button>
-        <div id="login-message" datastatus="Connection error"></div>
-    </form>
+          <button type="submit">LOG IN</button>
+          <div id="login-message" datastatus="Connection error"></div>
+      </form>
+    </div>
 
     <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbwm-xoojxIaAJ8-cLLIRFAthMHT1FFWS8w0gHtf6xlhU5xP3eqB47CQucqea4GDEm0Zlw/exec";
@@ -45,9 +41,9 @@
         e.preventDefault();
 
     const email = document.getElementById("login-email").value.trim();
-    const department = document.getElementById("login-department").value;
+    const password = document.getElementById("login-password").value;
 
-    const url = `${scriptURL}?action=login&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`;
+    const url = `${scriptURL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
 
     fetch(url, {
       method: "GET",
@@ -64,10 +60,10 @@
     .then(data => {
       if (data.status.toLowerCase() === "authorized") {
         sessionStorage.setItem("email", data.email);
-        sessionStorage.setItem("department", data.department);
+        sessionStorage.setItem("password", data.password);
         document.getElementById("login-message").textContent = "Authorized";
         document.getElementById("login-email").value = "";
-        document.getElementById("login-department").value = "";
+        document.getElementById("login-password").value = "";
         document.getElementById("login-message").textContent = "";
         window.location = "mainpage.html";
       } else {
@@ -83,13 +79,6 @@
     </script>
 
 </body>
-
-
-
-
-
-
-
 
 
 
