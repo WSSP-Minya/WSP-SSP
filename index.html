@@ -50,13 +50,15 @@
             const response = await fetch(scriptURL, {
               method: "POST",
               headers: {
-                "Content-Type": "application/json"   // ← الحل هنا
+                "Content-Type": "application/json"
+              },
               body: JSON.stringify({
                 action: "login",
                 email: email,
                 password: password
               })
             });
+
         
             const data = await response.json();
         
@@ -78,6 +80,7 @@
 
 
 </body>
+
 
 
 
