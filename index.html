@@ -60,7 +60,6 @@
     .then(data => {
       if (data.status.toLowerCase() === "authorized") {
         sessionStorage.setItem("email", data.email);
-        sessionStorage.setItem("password", data.password);
         document.getElementById("login-message").textContent = "Authorized";
         document.getElementById("login-email").value = "";
         document.getElementById("login-password").value = "";
@@ -83,6 +82,7 @@
 
 
 </body>
+
 
 
 
