@@ -35,38 +35,37 @@
     </div>
 
  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzO-08tYEmf5ZUflvAD4-26UYco3TIR6_P91sOgK4N6lcyj57d7F5BJTj_7ccj2Vn_2/exec"; // ← ضع رابط السكربت هنا
-    
-    document.getElementById("loginForm").addEventListener("submit", async e => {
-        e.preventDefault();
-    
-        const email = document.getElementById("login-email").value.trim();
-        const password = document.getElementById("login-password").value;
-    
-        const formData = new URLSearchParams();
-        formData.append("action", "login");
-        formData.append("email", email);
-        formData.append("password", password);
-    
-        try {
-            const response = await fetch(scriptURL, {
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxBXQPMEPdIsJq2FamqdpM8bG6opZJn_2wOe-LklC9WNlAEtgbz8_5H_ZfkWU07e2pF/exec";
+
+        document.getElementById("loginForm").addEventListener("submit", e => {
+            e.preventDefault();
+        
+            const email = document.getElementById("login-email").value.trim();
+            const password = document.getElementById("login-password").value;
+        
+            const params = new URLSearchParams();
+            params.append("action", "login");
+            params.append("email", email);
+            params.append("password", password);
+        
+            fetch(scriptURL, {
                 method: "POST",
-                body: formData
+                body: params
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.status === "authorized") {
+                    sessionStorage.setItem("email", data.email);
+                    window.location = "mainpage.html";
+                } else {
+                    document.getElementById("login-message").textContent = "Unauthorized";
+                }
+            })
+            .catch(err => {
+                document.getElementById("login-message").textContent = "Connection Error";
             });
-    
-            const data = await response.json();
-    
-            if (data.status === "authorized") {
-                sessionStorage.setItem("email", data.email);
-                window.location = "mainpage.html";
-            } else {
-                document.getElementById("login-message").textContent = "Unauthorized";
-            }
-        } catch (err) {
-            document.getElementById("login-message").textContent = "Connection Error";
-            console.error(err);
-        }
-    });
+        });
+
 </script>
 
     
@@ -74,6 +73,7 @@
 
 
 </body>
+
 
 
 
