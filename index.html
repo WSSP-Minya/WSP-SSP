@@ -35,30 +35,39 @@
     </div>
 
  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxwAYA3fCmFULfREZXfjIcpmNQhTR4GMvZpRUzn7NDEkmx2Vp98aULCnPQK_IuHpag/exec";
-         const form = document.getElementById('loginForm');
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('loginForm');
+      const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxwAYA3fCmFULfREZXfjIcpmNQhTR4GMvZpRUzn7NDEkmx2Vp98aULCnPQK_IuHpag/exec'; // ضع رابط الـ Web App هنا
 
-         form.addEventListener('submit', async (e) => {
-          e.preventDefault();
-          const email = document.getElementById('email').value;
-          const password = document.getElementById('password').value;
-    
-          const response = await fetch(scriptURL, {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value.trim();
+
+        try {
+          const response = await fetch(WEB_APP_URL, {
             method: 'POST',
             body: JSON.stringify({email, password}),
-            headers: {
-              'Content-Type': 'application/json'
-            }
+            headers: {'Content-Type': 'application/json'}
           });
-    
+
           const result = await response.json();
+
           if(result.success){
             alert('Login successful!');
           } else {
             alert('Email or password incorrect!');
           }
-        });
-
+        } catch (err) {
+          console.error(err);
+          alert('Error connecting to server.');
+        }
+      });
+    });
 </script>
 
     
@@ -66,6 +75,7 @@
 
 
 </body>
+
 
 
 
