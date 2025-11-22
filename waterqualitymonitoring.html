@@ -221,9 +221,9 @@ let department = "";
 window.onload = () => {
   // جلب البريد الإلكتروني والقسم من الجلسة (sessionStorage)
   const email = sessionStorage.getItem("email");
-  department = sessionStorage.getItem("department");
-    console.log("email:", email);
-    console.log("department:", department);
+  const department = sessionStorage.getItem("department");
+  const password = sessionStorage.getItem("password");
+    
 
 
   // الحصول على عناصر الـ select الخاصة بالمحطة والفرع
@@ -322,7 +322,7 @@ window.onload = () => {
 };
 
 function fetchData(email, department) {
-  fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
+  fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&department=${encodeURIComponent(department)}`)
     .then(response => response.json())
     .then(data => {
       if (data.status === "unauthorized") {
@@ -606,6 +606,7 @@ function exportTableToExcel(waterqualitytable, filename = '') {
 
 
 </script>
+
 
 
 
