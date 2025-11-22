@@ -223,7 +223,8 @@ window.onload = () => {
   const email = sessionStorage.getItem("email");
   department = sessionStorage.getItem("department");
   password = sessionStorage.getItem("password");
-    
+console.log("Email:", email, "Password:", password, "Department:", department);
+ 
 
 
   // الحصول على عناصر الـ select الخاصة بالمحطة والفرع
@@ -606,6 +607,7 @@ function exportTableToExcel(waterqualitytable, filename = '') {
 
 
 </script>
+
 
 
 
