@@ -222,6 +222,9 @@ window.onload = () => {
   // جلب البريد الإلكتروني والقسم من الجلسة (sessionStorage)
   const email = sessionStorage.getItem("email");
   department = sessionStorage.getItem("department");
+    console.log("email:", email);
+    console.log("department:", department);
+
 
   // الحصول على عناصر الـ select الخاصة بالمحطة والفرع
   const stationSelect = document.getElementById("station");
@@ -603,6 +606,7 @@ function exportTableToExcel(waterqualitytable, filename = '') {
 
 
 </script>
+
 
 
 
