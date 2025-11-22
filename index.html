@@ -35,53 +35,46 @@
     </div>
 
  <script>
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzO-08tYEmf5ZUflvAD4-26UYco3TIR6_P91sOgK4N6lcyj57d7F5BJTj_7ccj2Vn_2/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzO-08tYEmf5ZUflvAD4-26UYco3TIR6_P91sOgK4N6lcyj57d7F5BJTj_7ccj2Vn_2/exec"; // ← ضع رابط السكربت هنا
     
-    document.getElementById("loginForm").addEventListener("submit", e => {
+    document.getElementById("loginForm").addEventListener("submit", async e => {
         e.preventDefault();
-
-    const email = document.getElementById("login-email").value.trim();
-    const password = document.getElementById("login-password").value;
-
-    const url = `${scriptURL}?action=login&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
-
-    fetch(url, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-      },
-    })
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      return response.json();
-    })
-    .then(data => {
-      if (data.status.toLowerCase() === "authorized") {
-        sessionStorage.setItem("email", data.email);
-        document.getElementById("login-message").textContent = "Authorized";
-        document.getElementById("login-email").value = "";
-        document.getElementById("login-password").value = "";
-        document.getElementById("login-message").textContent = "";
-        window.location = "mainpage.html";
-      } else {
-        document.getElementById("login-message").textContent = "Unauthorized";
-      }
-    })
-    .catch(err => {
-      console.error("خطأ:", err);
-      document.getElementById("login-message").textContent = "Connection Error";
+    
+        const email = document.getElementById("login-email").value.trim();
+        const password = document.getElementById("login-password").value;
+    
+        const formData = new URLSearchParams();
+        formData.append("action", "login");
+        formData.append("email", email);
+        formData.append("password", password);
+    
+        try {
+            const response = await fetch(scriptURL, {
+                method: "POST",
+                body: formData
+            });
+    
+            const data = await response.json();
+    
+            if (data.status === "authorized") {
+                sessionStorage.setItem("email", data.email);
+                window.location = "mainpage.html";
+            } else {
+                document.getElementById("login-message").textContent = "Unauthorized";
+            }
+        } catch (err) {
+            document.getElementById("login-message").textContent = "Connection Error";
+            console.error(err);
+        }
     });
-  });     
-      
- </script>
+</script>
 
     
 
 
 
 </body>
+
 
 
 
