@@ -30,41 +30,41 @@
                 
 
           <button type="submit">LOG IN</button>
-           <script>
-                document.addEventListener('DOMContentLoaded', () => {
-                  const form = document.getElementById('loginForm');
-                  const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxwAYA3fCmFULfREZXfjIcpmNQhTR4GMvZpRUzn7NDEkmx2Vp98aULCnPQK_IuHpag/exec'; // ضع رابط الـ Web App هنا
-            
-                  form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-            
-                    const emailInput = document.getElementById('email');
-                    const passwordInput = document.getElementById('password');
-            
-                    const email = emailInput.value.trim();
-                    const password = passwordInput.value.trim();
-            
-                    try {
-                      const response = await fetch(WEB_APP_URL, {
-                        method: 'POST',
-                        body: JSON.stringify({email, password}),
-                        headers: {'Content-Type': 'application/json'}
-                      });
-            
-                      const result = await response.json();
-            
-                      if(result.success){
-                        alert('Login successful!');
-                      } else {
-                        alert('Email or password incorrect!');
-                      }
-                    } catch (err) {
-                      console.error(err);
-                      alert('Error connecting to server.');
-                    }
+          <script>
+            document.addEventListener('DOMContentLoaded', () => {
+              const form = document.getElementById('loginForm');
+              const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbxwAYA3fCmFULfREZXfjIcpmNQhTR4GMvZpRUzn7NDEkmx2Vp98aULCnPQK_IuHpag/exec';
+        
+              form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+        
+                const emailInput = document.getElementById('login-email');
+                const passwordInput = document.getElementById('login-password');
+        
+                const email = emailInput.value.trim();
+                const password = passwordInput.value.trim();
+        
+                try {
+                  const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({email, password}),
+                    headers: {'Content-Type': 'application/json'}
                   });
-                });
-            </script>
+        
+                  const result = await response.json();
+        
+                  if(result.success){
+                    alert('Login successful!');
+                  } else {
+                    alert('Email or password incorrect!');
+                  }
+                } catch (err) {
+                  console.error(err);
+                  alert('Error connecting to server.');
+                }
+              });
+            });
+          </script> 
 
           <div id="login-message" datastatus="Connection error"></div>
       </form>
@@ -76,6 +76,7 @@
 
 
 </body>
+
 
 
 
