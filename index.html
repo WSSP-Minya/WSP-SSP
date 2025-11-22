@@ -38,7 +38,7 @@
 <script>
             document.addEventListener('DOMContentLoaded', () => {
               const form = document.getElementById('loginForm');
-              const WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbzylmJV0KbzrfbI_A7OZEPksOxgNSHAddxNS2jS7ctJMkyGuc_8hqKzN8JrubN4PGuh/exec'; // ضع رابط Web App هنا
+              const scriptURL = 'https://script.google.com/macros/s/AKfycbzylmJV0KbzrfbI_A7OZEPksOxgNSHAddxNS2jS7ctJMkyGuc_8hqKzN8JrubN4PGuh/exec'; // ضع رابط Web App هنا
         
               form.addEventListener('submit', async (e) => {
                 e.preventDefault();
@@ -48,12 +48,13 @@
         
                 try {
                   // استخدام GET لتجنب CORS
-                  const url = `${WEB_APP_URL}?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                  const url = `${scriptURL}?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
                   const response = await fetch(url);
                   const result = await response.json();
         
                   if(result.success){
                     alert('Login successful!');
+                    window.location="mainpage.html";  
                   } else {
                     alert('Email or password incorrect!');
                   }
@@ -65,6 +66,7 @@
             });
 </script>
 </html>
+
 
 
 
