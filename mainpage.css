@@ -15,7 +15,7 @@ body {
   }
 
 
-  .buttonlabel{
+  .buttonlabel {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -31,7 +31,7 @@ body {
     
   }
 
-  .buttonlabel:hover{
+  .buttonlabel:hover {
     background-color: #007bff;
     color: black;
     transform: translateY(-5px);
@@ -39,7 +39,7 @@ body {
     transform: scale(1.5);
   }
 
-  .buttonlabel img{
+  .buttonlabel img {
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -49,11 +49,11 @@ body {
    
   }
 
-  .buttonlabel:hover img{
+  .buttonlabel:hover img {
     transform: scale(1.5);
   }
 
-  .buttonlabel span{
+  .buttonlabel span {
     font-size: 15px;
     font-weight: bold;
     z-index: 1;
@@ -61,4 +61,5 @@ body {
 
 
   
+
 
