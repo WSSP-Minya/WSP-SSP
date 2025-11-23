@@ -31,7 +31,15 @@
                 window.location.href= pagename+".html";
             }
             
-           
+         if (department?.toLowerCase() !== "wsp") {
+            const buttons = document.querySelectorAll(".buttonlabel");
+            const waterLevelButton = buttons[2];  // الزر الثالث
+    
+            waterLevelButton.disabled = true;     // تعطيل الزر
+            waterLevelButton.style.opacity = "0.5";  // شكل يدل على أنه غير فعّال
+            waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
+        }
+  
 
 
         </script>
@@ -43,6 +51,7 @@
 
 
 </html>
+
 
 
 
