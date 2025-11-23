@@ -110,7 +110,7 @@
       <button class="branchbutton" onclick='sendCommentsData(event,"updatestation")'>Branch Submit</button>
     </div>
     <div>
-      <button type="button" id="printReport">طباعة التقرير</button>
+      <button type="button" id="printReport">Print</button>
     </div>
    
   </form>
@@ -545,7 +545,7 @@
       const detailsMap = locationSelect.detailsMap;
   
       if (!detailsMap || Object.keys(detailsMap).length === 0) {
-          alert("لا توجد بيانات مواقع للطباعة!");
+          alert("No Data for Print!");
           return;
       }
         
@@ -652,6 +652,7 @@
 
 </body>
 </html>
+
 
 
 
