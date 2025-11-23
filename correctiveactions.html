@@ -521,7 +521,7 @@
         fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
           .then(response => response.json())
           .then(data => {
-            console.log("✅ Response JSON from server:", result);  // عرض النتيجة كاملة من السيرفر
+            console.log("✅ Response JSON from server:", data);  // عرض النتيجة كاملة من السيرفر
             if (data.status === "unauthorized") {
               alert("غير مصرح لك بالوصول");
               return;
@@ -650,6 +650,7 @@
 
 </body>
 </html>
+
 
 
 
