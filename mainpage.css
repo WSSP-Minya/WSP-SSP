@@ -14,7 +14,9 @@ body {
     justify-content: center;
   }
 
-  .buttonlabel {
+  .buttonlabel1,
+  .buttonlabel2,
+  .buttonlabel3{
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -30,7 +32,9 @@ body {
     
   }
 
-  .buttonlabel:hover {
+  .buttonlabel1:hover,
+  .buttonlabel2:hover,
+  .buttonlabel3:hover{
     background-color: #007bff;
     color: black;
     transform: translateY(-5px);
@@ -38,7 +42,9 @@ body {
     transform: scale(1.5);
   }
 
-  .buttonlabel img {
+  .buttonlabel1 img,
+  .buttonlabel2 img,
+  .buttonlabel2 img{
     width: 150px;
     height: 150px;
     object-fit: cover;
@@ -48,14 +54,19 @@ body {
    
   }
 
-  .buttonlabel:hover img{
+  .buttonlabel1:hover img,
+  .buttonlabel2:hover img,
+  .buttonlabel3:hover img{
     transform: scale(1.5);
   }
 
-  .buttonlabel span {
+  .buttonlabel1 span,
+  .buttonlabel2 span,
+  .buttonlabel3 span{
     font-size: 15px;
     font-weight: bold;
     z-index: 1;
   }
+
 
   
