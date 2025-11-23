@@ -122,6 +122,8 @@
     window.onload = () => {
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
+      const password = sessionStorage.getItem("password");
+
 
   
       document.getElementById("email").value = email || "";
@@ -519,7 +521,6 @@
         document.getElementById("filename").textContent = "";
       }
       function fetchData(email, password, department) {
-        const password = sessionStorage.getItem("password");
         fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&department=${encodeURIComponent(department)}`)
           .then(response => response.json())
           .then(data => {
@@ -652,6 +653,7 @@
 
 </body>
 </html>
+
 
 
 
