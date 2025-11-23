@@ -122,7 +122,6 @@
     window.onload = () => {
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
-      const password = sessionStorage.getItem("password");
 
 
   
@@ -335,7 +334,6 @@
         event = event || window.event; // ضمان وجود event
         const email = sessionStorage.getItem("email");
         const department = sessionStorage.getItem("department"); 
-          const password= sessionStorage.getItem("password"); 
         const locationSelect = document.getElementById("location");
         const riskInput = document.getElementById("risk");
         const corractionInput = document.getElementById("corraction");
@@ -501,7 +499,7 @@
               }
       
               clearForm();
-              fetchData(email, password, department);
+              fetchData(email, department);
           })
           .catch(error => {
               console.error("💥 Exception caught:", error);
@@ -521,8 +519,8 @@
         document.getElementById("wspcomment").value = "";
         document.getElementById("filename").textContent = "";
       }
-      function fetchData(email, password, department) {
-        fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&department=${encodeURIComponent(department)}`)
+      function fetchData(email, department) {
+        fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
           .then(response => response.json())
           .then(data => {
             console.log("✅ Response JSON from server:", data);  // عرض النتيجة كاملة من السيرفر
@@ -654,6 +652,7 @@
 
 </body>
 </html>
+
 
 
 
