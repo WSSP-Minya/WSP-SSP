@@ -212,7 +212,7 @@
 </body> 
 </html>
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycby07CJ4-Ym2QGSpx_gh5oAKu1KJVDJ7h26qDI9vP7ldL_uYfzImXncInulXg6fLen_9ng/exec";
+const scriptURL = "https://script.google.com/macros/s/AKfycbwm-xoojxIaAJ8-cLLIRFAthMHT1FFWS8w0gHtf6xlhU5xP3eqB47CQucqea4GDEm0Zlw/exec";
     
 // تعريف متغيرات عامة
 let department = "";
@@ -222,9 +222,6 @@ window.onload = () => {
   // جلب البريد الإلكتروني والقسم من الجلسة (sessionStorage)
   const email = sessionStorage.getItem("email");
   department = sessionStorage.getItem("department");
-
- 
-
 
   // الحصول على عناصر الـ select الخاصة بالمحطة والفرع
   const stationSelect = document.getElementById("station");
@@ -247,109 +244,141 @@ window.onload = () => {
     branchSelect.value = department;
     branchSelect.disabled = true;
 
-    // 🔹 تحميل المحطات بدون كلمة مرور
-        loadStations(department);
-      } else {
-        branchSelect.disabled = false;
+    // جلب قائمة المحطات الخاصة بالفرع من Google App Script
+    fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(department)}`)
+      .then(response => response.json()) // تحويل الاستجابة إلى JSON
+      .then(data => {
+        // عرض رسالة مؤقتة أثناء تحميل المحطات
+        stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+        
+        // إذا تم جلب المحطات بنجاح
+        if (data.status === "success") {
+          // إعادة تعيين القائمة
+          stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+          
+          // إضافة كل محطة كخيار في القائمة
+          data.stations.forEach(station => {
+            const option = document.createElement("option");
+            option.value = station;
+            option.textContent = station;
+            stationSelect.appendChild(option);
+          });
+        } else {
+          // في حال عدم وجود محطات
+          stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+        }
+      })
+      .catch(error => {
+        // في حال حدوث خطأ أثناء الاتصال
+        console.error("Error fetching stations:", error);
+        stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+      });
+
+  } else {
+    // إذا كان المستخدم من قسم WSP (أي يمكنه اختيار أي فرع)
     
-        branchSelect.addEventListener("change", () => {
-          if (branchSelect.value) {
-            loadStations(branchSelect.value);
-          }
-        });
-      }
-    
-      // 🔹 استدعاء fetchData بدون تمرير password
-      fetchData(email, department);
-    };
-    
-    // 🔹 دالة جديدة لتحميل المحطات بشكل موحد
-    function loadStations(branch) {
-      const stationSelect = document.getElementById("station");
-      stationSelect.innerHTML = '<option disabled selected>Loading stations...</option>';
-    
-      fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`)
-        .then(res => res.json())
+    // إتاحة اختيار الفرع من القائمة
+    branchSelect.disabled = false;
+
+    // عند تغيير الفرع المختار من قبل المستخدم
+    branchSelect.addEventListener("change", () => {
+      const selectedBranch = branchSelect.value; // الحصول على الفرع المختار
+      if (!selectedBranch) return; // التأكد من أن قيمة الفرع صالحة
+
+      // عرض رسالة تحميل مؤقتة
+      stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+
+      // إرسال طلب لجلب المحطات الخاصة بالفرع المختار
+      fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(selectedBranch)}`)
+        .then(response => response.json()) // تحويل الاستجابة إلى JSON
         .then(data => {
           if (data.status === "success") {
-            stationSelect.innerHTML = '<option disabled selected>Select Station</option>';
-            data.stations.forEach(st => {
-              const opt = document.createElement("option");
-              opt.value = st;
-              opt.textContent = st;
-              stationSelect.appendChild(opt);
+            // تفريغ وإعادة بناء القائمة بالمحطات الجديدة
+            stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+            data.stations.forEach(station => {
+              const option = document.createElement("option");
+              option.value = station;
+              option.textContent = station;
+              stationSelect.appendChild(option);
             });
           } else {
-            stationSelect.innerHTML = '<option disabled>Not found</option>';
+            // في حال لم يتم العثور على محطات
+            stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
           }
-        })
-        .catch(() => {
-          stationSelect.innerHTML = '<option disabled>Error</option>';
-        });
-    }
-    
-    // 🔹 تعديل fetchData ليعمل بدون password
-    function fetchData(email, department) {
-      fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
-        .then(response => response.json())
-        .then(data => {
-          if (!data || !data.water_data) {
-            alert("خطأ في تحميل البيانات");
-            return;
-          }
-    
-          const rows = data.water_data;
-          const tbody = document.querySelector("table.table-data tbody");
-          tbody.innerHTML = "";
-    
-          const desiredColumnIndexes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
-    
-          rows.slice(1).forEach(row => {
-            const rowBranch = row[2];
-    
-            // 🔹 تجاهل الصفوف غير الخاصة بالقسم إذا لم يكن WSP
-            if (department !== "WSP" && rowBranch !== department) return;
-    
-            const tr = document.createElement("tr");
-    
-            row.forEach((cell,index) => {
-              if (desiredColumnIndexes.includes(index)) {
-                const td = document.createElement("td");
-    
-                if (index === 1) {
-                  const d = new Date(cell);
-                  td.textContent = !isNaN(d.getTime())
-                    ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`
-                    : cell ?? "";
-                } else {
-                  td.textContent = cell ?? "";
-                }
-    
-                tr.appendChild(td);
-              }
-            });
-    
-            tr.addEventListener("click", () => {
-              clearRowHighlight();
-              tr.classList.add("selected-row");
-              fillFormWithRow(row);
-            });
-    
-            tbody.appendChild(tr);
-          });
-    
-          if (!tbody.hasChildNodes()) {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `<td colspan="21" style="text-align:center;">لا توجد بيانات</td>`;
-            tbody.appendChild(tr);
-          }
-    
         })
         .catch(error => {
-          console.error("Fetch Error:", error);
-          alert("خطأ أثناء تحميل البيانات");
+          // في حال حدوث خطأ أثناء الاتصال
+          console.error("Error fetching stations:", error);
+          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
         });
-    }
+    });
+  }
+
+  // تحميل البيانات الخاصة بجودة المياه للمستخدم أو القسم
+  fetchData(email, department);
+};
+
+function fetchData(email, department) {
+  fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.status === "unauthorized") {
+        alert("غير مصرح لك بالوصول");
+        return;
+      }
+
+      const rows = data.water_data;
+      const tbody = document.querySelector("table.table-data tbody");
+      tbody.innerHTML = "";
+
+      const desiredColumnIndexes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
+
+      rows.slice(1).forEach((row) => {
+        const rowBranch = row[2]; // العمود الثالث هو "Branch"
+        if (department !== "WSP" && rowBranch !== department) return;
+
+        const tr = document.createElement("tr");
+
+        row.forEach((cell, index) => {
+          if (desiredColumnIndexes.includes(index)) {
+            const td = document.createElement("td");
+
+            if (index === 1) {
+              const d = new Date(cell);
+              td.textContent = !isNaN(d.getTime())
+                ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+                : cell ?? "";
+            } else {
+              td.textContent = cell ?? "";
+            }
+
+            tr.appendChild(td);
+          }
+        });
+        tr.addEventListener("click", () => {
+          clearRowHighlight();
+          tr.classList.add("selected-row");
+          fillFormWithRow(row);
+        });
+        tbody.appendChild(tr);
+      });
+
+      // إذا لم توجد بيانات
+      if (!tbody.hasChildNodes()) {
+        const tr = document.createElement("tr");
+        const td = document.createElement("td");
+        td.colSpan = desiredColumnIndexes.length;
+        td.textContent = "لا توجد بيانات لعرضها لهذه المنطقة.";
+        td.style.textAlign = "center";
+        tr.appendChild(td);
+        tbody.appendChild(tr);
+      }
+    })
+    .catch(error => {
+      console.error("خطأ:", error);
+      alert("حدث خطأ أثناء تحميل البيانات.");
+    });
+}
 
 function formatDateForInput(dateValue) {
   try {
@@ -534,11 +563,6 @@ function clearForm() {
   
 }
 
-
-
-
-
-
     
 function printTable() {
   const table = document.getElementById("waterqualitytable").outerHTML;
@@ -557,6 +581,7 @@ function printTable() {
   win.document.close();
   win.print();
 }
+
 function exportTableToExcel(waterqualitytable, filename = '') {
   const table = document.getElementById(waterqualitytable);
   const dataType = 'application/vnd.ms-excel';
@@ -574,63 +599,3 @@ function exportTableToExcel(waterqualitytable, filename = '') {
 
 
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
