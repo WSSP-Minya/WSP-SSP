@@ -39,7 +39,7 @@
          if (department?.toLowerCase() !== "wsp") {
             const buttons = document.querySelectorAll(".buttonlabel");
             const waterLevelButton = buttons[2];  // الزر الثالث
-    
+            const reportsButton = buttons[3];
             waterLevelButton.disabled = true;     // تعطيل الزر
             waterLevelButton.style.opacity = "0.5";  // شكل يدل على أنه غير فعّال
             waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
@@ -56,6 +56,7 @@
 
 
 </html>
+
 
 
 
