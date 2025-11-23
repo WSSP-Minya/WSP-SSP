@@ -8,29 +8,32 @@
     <body>
                
         <div class="options">
-            <button onclick="AccessedToPage('waterqualitymonitoring')" class="buttonlabel">
+            <button onclick="AccessedToPage('waterqualitymonitoring')" class="buttonlabel1">
                 
                 <img src="https://www.cimsrdoon.com/img/water-setization-image.jpg" alt="Water Quality Monitoring" title="Raw Water Quality Monitoring">
                 <span>Water Quality Monitoring</span>
             </button>
             
-            <button onclick="AccessedToPage('correctiveactions')" class="buttonlabel">
+            <button onclick="AccessedToPage('correctiveactions')" class="buttonlabel2">
                 <img src="https://i0.wp.com/hellonimbly.com/wp-content/uploads/2022/09/BLOG-Social-Media_September_5-Important-Benefits-of-Corrective-Action-Report-in-Business.jpg?fit=1281%2C721&ssl=1" alt="Corrective Actions" title="Corrective Actions">
                 <span>Corrective Actions</span>
             </button> 
 
-            <button onclick="AccessedToPage('waterlevelmonitoring')" class="buttonlabel">
+            <button onclick="AccessedToPage('waterlevelmonitoring')" class="buttonlabel3">
                 <img src="https://marvel-b1-cdn.bc0a.com/f00000000170758/www.ysi.com/image%20library/parameters/level/water-level.jpg" alt="Water Level Monitoring" title="Water Level Monitoring">
                 <span>Water Level Monitoring</span>
             </button> 
         </div>
         <script>
+            const department = sessionStorage.getItem("department");
             function AccessedToPage(pagename){
                 alert("Accessed to "+pagename);
                 window.location.href= pagename+".html";
             }
             
-            
+            if (department!=="wsp"){
+                document.querySelector(".buttonlabel3").style.display = "none";    
+            }
         
 
 
@@ -44,6 +47,7 @@
 
 
 </html>
+
 
 
 
