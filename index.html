@@ -55,6 +55,7 @@
                   if(result.success){
                     alert('Login successful!');
                     sessionStorage.setItem('email', result.email);
+                    sessionStorage.setItem('password', result.password);
                     sessionStorage.setItem('department', result.department);
                     window.location="mainpage.html";  
                   } else {
@@ -68,6 +69,7 @@
             });
 </script>
 </html>
+
 
 
 
