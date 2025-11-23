@@ -517,8 +517,8 @@
         document.getElementById("wspcomment").value = "";
         document.getElementById("filename").textContent = "";
       }
-      function fetchData(email, department) {
-        fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
+      function fetchData(email, password, department) {
+        fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&department=${encodeURIComponent(department)}`)
           .then(response => response.json())
           .then(data => {
             console.log("✅ Response JSON from server:", data);  // عرض النتيجة كاملة من السيرفر
@@ -650,6 +650,7 @@
 
 </body>
 </html>
+
 
 
 
