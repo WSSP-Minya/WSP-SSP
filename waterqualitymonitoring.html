@@ -212,89 +212,35 @@
 </body> 
 </html>
 <script>
-const scriptURL = "https://script.google.com/macros/s/AKfycbwApBXgYU_QKzwFHY2m0e_WuSOBCRtLlIlqtUnr_yvf3MbPD4z3GvBiug-bllUNPBTJ/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbyJjyZJTf05H5y8IqsdacJOq0vGPtXBFYLiBFr82qGDBTHD-0W7rBWoZi0C2IzwQhPafQ/exec";
     
-// تعريف متغيرات عامة
-let department = "";
-
-// يتم تنفيذ هذا الكود عند تحميل الصفحة بالكامل
-window.onload = () => {
-  // جلب البريد الإلكتروني والقسم من الجلسة (sessionStorage)
-  const email = sessionStorage.getItem("email");
-  department = sessionStorage.getItem("department");
-
-  // الحصول على عناصر الـ select الخاصة بالمحطة والفرع
-  const stationSelect = document.getElementById("station");
-  const branchSelect = document.getElementById("branch");
-
-  // التحقق من وجود بيانات الدخول، إذا لم تكن موجودة يتم توجيه المستخدم إلى صفحة تسجيل الدخول
-  if (!email || !department) {
-    alert("يرجى تسجيل الدخول أولاً");
-    window.location = "login.html";
-    return;
-  }
-
-  // تعبئة البريد الإلكتروني والقسم في الحقول الخاصة بهما
-  document.getElementById("username").value = email;
-  document.getElementById("section").value = department;
-
-  // إذا لم يكن المستخدم من قسم WSP
-  if (department !== "WSP") {
-    // يتم تعيين الفرع تلقائيًا من القسم وتعطيل إمكانية تغييره
-    branchSelect.value = department;
-    branchSelect.disabled = true;
-
-    // جلب قائمة المحطات الخاصة بالفرع من Google App Script
-    fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(department)}`)
-      .then(response => response.json()) // تحويل الاستجابة إلى JSON
-      .then(data => {
-        // عرض رسالة مؤقتة أثناء تحميل المحطات
-        stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-        
-        // إذا تم جلب المحطات بنجاح
-        if (data.status === "success") {
-          // إعادة تعيين القائمة
+    // متغير عام لتخزين القسم
+    let department = "";
+    
+    // عند تحميل الصفحة
+    window.onload = () => {
+      const email = sessionStorage.getItem("email");
+      department = sessionStorage.getItem("department");
+    
+      const stationSelect = document.getElementById("station");
+      const branchSelect = document.getElementById("branch");
+    
+      if (!email || !department) {
+        alert("يرجى تسجيل الدخول أولاً");
+        window.location = "login.html";
+        return;
+      }
+    
+      document.getElementById("username").value = email;
+      document.getElementById("section").value = department;
+    
+      if (department !== "WSP") {
+        branchSelect.value = department;
+        branchSelect.disabled = true;
+    
+        fetchStations(department, (data) => {
           stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-          
-          // إضافة كل محطة كخيار في القائمة
-          data.stations.forEach(station => {
-            const option = document.createElement("option");
-            option.value = station;
-            option.textContent = station;
-            stationSelect.appendChild(option);
-          });
-        } else {
-          // في حال عدم وجود محطات
-          stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-        }
-      })
-      .catch(error => {
-        // في حال حدوث خطأ أثناء الاتصال
-        console.error("Error fetching stations:", error);
-        stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-      });
-
-  } else {
-    // إذا كان المستخدم من قسم WSP (أي يمكنه اختيار أي فرع)
-    
-    // إتاحة اختيار الفرع من القائمة
-    branchSelect.disabled = false;
-
-    // عند تغيير الفرع المختار من قبل المستخدم
-    branchSelect.addEventListener("change", () => {
-      const selectedBranch = branchSelect.value; // الحصول على الفرع المختار
-      if (!selectedBranch) return; // التأكد من أن قيمة الفرع صالحة
-
-      // عرض رسالة تحميل مؤقتة
-      stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-
-      // إرسال طلب لجلب المحطات الخاصة بالفرع المختار
-      fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(selectedBranch)}`)
-        .then(response => response.json()) // تحويل الاستجابة إلى JSON
-        .then(data => {
           if (data.status === "success") {
-            // تفريغ وإعادة بناء القائمة بالمحطات الجديدة
-            stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
             data.stations.forEach(station => {
               const option = document.createElement("option");
               option.value = station;
@@ -302,303 +248,247 @@ window.onload = () => {
               stationSelect.appendChild(option);
             });
           } else {
-            // في حال لم يتم العثور على محطات
             stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
           }
-        })
-        .catch(error => {
-          // في حال حدوث خطأ أثناء الاتصال
-          console.error("Error fetching stations:", error);
-          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
         });
-    });
-  }
-
-  // تحميل البيانات الخاصة بجودة المياه للمستخدم أو القسم
-  fetchData(email, department);
-};
-
-function fetchData(email, department) {
-  fetch(`${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
-    .then(response => response.json())
-    .then(data => {
-      if (data.status === "unauthorized") {
-        alert("غير مصرح لك بالوصول");
-        return;
-      }
-
-      const rows = data.water_data;
-      const tbody = document.querySelector("table.table-data tbody");
-      tbody.innerHTML = "";
-
-      const desiredColumnIndexes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21];
-
-      rows.slice(1).forEach((row) => {
-        const rowBranch = row[2]; // العمود الثالث هو "Branch"
-        if (department !== "WSP" && rowBranch !== department) return;
-
-        const tr = document.createElement("tr");
-
-        row.forEach((cell, index) => {
-          if (desiredColumnIndexes.includes(index)) {
-            const td = document.createElement("td");
-
-            if (index === 1) {
-              const d = new Date(cell);
-              td.textContent = !isNaN(d.getTime())
-                ? `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
-                : cell ?? "";
+      } else {
+        branchSelect.disabled = false;
+        branchSelect.addEventListener("change", () => {
+          const selectedBranch = branchSelect.value;
+          if (!selectedBranch) return;
+    
+          stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+          fetchStations(selectedBranch, (data) => {
+            stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+            if (data.status === "success") {
+              data.stations.forEach(station => {
+                const option = document.createElement("option");
+                option.value = station;
+                option.textContent = station;
+                stationSelect.appendChild(option);
+              });
             } else {
-              td.textContent = cell ?? "";
+              stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
             }
-
-            tr.appendChild(td);
+          });
+        });
+      }
+    
+      fetchData(email, department);
+    
+      // ربط الأزرار
+      document.querySelectorAll(".button-content")[0].addEventListener("click", e => { e.preventDefault(); sendData("add"); });
+      document.querySelectorAll(".button-content")[1].addEventListener("click", e => { e.preventDefault(); sendData("update"); });
+      document.querySelectorAll(".button-content")[2].addEventListener("click", e => { e.preventDefault(); sendData("delete"); });
+    };
+    
+    // ================= JSONP Fetch Functions =================
+    function fetchData(email, department) {
+      window.handleWaterData = function(data) {
+        if (data.status === "unauthorized") {
+          alert("غير مصرح لك بالوصول");
+          return;
+        }
+    
+        const rows = data.water_data;
+        const tbody = document.querySelector("table.table-data tbody");
+        tbody.innerHTML = "";
+    
+        const desiredColumnIndexes = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21];
+    
+        rows.slice(1).forEach((row) => {
+          const rowBranch = row[2];
+          if (department !== "WSP" && rowBranch !== department) return;
+    
+          const tr = document.createElement("tr");
+          row.forEach((cell, index) => {
+            if (desiredColumnIndexes.includes(index)) {
+              const td = document.createElement("td");
+              if (index === 1) {
+                const d = new Date(cell);
+                td.textContent = !isNaN(d.getTime())
+                  ? `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`
+                  : cell ?? "";
+              } else {
+                td.textContent = cell ?? "";
+              }
+              tr.appendChild(td);
+            }
+          });
+          tr.addEventListener("click", () => {
+            clearRowHighlight();
+            tr.classList.add("selected-row");
+            fillFormWithRow(row);
+          });
+          tbody.appendChild(tr);
+        });
+    
+        if (!tbody.hasChildNodes()) {
+          const tr = document.createElement("tr");
+          const td = document.createElement("td");
+          td.colSpan = desiredColumnIndexes.length;
+          td.textContent = "لا توجد بيانات لعرضها لهذه المنطقة.";
+          td.style.textAlign = "center";
+          tr.appendChild(td);
+          tbody.appendChild(tr);
+        }
+      };
+    
+      const script = document.createElement("script");
+      script.src = `${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}&callback=handleWaterData`;
+      document.body.appendChild(script);
+    }
+    
+    function fetchStations(branch, callback) {
+      window.handleStations = function(data) {
+        callback(data);
+      };
+      const script = document.createElement("script");
+      script.src = `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}&callback=handleStations`;
+      document.body.appendChild(script);
+    }
+    
+    // ================= وظائف النموذج =================
+    function fillFormWithRow(row) {
+      const formattedDate = formatDateForInput(row[1]);
+      document.getElementById("date").value = formattedDate;
+      document.getElementById("entry-id").value = row[0];
+      document.getElementById("branch").value = row[2];
+    
+      if (department === "WSP") {
+        fetchStations(row[2], (data) => {
+          const stationSelect = document.getElementById("station");
+          stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+          if (data.status === "success") {
+            data.stations.forEach(station => {
+              const option = document.createElement("option");
+              option.value = station;
+              option.textContent = station;
+              stationSelect.appendChild(option);
+            });
+            stationSelect.value = row[3];
           }
         });
-        tr.addEventListener("click", () => {
-          clearRowHighlight();
-          tr.classList.add("selected-row");
-          fillFormWithRow(row);
-        });
-        tbody.appendChild(tr);
-      });
-
-      // إذا لم توجد بيانات
-      if (!tbody.hasChildNodes()) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = desiredColumnIndexes.length;
-        td.textContent = "لا توجد بيانات لعرضها لهذه المنطقة.";
-        td.style.textAlign = "center";
-        tr.appendChild(td);
-        tbody.appendChild(tr);
+      } else {
+        document.getElementById("station").value = row[3];
       }
-    })
-    .catch(error => {
-      console.error("خطأ:", error);
-      alert("حدث خطأ أثناء تحميل البيانات.");
-    });
-}
-
-function formatDateForInput(dateValue) {
-  try {
-    const d = new Date(dateValue);
-    if (isNaN(d.getTime())) return "";
-
-    // استخدام toLocaleDateString لضمان تحويل التاريخ إلى توقيت مصر
-    const [day, month, year] = d
-      .toLocaleDateString("en-GB", { timeZone: "Africa/Cairo" })
-      .split("/");
-
-    return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
-  } catch (error) {
-    console.error("Invalid date for input formatting:", error);
-    return "";
-  }
-}
-
-function fillFormWithRow(row) {
-  console.log("Row data:", row); // تحقق من البيانات المستخلصة من الصف
-
-  const formattedDate = formatDateForInput(row[1]); // تنسيق التاريخ
-  document.getElementById("date").value = formattedDate; // تعبئة الحقل بالتاريخ المنسق
-
-  document.getElementById("entry-id").value = row[0]; // تعبئة ID
-    // تعبئة الفرع
-  document.getElementById("branch").value = row[2];
-
-  // إذا كان المستخدم WSP، نحتاج إلى تحميل المحطات الخاصة بالفرع المختار من الصف
-  if (department === "WSP") {
-    // جلب المحطات الخاصة بالفرع
-    fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(row[2])}`)
-      .then(response => response.json())
-      .then(data => {
-        const stationSelect = document.getElementById("station");
-        stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-
-        if (data.status === "success") {
-          data.stations.forEach(station => {
-            const option = document.createElement("option");
-            option.value = station;
-            option.textContent = station;
-            stationSelect.appendChild(option);
-          });
-
-          // بعد تحميل المحطات، نضبط المحطة بناءً على قيمة الصف
-          stationSelect.value = row[3];
-        } else {
-          stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-        }
+    
+      document.getElementById("sample").value = row[4];
+      document.getElementById("turbidity").value = row[5];
+      document.getElementById("pH").value = row[6];
+      document.getElementById("temp").value = row[7];
+      document.getElementById("tds").value = row[8];
+      document.getElementById("ch").value = row[9];
+      document.getElementById("sulf").value = row[10];
+      document.getElementById("fe").value = row[11];
+      document.getElementById("mn").value = row[12];
+      document.getElementById("nh3").value = row[13];
+      document.getElementById("no2").value = row[14];
+      document.getElementById("no3").value = row[15];
+      document.getElementById("do").value = row[16];
+      document.getElementById("cod").value = row[17];
+      document.getElementById("bod").value = row[18];
+      document.getElementById("og").value = row[19];
+      document.getElementById("tc").value = row[20];
+      document.getElementById("ta").value = row[21];
+    }
+    
+    function formatDateForInput(dateValue) {
+      try {
+        const d = new Date(dateValue);
+        if (isNaN(d.getTime())) return "";
+        const [day, month, year] = d.toLocaleDateString("en-GB", { timeZone: "Africa/Cairo" }).split("/");
+        return `${year}-${month.padStart(2,"0")}-${day.padStart(2,"0")}`;
+      } catch { return ""; }
+    }
+    
+    function clearRowHighlight() {
+      document.querySelectorAll("table.table-data tr").forEach(row => row.classList.remove("selected-row"));
+    }
+    
+    // ================= إرسال البيانات =================
+    function sendData(action) {
+      const email = sessionStorage.getItem("email");
+      const department = sessionStorage.getItem("department");
+    
+      if ((action==="update" || action==="delete") && !document.getElementById("entry-id").value) {
+        alert("يرجى اختيار صف من الجدول قبل التحديث أو الحذف.");
+        return;
+      }
+    
+      const formData = new URLSearchParams();
+      formData.append("action", action);
+      formData.append("email", email);
+      formData.append("department", department);
+      formData.append("id", document.getElementById("entry-id").value);
+      formData.append("date", document.getElementById("date").value);
+      formData.append("branch", document.getElementById("branch").value);
+      formData.append("station", document.getElementById("station").value);
+      formData.append("location", document.getElementById("sample").value);
+      formData.append("turbidity", document.getElementById("turbidity").value);
+      formData.append("ph", document.getElementById("pH").value);
+      formData.append("temp", document.getElementById("temp").value);
+      formData.append("tds", document.getElementById("tds").value);
+      formData.append("chlorides", document.getElementById("ch").value);
+      formData.append("sulfates", document.getElementById("sulf").value);
+      formData.append("fe", document.getElementById("fe").value);
+      formData.append("mn", document.getElementById("mn").value);
+      formData.append("nh3", document.getElementById("nh3").value);
+      formData.append("no2", document.getElementById("no2").value);
+      formData.append("no3", document.getElementById("no3").value);
+      formData.append("do", document.getElementById("do").value);
+      formData.append("cod", document.getElementById("cod").value);
+      formData.append("bod", document.getElementById("bod").value);
+      formData.append("og", document.getElementById("og").value);
+      formData.append("tc", document.getElementById("tc").value);
+      formData.append("ta", document.getElementById("ta").value);
+    
+      fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
       })
-      .catch(error => {
-        console.error("Error fetching stations:", error);
-        document.getElementById("station").innerHTML = '<option value="" disabled selected>Connection Error</option>';
-      });
-  } else {
-    // إذا لم يكن WSP، فقط عين المحطة مباشرة
-    document.getElementById("station").value = row[3];
-  }
-
-  document.getElementById("branch").value = row[2]; // تعبئة الفرع
-  document.getElementById("station").value = row[3]; // تعبئة المحطة
-  document.getElementById("sample").value = row[4]; // تعبئة الموقع
-
-  // تعبئة باقي الحقول
-  document.getElementById("turbidity").value = row[5];
-  document.getElementById("pH").value = row[6];
-  document.getElementById("temp").value = row[7];
-  document.getElementById("tds").value = row[8];
-  document.getElementById("ch").value = row[9];
-  document.getElementById("sulf").value = row[10];
-  document.getElementById("fe").value = row[11];
-  document.getElementById("mn").value = row[12];
-  document.getElementById("nh3").value = row[13];
-  document.getElementById("no2").value = row[14];
-  document.getElementById("no3").value = row[15];
-  document.getElementById("do").value = row[16];
-  document.getElementById("cod").value = row[17];
-  document.getElementById("bod").value = row[18];
-  document.getElementById("og").value = row[19];
-  document.getElementById("tc").value = row[20];
-  document.getElementById("ta").value = row[21];
-}
-
-function clearRowHighlight() {
-  document.querySelectorAll("table.table-data tr").forEach(row => {
-    row.classList.remove("selected-row");
-  });
-}
-
-// إضافة حدث لتحديد الصف وتعبئة البيانات
-document.querySelectorAll("table.table-data tr").forEach(row => {
-  row.addEventListener("click", function() {
-    console.log("Row selected:", row);
-    clearRowHighlight(); // إزالة التمييز عن الصفوف الأخرى
-    row.classList.add("selected-row"); // تمييز الصف الحالي
-    const rowData = Array.from(row.children).map(td => td.textContent); // جمع البيانات من جميع خلايا الصف
-    fillFormWithRow(rowData); // تعبئة النموذج باستخدام بيانات الصف
-  });
-});
-document.querySelectorAll(".button-content")[0].addEventListener("click", function (e) {
-  e.preventDefault();
-  sendData("add");
-});
-
-document.querySelectorAll(".button-content")[1].addEventListener("click", function (e) {
-  e.preventDefault();
-  sendData("update");
-});
-
-document.querySelectorAll(".button-content")[2].addEventListener("click", function (e) {
-  e.preventDefault();
-  sendData("delete");
-});
-
+      .then(res => res.text())
+      .then(result => {
+        alert(`تمت عملية ${action==='add'?'الإضافة':action==='update'?'التحديث':'الحذف'} بنجاح.`);
+        clearForm();
+        fetchData(email, department);
+      })
+      .catch(error => { console.error("خطأ:", error); alert("حدث خطأ أثناء تنفيذ العملية."); });
+    }
     
-function sendData(action) {
-  const email = sessionStorage.getItem("email");
-  const department = sessionStorage.getItem("department");
-
-  if ((action === "update" || action === "delete") && !document.getElementById("entry-id").value) {
-    alert("يرجى اختيار صف من الجدول قبل التحديث أو الحذف.");
-    return;
-  }
-
-  const formData = new URLSearchParams();
-  formData.append("action", action);
-  formData.append("email", email);
-  formData.append("department", department);
-  formData.append("id", document.getElementById("entry-id").value);
-  formData.append("date", document.getElementById("date").value);
-  formData.append("branch", document.getElementById("branch").value);
-  formData.append("station", document.getElementById("station").value);
-  formData.append("location", document.getElementById("sample").value);
-  formData.append("turbidity", document.getElementById("turbidity").value);
-  formData.append("ph", document.getElementById("pH").value);
-  formData.append("temp", document.getElementById("temp").value);
-  formData.append("tds", document.getElementById("tds").value);
-  formData.append("chlorides", document.getElementById("ch").value);
-  formData.append("sulfates", document.getElementById("sulf").value);
-  formData.append("fe", document.getElementById("fe").value);
-  formData.append("mn", document.getElementById("mn").value);
-  formData.append("nh3", document.getElementById("nh3").value);
-  formData.append("no2", document.getElementById("no2").value);
-  formData.append("no3", document.getElementById("no3").value);
-  formData.append("do", document.getElementById("do").value);
-  formData.append("cod", document.getElementById("cod").value);
-  formData.append("bod", document.getElementById("bod").value);
-  formData.append("og", document.getElementById("og").value);
-  formData.append("tc", document.getElementById("tc").value);
-  formData.append("ta", document.getElementById("ta").value);
-
-  fetch(scriptURL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/x-www-form-urlencoded"
-    },
-    body: formData.toString()
-  })
-    .then(response => response.text())
-    .then(result => {
-      alert(`تمت عملية ${action === 'add' ? 'الإضافة' : action === 'update' ? 'التحديث' : 'الحذف'} بنجاح.`);
-      clearForm();
-      fetchData(email, department);
-    })
-    .catch(error => {
-      console.error("خطأ:", error);
-      alert("حدث خطأ أثناء تنفيذ العملية.");
-    });
-}
-
-function clearForm() {
-  document.querySelector("form").reset();
-  document.getElementById("entry-id").value = "";
-  clearRowHighlight();
-  if (department !== "WSP") {
-          // تحديد قيمة الـ select تلقائياً بناءً على القسم
-          document.getElementById("branch").value = department;
-          document.getElementById("branch").disabled = true;
-          document.getElementById("station").innerHTML = '<option value="" disabled selected>Select Station</option>';
-  }
-  
-}
-
+    function clearForm() {
+      document.querySelector("form").reset();
+      document.getElementById("entry-id").value = "";
+      clearRowHighlight();
+      if (department !== "WSP") {
+        document.getElementById("branch").value = department;
+        document.getElementById("branch").disabled = true;
+        document.getElementById("station").innerHTML = '<option value="" disabled selected>Select Station</option>';
+      }
+    }
     
-function printTable() {
-  const table = document.getElementById("waterqualitytable").outerHTML;
-  const style = `
-    <style>
-      table { border-collapse: collapse; width: 100%; direction: ltr; }
-      th, td { border: 1px solid #000; padding: 8px; text-align: center; }
-    </style>
-  `;
-  const win = window.open('', '', 'height=700,width=900');
-  win.document.write('<html><head><title>Raw Water Quality Monitoring</title>');
-  win.document.write(style);
-  win.document.write('</head><body>');
-  win.document.write(table);
-  win.document.write('</body></html>');
-  win.document.close();
-  win.print();
-}
-
-function exportTableToExcel(waterqualitytable, filename = '') {
-  const table = document.getElementById(waterqualitytable);
-  const dataType = 'application/vnd.ms-excel';
-  const tableHTML = table.outerHTML.replace(/ /g, '%20');
-
-  const link = document.createElement("a");
-  document.body.appendChild(link);
-
-  filename = filename ? filename + '.xls' : 'excel_data.xls';
-  link.href = 'data:' + dataType + ', ' + tableHTML;
-  link.download = filename;
-  link.click();
-  document.body.removeChild(link);
-}
-
-
+    // ================= الطباعة والتصدير =================
+    function printTable() {
+      const table = document.getElementById("waterqualitytable").outerHTML;
+      const style = `<style>table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:8px;text-align:center;}</style>`;
+      const win = window.open('', '', 'height=700,width=900');
+      win.document.write('<html><head><title>Raw Water Quality Monitoring</title>' + style + '</head><body>' + table + '</body></html>');
+      win.document.close();
+      win.print();
+    }
+    
+    function exportTableToExcel(waterqualitytable, filename='') {
+      const table = document.getElementById(waterqualitytable).outerHTML.replace(/ /g,'%20');
+      const link = document.createElement("a");
+      document.body.appendChild(link);
+      link.href = 'data:application/vnd.ms-excel,' + table;
+      link.download = filename ? filename+'.xls' : 'excel_data.xls';
+      link.click();
+      document.body.removeChild(link);
+    }
 </script>
+
 
 
 
