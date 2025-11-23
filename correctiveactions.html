@@ -334,7 +334,8 @@
     async function sendCommentsData(event, action) {
         event = event || window.event; // ضمان وجود event
         const email = sessionStorage.getItem("email");
-        const department = sessionStorage.getItem("department");      
+        const department = sessionStorage.getItem("department"); 
+          const password= sessionStorage.getItem("password"); 
         const locationSelect = document.getElementById("location");
         const riskInput = document.getElementById("risk");
         const corractionInput = document.getElementById("corraction");
@@ -653,6 +654,7 @@
 
 </body>
 </html>
+
 
 
 
