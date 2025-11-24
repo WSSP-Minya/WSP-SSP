@@ -649,84 +649,85 @@
 
     ///////كل المحطات
         const locationSelect = document.getElementById("location");
-        document.getElementById("printReport2").addEventListener("click", () => {
+        document.getElementById("printReport2").addEventListener("click", async () => {
         const branch = document.getElementById("branch").value || "----";
     
-        if (!locationSelect || !locationSelect.detailsMap || Object.keys(locationSelect.detailsMap).length === 0) {
-            alert("لا توجد بيانات للطباعة!");
+        // جلب جميع المحطات للفرع من السيرفر
+        const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+        const stationsData = await stationsResponse.json();
+    
+        if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
+            alert("لا توجد محطات لهذا الفرع للطباعة!");
             return;
         }
     
-        // جمع البيانات لكل محطة
-        const stationSelect = document.getElementById("station");
-        const stationName = stationSelect.value || "----";
-        const certifiedDate = document.getElementById("certifieddate").value || "----";
-    
-        const detailsMap = locationSelect.detailsMap;
-        const allLocations = Object.values(detailsMap);
-    
-        // إنشاء جدول ملخص لكل محطة (المحطة - إجمالي الإجراءات - المنفذ - الجارية - لم يتم التنفيذ)
-        let summaryRowsHtml = `
-            <tr>
-                <th>المحطة</th>
-                <th>إجمالي الإجراءات التصحيحية</th>
-                <th>المنفذ</th>
-                <th>الجارية</th>
-                <th>لم يتم التنفيذ</th>
-            </tr>
-        `;
-    
-        const totalActions = allLocations.length;
-        const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
-        const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
-        const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-    
-        summaryRowsHtml += `
-            <tr>
-                <td>${stationName}</td>
-                <td>${totalActions}</td>
-                <td>${doneActions}</td>
-                <td>${inProgressActions}</td>
-                <td>${notDoneActions}</td>
-            </tr>
-        `;
-    
-        // جدول تفصيلي لإجراءات كل موقع
-        const detailRowsHtml = allLocations.map(detail => `
-            <tr>
-                <td>${detail.location || ""}</td>
-                <td>${detail.risk || ""}</td>
-                <td>${detail.corraction || ""}</td>
-                <td>${detail.duration || ""}</td>
-                <td>${detail.status || ""}</td>
-                <td>${detail.notes || ""}</td>
-            </tr>
-        `).join("");
-    
-        const htmlContent = `
+        let htmlContent = `
             <html>
             <head>
-                <title>تقرير الاعتماد</title>
+                <title>تقرير الاعتماد لكل المحطات</title>
                 <style>
                     body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
                     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                     th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
                     th { background-color: #f0f0f0; }
-                    h2 { text-align: center; }
+                    h2, h3 { text-align: center; }
                 </style>
             </head>
             <body>
-                <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
-                <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${stationName} &nbsp;&nbsp;&nbsp; <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
-                
-                <h3>ملخص الإجراءات لكل محطة</h3>
-                <table>
-                    <tbody>
-                        ${summaryRowsHtml}
-                    </tbody>
-                </table>
+                <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات الفرع: ${branch}</h2>
+        `;
     
-                <h3>تفاصيل الإجراءات لكل موقع</h3>
+        for (const station of stationsData.stations) {
+            // جلب تفاصيل كل محطة
+            const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+            const detailsData = await detailsResponse.json();
+    
+            if (detailsData.status !== "success" || !detailsData.details || detailsData.details.length === 0) {
+                htmlContent += `<p>لا توجد بيانات لمحطة: ${station}</p>`;
+                continue;
+            }
+    
+            const allLocations = detailsData.details;
+    
+            // ملخص الإجراءات
+            const totalActions = allLocations.length;
+            const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+            const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+            const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+    
+            // جدول ملخص لكل محطة
+            htmlContent += `
+                <h3>ملخص محطة: ${station}</h3>
+                <table>
+                    <tr>
+                        <th>إجمالي الإجراءات</th>
+                        <th>المنفذ</th>
+                        <th>الجارية</th>
+                        <th>لم يتم التنفيذ</th>
+                    </tr>
+                    <tr>
+                        <td>${totalActions}</td>
+                        <td>${doneActions}</td>
+                        <td>${inProgressActions}</td>
+                        <td>${notDoneActions}</td>
+                    </tr>
+                </table>
+            `;
+    
+            // جدول التفاصيل لكل موقع
+            const detailRowsHtml = allLocations.map(detail => `
+                <tr>
+                    <td>${detail.location || ""}</td>
+                    <td>${detail.risk || ""}</td>
+                    <td>${detail.corraction || ""}</td>
+                    <td>${detail.duration || ""}</td>
+                    <td>${detail.status || ""}</td>
+                    <td>${detail.notes || ""}</td>
+                </tr>
+            `).join("");
+    
+            htmlContent += `
+                <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station}</h4>
                 <table>
                     <thead>
                         <tr>
@@ -742,9 +743,10 @@
                         ${detailRowsHtml}
                     </tbody>
                 </table>
-            </body>
-            </html>
-        `;
+            `;
+        }
+    
+        htmlContent += `</body></html>`;
     
         const printWindow = window.open('', '', 'height=800,width=1000');
         printWindow.document.write(htmlContent);
@@ -762,6 +764,7 @@
 
 </body>
 </html>
+
 
 
 
