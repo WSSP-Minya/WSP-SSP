@@ -772,8 +772,9 @@
         printWindow.print();
     });
     /////تقرير مجمع للفروع كلها
+        
         document.getElementById("printReportAll").addEventListener("click", async () => {
-        // أولًا جلب كل الفروع
+        // جلب كل الفروع
         const branchesResponse = await fetch(`${scriptURL}?action=getBranches`);
         const branchesData = await branchesResponse.json();
     
@@ -791,7 +792,7 @@
                     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                     th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
                     th { background-color: #f0f0f0; }
-                    h2, h3, h4 { text-align: center; margin: 10px 0; }
+                    h2, h3 { text-align: center; margin: 10px 0; }
                 </style>
             </head>
             <body>
@@ -811,7 +812,7 @@
                 </tr>
         `;
     
-        const allDetailsPerBranch = {}; // لتخزين التفاصيل لكل فرع ثم لكل محطة
+        const allDetailsPerBranch = {};
     
         for (const branch of branchesData.branches) {
             // جلب المحطات لكل فرع
@@ -819,7 +820,7 @@
             const stationsData = await stationsResponse.json();
     
             let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
-            allDetailsPerBranch[branch] = {}; // لتخزين التفاصيل لكل محطة داخل الفرع
+            allDetailsPerBranch[branch] = {};
     
             if (stationsData.status === "success" && stationsData.stations && stationsData.stations.length > 0) {
                 for (const station of stationsData.stations) {
@@ -830,13 +831,12 @@
     
                     if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
                         const allLocations = detailsData.details;
-    
                         totalActions = allLocations.length;
                         doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                         inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                         notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
     
-                        allDetailsPerBranch[branch][station] = allLocations; // تخزين التفاصيل لكل محطة
+                        allDetailsPerBranch[branch][station] = { totalActions, doneActions, inProgressActions, notDoneActions };
                     }
     
                     branchTotal += totalActions;
@@ -859,7 +859,7 @@
     
         htmlContent += `</table>`;
     
-        // --------- جدول لكل فرع (ملخص لكل محطة) ---------
+        // --------- ملخص كل محطة داخل كل فرع ---------
         for (const branch of Object.keys(allDetailsPerBranch)) {
             htmlContent += `<h3>ملخص محطات الفرع: ${branch}</h3>`;
             htmlContent += `
@@ -875,37 +875,33 @@
     
             const stations = Object.keys(allDetailsPerBranch[branch]);
             for (const station of stations) {
-                const allLocations = allDetailsPerBranch[branch][station];
-    
-                const totalActions = allLocations.length;
-                const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
-                const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
-                const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-    
+                const stats = allDetailsPerBranch[branch][station];
                 htmlContent += `
                     <tr>
                         <td>${station}</td>
-                        <td>${totalActions}</td>
-                        <td>${doneActions}</td>
-                        <td>${inProgressActions}</td>
-                        <td>${notDoneActions}</td>
+                        <td>${stats.totalActions}</td>
+                        <td>${stats.doneActions}</td>
+                        <td>${stats.inProgressActions}</td>
+                        <td>${stats.notDoneActions}</td>
                     </tr>
                 `;
             }
     
             htmlContent += `</table>`;
-          // فتح نافذة الطباعة
-          const printWindow = window.open('', '', 'height=800,width=1200');
-          if (!printWindow) {
-              alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
-              return;
-          }
-      
-          printWindow.document.write(htmlContent);
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.print();
-      });
+        }
+    
+        // --------- فتح نافذة الطباعة ---------
+        const printWindow = window.open('', '', 'height=800,width=1200');
+        if (!printWindow) {
+            alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+            return;
+        }
+    
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
 
 
 
@@ -917,6 +913,7 @@
 
 </body>
 </html>
+
 
 
 
