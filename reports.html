@@ -2,7 +2,7 @@
 <html>
   <head>
     <title>Reports</title>
-    <link rel="stylesheet" href="styles.css" />
+   
   </head>
   <body>
      
@@ -56,9 +56,9 @@
                 <option value="لم يتم">لم يتم</option>
               </select>
             </div>
-            <button>Report All</button>
-            <button>Report Branch</button>
             <button type="button" id="reportstation">Report Station</button>
+            <button type="button" id="reportbranch">Report Branch</button>
+            <button type="button" id="reportall">Report All</button>
             
         </form>
 
@@ -70,6 +70,7 @@
           window.onload = () => {
             const email = sessionStorage.getItem("email");
             const department = sessionStorage.getItem("department");
+            const stationSelect = document.getElementById("station");
       
       
         
@@ -143,7 +144,7 @@
           };
 
           // طباعة الاجراءات التصحيحة لمحطة واحدة
-          document.getElementById("printReport").addEventListener("click", () => {
+          document.getElementById("reportstation").addEventListener("click", () => {
           const branch = document.getElementById("branch").value || "----";
           const station = document.getElementById("station").value || "----";
           const certifiedDate = document.getElementById("certifieddate").value || "----";
@@ -253,7 +254,7 @@
     
         ///////كل المحطات
             const locationSelect= document.getElementById("location");
-            document.getElementById("printReport2").addEventListener("click", async () => {
+            document.getElementById("reportbranch").addEventListener("click", async () => {
             const branch = document.getElementById("branch").value || "----";
         
             // جلب جميع المحطات للفرع من السيرفر
@@ -376,7 +377,7 @@
         });
         /////تقرير مجمع للفروع كلها
             
-            document.getElementById("printReportAll").addEventListener("click", async () => {
+            document.getElementById("reportall").addEventListener("click", async () => {
             const branchSelect = document.getElementById("branch");
             const branchOptions = Array.from(branchSelect.options)
                                        .filter(opt => opt.value && opt.value !== "----"); // تجاهل placeholder
@@ -643,4 +644,5 @@
   </body>
 
 </html>
+
 
