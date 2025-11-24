@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Reports</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+     
+        <div class="username">
+          <label for="email" class="dislabel">Email</label>
+          <input id="email" value="" disabled>
+        </div>
+      
+        <div class="region">
+          <label for="section" class="dislabel">Section</label>
+          <input id="section" value="" disabled>
+        </div>
+      
+        <form onsubmit="return false;">
+          <h1>Reports</h1>
+          <br><br>
+      
+          <div class="generalinfo">
+            <div>
+              <label class="infolabel">Branch</label>
+              <select id="branch">
+                <option value="" selected disabled>Select Branch</option>
+                <option value="الكل">الكل</option>
+                <option value="العدوه">العدوه</option>
+                <option value="مغاغة">مغاغة</option>
+                <option value="بنى مزار">بنى مزار</option>
+                <option value="مطاى">مطاى</option>
+                <option value="سمالوط">سمالوط</option>
+                <option value="المنيا">المنيا</option>
+                <option value="ابوقرقاص">ابوقرقاص</option>
+                <option value="ملوى">ملوى</option>
+                <option value="ديرمواس">ديرمواس</option>
+              </select>
+            </div>
+      
+            <div>
+              <label class="infolabel">Station</label>
+              <select id="station">
+                <option value="" selected disabled>Select Station</option>
+              </select>
+            </div>
+            <div>
+              <label>Status</label>
+              <select id="status">
+                <option value="" selected disabled>Select Status</option>
+                <option value="تم">تم</option>
+                <option value="جارى">جارى</option>
+                <option value="لم يتم">لم يتم</option>
+              </select>
+            </div>
+            <button>Report All</button>
+            <button>Report Branch</button>
+            <button>Report Station</button>
+            
+        </form>
+
+      
+      <script src="script.js"></script>
+  </body>
+</html>
