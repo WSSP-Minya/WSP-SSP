@@ -697,15 +697,16 @@
     
             // جدول ملخص لكل محطة
             htmlContent += `
-                <h3>ملخص محطة: ${station}</h3>
                 <table>
                     <tr>
+                        <th>المحطة</th>
                         <th>إجمالي الإجراءات</th>
                         <th>المنفذ</th>
                         <th>الجارية</th>
                         <th>لم يتم التنفيذ</th>
                     </tr>
                     <tr>
+                        <td>${station}</td>
                         <td>${totalActions}</td>
                         <td>${doneActions}</td>
                         <td>${inProgressActions}</td>
@@ -764,6 +765,7 @@
 
 </body>
 </html>
+
 
 
 
