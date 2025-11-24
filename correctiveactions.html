@@ -263,6 +263,7 @@
         fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
           .then(res => res.json())
           .then(data => {
+            console.log("Received station details:", data);  // 👈 عرض البيانات في الـ Console
             if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
             else {
               locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
@@ -652,6 +653,7 @@
 
 </body>
 </html>
+
 
 
 
