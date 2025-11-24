@@ -648,7 +648,7 @@
   });
 
     ///////كل المحطات
-        const locationSelect = document.getElementById("location");
+        const locationSelect= document.getElementByID("location");
         document.getElementById("printReport2").addEventListener("click", async () => {
         const branch = document.getElementById("branch").value || "----";
     
@@ -677,45 +677,56 @@
                 <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات الفرع: ${branch}</h2>
         `;
     
+        // --------- جدول الملخص لجميع المحطات ---------
+        htmlContent += `
+            <h3>ملخص جميع المحطات</h3>
+            <table>
+                <tr>
+                    <th>المحطة</th>
+                    <th>إجمالي الإجراءات</th>
+                    <th>المنفذ</th>
+                    <th>الجارية</th>
+                    <th>لم يتم التنفيذ</th>
+                </tr>
+        `;
+    
+        const allDetailsPerStation = {}; // لتخزين التفاصيل لكل محطة
+    
+        // أولًا نحسب بيانات الملخص لكل محطة
         for (const station of stationsData.stations) {
-            // جلب تفاصيل كل محطة
             const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
             const detailsData = await detailsResponse.json();
     
-            if (detailsData.status !== "success" || !detailsData.details || detailsData.details.length === 0) {
-                htmlContent += `<p>لا توجد بيانات لمحطة: ${station}</p>`;
-                continue;
+            let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+    
+            if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
+                const allLocations = detailsData.details;
+                totalActions = allLocations.length;
+                doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+    
+                // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
+                allDetailsPerStation[station] = allLocations;
             }
     
-            const allLocations = detailsData.details;
-    
-            // ملخص الإجراءات
-            const totalActions = allLocations.length;
-            const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
-            const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
-            const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-    
-            // جدول ملخص لكل محطة
             htmlContent += `
-                <table>
-                    <tr>
-                        <th>المحطة</th>
-                        <th>إجمالي الإجراءات</th>
-                        <th>المنفذ</th>
-                        <th>الجارية</th>
-                        <th>لم يتم التنفيذ</th>
-                    </tr>
-                    <tr>
-                        <td>${station}</td>
-                        <td>${totalActions}</td>
-                        <td>${doneActions}</td>
-                        <td>${inProgressActions}</td>
-                        <td>${notDoneActions}</td>
-                    </tr>
-                </table>
+                <tr>
+                    <td>${station}</td>
+                    <td>${totalActions}</td>
+                    <td>${doneActions}</td>
+                    <td>${inProgressActions}</td>
+                    <td>${notDoneActions}</td>
+                </tr>
             `;
+        }
     
-            // جدول التفاصيل لكل موقع
+        htmlContent += `</table>`;
+    
+        // --------- الجداول التفصيلية لكل محطة ---------
+        for (const station of Object.keys(allDetailsPerStation)) {
+            const allLocations = allDetailsPerStation[station];
+    
             const detailRowsHtml = allLocations.map(detail => `
                 <tr>
                     <td>${detail.location || ""}</td>
@@ -749,12 +760,19 @@
     
         htmlContent += `</body></html>`;
     
+        // فتح نافذة الطباعة
         const printWindow = window.open('', '', 'height=800,width=1000');
+        if (!printWindow) {
+            alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+            return;
+        }
+    
         printWindow.document.write(htmlContent);
         printWindow.document.close();
         printWindow.focus();
         printWindow.print();
     });
+
 
 
 
@@ -765,6 +783,7 @@
 
 </body>
 </html>
+
 
 
 
