@@ -111,6 +111,7 @@
     </div>
     <div>
       <button type="button" id="printReport">Print</button>
+      <button type="button" id="printReport2">Print branch</button>
     </div>
    
   </form>
@@ -646,6 +647,112 @@
       printWindow.print();
   });
 
+    ///////كل المحطات
+        document.getElementById("printReport2").addEventListener("click", () => {
+        const branch = document.getElementById("branch").value || "----";
+    
+        if (!locationSelect || !locationSelect.detailsMap || Object.keys(locationSelect.detailsMap).length === 0) {
+            alert("لا توجد بيانات للطباعة!");
+            return;
+        }
+    
+        // جمع البيانات لكل محطة
+        const stationSelect = document.getElementById("station");
+        const stationName = stationSelect.value || "----";
+        const certifiedDate = document.getElementById("certifieddate").value || "----";
+    
+        const detailsMap = locationSelect.detailsMap;
+        const allLocations = Object.values(detailsMap);
+    
+        // إنشاء جدول ملخص لكل محطة (المحطة - إجمالي الإجراءات - المنفذ - الجارية - لم يتم التنفيذ)
+        let summaryRowsHtml = `
+            <tr>
+                <th>المحطة</th>
+                <th>إجمالي الإجراءات التصحيحية</th>
+                <th>المنفذ</th>
+                <th>الجارية</th>
+                <th>لم يتم التنفيذ</th>
+            </tr>
+        `;
+    
+        const totalActions = allLocations.length;
+        const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+        const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+        const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+    
+        summaryRowsHtml += `
+            <tr>
+                <td>${stationName}</td>
+                <td>${totalActions}</td>
+                <td>${doneActions}</td>
+                <td>${inProgressActions}</td>
+                <td>${notDoneActions}</td>
+            </tr>
+        `;
+    
+        // جدول تفصيلي لإجراءات كل موقع
+        const detailRowsHtml = allLocations.map(detail => `
+            <tr>
+                <td>${detail.location || ""}</td>
+                <td>${detail.risk || ""}</td>
+                <td>${detail.corraction || ""}</td>
+                <td>${detail.duration || ""}</td>
+                <td>${detail.status || ""}</td>
+                <td>${detail.notes || ""}</td>
+            </tr>
+        `).join("");
+    
+        const htmlContent = `
+            <html>
+            <head>
+                <title>تقرير الاعتماد</title>
+                <style>
+                    body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                    th { background-color: #f0f0f0; }
+                    h2 { text-align: center; }
+                </style>
+            </head>
+            <body>
+                <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
+                <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${stationName} &nbsp;&nbsp;&nbsp; <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
+                
+                <h3>ملخص الإجراءات لكل محطة</h3>
+                <table>
+                    <tbody>
+                        ${summaryRowsHtml}
+                    </tbody>
+                </table>
+    
+                <h3>تفاصيل الإجراءات لكل موقع</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الموقع</th>
+                            <th>الخطر</th>
+                            <th>الإجراء التصحيحي</th>
+                            <th>المدة الزمنية</th>
+                            <th>الموقف التنفيذي</th>
+                            <th>ملاحظات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${detailRowsHtml}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+    
+        const printWindow = window.open('', '', 'height=800,width=1000');
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
+
+
 
 
   </script>
@@ -654,6 +761,7 @@
 
 </body>
 </html>
+
 
 
 
