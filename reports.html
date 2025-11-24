@@ -25,7 +25,6 @@
               <label class="infolabel">Branch</label>
               <select id="branch">
                 <option value="" selected disabled>Select Branch</option>
-                <option value="الكل">الكل</option>
                 <option value="العدوه">العدوه</option>
                 <option value="مغاغة">مغاغة</option>
                 <option value="بنى مزار">بنى مزار</option>
@@ -45,6 +44,10 @@
               </select>
             </div>
             <div>
+              <label class="infolabel">Certified Date</label>
+              <input type="date" id="certifieddate" readonly>
+            </div>
+            <div>
               <label>Status</label>
               <select id="status">
                 <option value="" selected disabled>Select Status</option>
@@ -61,130 +64,459 @@
 
       
      <script>
-          const email = sessionStorage.getItem("email");
-          const department = sessionStorage.getItem("department");
+          const scriptURL = "https://script.google.com/macros/s/AKfycbx4AOEzJl7NtiWeIpn5XAMP7VKXabRsdm-NSOSNI00TPffliqF2iigwClPqvFpdqhnerA/exec";
     
+  
+          window.onload = () => {
+            const email = sessionStorage.getItem("email");
+            const department = sessionStorage.getItem("department");
+      
+      
+        
+            document.getElementById("email").value = email || "";
+            document.getElementById("section").value = department || "";
+
+            let branchStations = [];
+            let branchDates = [];
+        
+            
+      
+            // جلب المحطات بناءً على الفرع
+            function fetchStations(branch) {
+              if (!branch) return;
+      
+              stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+      
+              const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+      
+              fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                  if (data.status === "success") {
+                    stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+                    branchStations = data.stations;
+                    branchDates = data.certifiedDates;
+      
+                    data.stations.forEach(station => {
+                      const option = document.createElement("option");
+                      option.value = station;
+                      option.textContent = station;
+                      stationSelect.appendChild(option);
+                    });
+                  } else {
+                    stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+                  }
+                })
+                .catch(err => {
+                  console.error("Error fetching stations:", err);
+                  stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+                });
+            }
+
+            // عند تغيير المحطة
+            stationSelect.addEventListener("change", () => {
+              const selectedStation = stationSelect.value;
+              const index = branchStations.indexOf(selectedStation);
+              if (index !== -1 && branchDates[index]) {
+                const date = new Date(branchDates[index]);
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                certifiedDateInput.value = `${year}-${month}-${day}`;
+              } else certifiedDateInput.value = "";
+      
+              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
+                .then(res => res.json())
+                .then(data => {
+                 
+                  if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
+                   
+                  else {
+                    locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
+                    riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
+                    branchcomment.value = wspcomment.value = "";
+                    document.getElementById("filename").textContent = "";
+                  }
+                })
+                .catch(err => console.error("Error fetching station details:", err));
+            });
+          };
+
+          // طباعة الاجراءات التصحيحة لمحطة واحدة
+          document.getElementById("printReport").addEventListener("click", () => {
+          const branch = document.getElementById("branch").value || "----";
+          const station = document.getElementById("station").value || "----";
+          const certifiedDate = document.getElementById("certifieddate").value || "----";
+      
+          const locationSelect = document.getElementById("location");
+          const detailsMap = locationSelect.detailsMap;
+      
+          if (!detailsMap || Object.keys(detailsMap).length === 0) {
+              alert("No Data for Print!");
+              return;
+          }
+            
+          // جميع الإجراءات
+            const allLocations = Object.values(detailsMap) || [];
+            
+            
+            // 2) عدد الاجراءات المنفذة 
+            const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;      
+            // 2) عدد الإجراءات الجارية
+            const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+            // 4) عدد الإجراءات لم يتم التنفيذ
+            const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+            // 1) إجمالي عدد الإجراءات التصحيحية
+            const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+      
+          // تصفية المواقع المعتمدة فقط (checkbox = false)
+          const approvedLocations = Object.values(detailsMap).filter(detail => detail.checkbox === false);
+      
+          if (approvedLocations.length === 0) {
+              alert("لا توجد مواقع معتمدة للطباعة!");
+              return;
+          }
+      
+          let rowsHtml = approvedLocations.map(detail => `
+              <tr>
+                  <td>${detail.location || ""}</td>
+                  <td>${detail.risk || ""}</td>
+                  <td>${detail.corraction || ""}</td>
+                  <td>${detail.duration || ""}</td>
+                  <td>${detail.status || ""}</td>
+                  <td>${detail.notes || ""}</td>
+              </tr>
+          `).join("");
+    
+            
     
       
-          document.getElementById("email").value = email || "";
-          document.getElementById("section").value = department || "";
+          const htmlContent = `
+              <html>
+              <head>
+                  <title>تقرير الاعتماد</title>
+                  <style>
+                      body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                      th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                      th { background-color: #f0f0f0; }
+                      h2 { text-align: center; }
+                      p { text-align: center;}
+                      /* تحديد أقل عرض لكل عمود (يمكن تعديلها كما تريد) */
+                      th:nth-child(1), td:nth-child(1) { width: 10%; } /* الموقع */
+                      th:nth-child(2), td:nth-child(2) { width: 15%; } /* الخطر */
+                      th:nth-child(3), td:nth-child(3) { width: 25%; } /* الإجراء التصحيحي */
+                      th:nth-child(4), td:nth-child(4) { width: 10%; } /* المدة */
+                      th:nth-child(5), td:nth-child(5) { width: 10%; } /* الموقف التنفيذي */
+                      th:nth-child(6), td:nth-child(6) { width: 25%; } /* الملاحظات */
+                  </style>
+              </head>
+              <body>
+                  <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
+                  <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${station} &nbsp;&nbsp;&nbsp;&nbsp <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
+                  <p>
+                      <strong>عدد الإجراءات التصحيحية:</strong> ${totalActionsCount}
+                      &nbsp;&nbsp;&nbsp;
+                      <strong>عدد الإجراءات المنفذة:</strong> ${doneActionsCount}
+                      &nbsp;&nbsp;&nbsp;
+                      <strong>عدد الإجراءات الجارية:</strong> ${inProgressActionsCount}
+                      &nbsp;&nbsp;&nbsp;
+                      <strong>عدد الإجراءات لم يتم التنفيذ:</strong> ${notDoneActionsCount}
+                  </p>
+                  
     
-             
-          const stationSelect = document.getElementById("station");
-          const branchSelect = document.getElementById("branch");
-          const certifiedDateInput = document.getElementById("certifieddate");
-          const locationSelect = document.getElementById("location");
-          const riskInput = document.getElementById("risk");
-          const corractionInput = document.getElementById("corraction");
-          const durationInput = document.getElementById("duration");
-          const statusSelect = document.getElementById("status");
-          const branchcomment = document.getElementById("branchcomment");
-          const wspcomment = document.getElementById("wspcomment");
-          const branchbuttons = document.querySelectorAll('.branchbutton');
-          const wspbuttons = document.querySelectorAll('.wspbutton');
- 
-         // جلب المحطات بناءً على الفرع
-          function fetchStations(branch) {
-            if (!branch) return;
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>الموقع</th>
+                              <th>الخطر</th>
+                              <th>الإجراء التصحيحي</th>
+                              <th>المدة الزمنية</th>
+                              <th>الموقف التنفيذي</th>
+                              <th>ملاحظات</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          ${rowsHtml}
+                      </tbody>
+                  </table>
+              </body>
+              </html>
+          `;
+      
+          const printWindow = window.open('', '', 'height=600,width=800');
+          printWindow.document.write(htmlContent);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+      });
     
-            stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-    
-            const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
-    
-            fetch(url)
-              .then(res => res.json())
-              .then(data => {
-                if (data.status === "success") {
-                  stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                  branchStations = data.stations;
-                  branchDates = data.certifiedDates;
-    
-                  data.stations.forEach(station => {
-                    const option = document.createElement("option");
-                    option.value = station;
-                    option.textContent = station;
-                    stationSelect.appendChild(option);
-                  });
-                } else {
-                  stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-                }
-              })
-              .catch(err => {
-                console.error("Error fetching stations:", err);
-                stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-              });
-          }
+        ///////كل المحطات
+            const locationSelect= document.getElementById("location");
+            document.getElementById("printReport2").addEventListener("click", async () => {
+            const branch = document.getElementById("branch").value || "----";
         
-                // ملء تفاصيل الموقع
-          function fillStationDetails(details) {
-            locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-            locationSelect.detailsMap = {};
-            details.forEach((detail, index) => {
-              const option = document.createElement("option");
-              option.value = index;  // أرسل نص الموقع
-              option.textContent = detail.location || "Unnamed Location";
-              locationSelect.appendChild(option);
-              locationSelect.detailsMap[index] = detail;
-            });
-          }
-    
-          locationSelect.addEventListener("change", () => {
-            const selectedKey = locationSelect.value;
-            if (!selectedKey) return;
-    
-            const detail = locationSelect.detailsMap[selectedKey];
-    
-            if (detail) {
-              riskInput.value = detail.risk || "";
-              corractionInput.value = detail.corraction || "";
-              durationInput.value = detail.duration || "";
-    
-              let status = (detail.status || "").trim();
-              switch (true) {
-                case /تم/.test(status): status = "تم"; break;
-                case /جار/.test(status): status = "جارى"; break;
-                case /لم/.test(status): status = "لم يتم"; break;
-                default: status = "";
-              }
-              statusSelect.value = status;
-              branchcomment.value = detail.branchcomment || "";
-              wspcomment.value = detail.wspcomment || "";
-    
-              if (detail.attachment) {
-                document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
-              } else {
-                document.getElementById("filename").textContent = "No File";
-              }
+            // جلب جميع المحطات للفرع من السيرفر
+            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+            const stationsData = await stationsResponse.json();
+        
+            if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
+                alert("لا توجد محطات لهذا الفرع للطباعة!");
+                return;
             }
-          });
-
-    
-          // عند تغيير المحطة
-          stationSelect.addEventListener("change", () => {
-            const selectedStation = stationSelect.value;
-            const index = branchStations.indexOf(selectedStation);
-            if (index !== -1 && branchDates[index]) {
-              const date = new Date(branchDates[index]);
-              const year = date.getFullYear();
-              const month = String(date.getMonth() + 1).padStart(2, '0');
-              const day = String(date.getDate()).padStart(2, '0');
-              certifiedDateInput.value = `${year}-${month}-${day}`;
-            } else certifiedDateInput.value = "";
-    
-            fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
-              .then(res => res.json())
-              .then(data => {
-                if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
-                else {
-                  locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
-                  riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
-                  branchcomment.value = wspcomment.value = "";
-                  document.getElementById("filename").textContent = "";
+        
+            let htmlContent = `
+                <html>
+                <head>
+                    <title>تقرير الاعتماد لكل المحطات</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                        th { background-color: #f0f0f0; }
+                        h2, h3 { text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات فرع: ${branch}</h2>
+            `;
+        
+            // --------- جدول الملخص لجميع المحطات ---------
+            htmlContent += `
+                <h3>ملخص جميع المحطات</h3>
+                <table>
+                    <tr>
+                        <th>المحطة</th>
+                        <th>إجمالي الإجراءات</th>
+                        <th>المنفذ</th>
+                        <th>الجارية</th>
+                        <th>لم يتم التنفيذ</th>
+                    </tr>
+            `;
+        
+            const allDetailsPerStation = {}; // لتخزين التفاصيل لكل محطة
+        
+            // أولًا نحسب بيانات الملخص لكل محطة
+            for (const station of stationsData.stations) {
+                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                const detailsData = await detailsResponse.json();
+        
+                let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+        
+                if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
+                    const allLocations = detailsData.details;
+                    totalActions = allLocations.length;
+                    doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                    inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                    notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+        
+                    // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
+                    allDetailsPerStation[station] = allLocations;
                 }
-              })
-              .catch(err => console.error("Error fetching station details:", err));
-          });
-        };
+        
+                htmlContent += `
+                    <tr>
+                        <td>${station}</td>
+                        <td>${totalActions}</td>
+                        <td>${doneActions}</td>
+                        <td>${inProgressActions}</td>
+                        <td>${notDoneActions}</td>
+                    </tr>
+                `;
+            }
+        
+            htmlContent += `</table>`;
+        
+            // --------- الجداول التفصيلية لكل محطة ---------
+            for (const station of Object.keys(allDetailsPerStation)) {
+                const allLocations = allDetailsPerStation[station];
+        
+                const detailRowsHtml = allLocations.map(detail => `
+                    <tr>
+                        <td>${detail.location || ""}</td>
+                        <td>${detail.risk || ""}</td>
+                        <td>${detail.corraction || ""}</td>
+                        <td>${detail.duration || ""}</td>
+                        <td>${detail.status || ""}</td>
+                    </tr>
+                `).join("");
+        
+                htmlContent += `
+                    <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station}</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الموقع</th>
+                                <th>الخطر</th>
+                                <th>الإجراء التصحيحي</th>
+                                <th>المدة الزمنية</th>
+                                <th>الموقف التنفيذي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${detailRowsHtml}
+                        </tbody>
+                    </table>
+                `;
+            }
+        
+            htmlContent += `</body></html>`;
+        
+            // فتح نافذة الطباعة
+            const printWindow = window.open('', '', 'height=800,width=1000');
+            if (!printWindow) {
+                alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+                return;
+            }
+        
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        });
+        /////تقرير مجمع للفروع كلها
+            
+            document.getElementById("printReportAll").addEventListener("click", async () => {
+            const branchSelect = document.getElementById("branch");
+            const branchOptions = Array.from(branchSelect.options)
+                                       .filter(opt => opt.value && opt.value !== "----"); // تجاهل placeholder
+        
+            if (branchOptions.length === 0) {
+                alert("لا توجد فروع للطباعة!");
+                return;
+            }
+        
+            let htmlContent = `
+                <html>
+                <head>
+                    <title>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                        th { background-color: #f0f0f0; }
+                        h2, h3 { text-align: center; }
+                    </style>
+                </head>
+                <body>
+                    <h2>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</h2>
+                    <h3>ملخص لكل الفروع</h3>
+                    <table>
+                        <tr>
+                            <th>الفرع</th>
+                            <th>إجمالي الإجراءات</th>
+                            <th>المنفذ</th>
+                            <th>الجارية</th>
+                            <th>لم يتم التنفيذ</th>
+                        </tr>
+            `;
+        
+            const allDetailsPerBranch = {};
+        
+            for (const opt of branchOptions) {
+                const branch = opt.value;
+        
+                // جلب المحطات لكل فرع
+                const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                const stationsData = await stationsResponse.json();
+        
+                let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
+                allDetailsPerBranch[branch] = {};
+        
+                if (stationsData.status === "success" && stationsData.stations?.length) {
+                    for (const station of stationsData.stations) {
+                        const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                        const detailsData = await detailsResponse.json();
+        
+                        let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+        
+                        if (detailsData.status === "success" && detailsData.details?.length) {
+                            const allLocations = detailsData.details;
+        
+                            totalActions = allLocations.length;
+                            doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                            inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                            notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+        
+                            allDetailsPerBranch[branch][station] = allLocations;
+                        }
+        
+                        branchTotal += totalActions;
+                        branchDone += doneActions;
+                        branchInProgress += inProgressActions;
+                        branchNotDone += notDoneActions;
+                    }
+                }
+        
+                htmlContent += `
+                    <tr>
+                        <td>${branch}</td>
+                        <td>${branchTotal}</td>
+                        <td>${branchDone}</td>
+                        <td>${branchInProgress}</td>
+                        <td>${branchNotDone}</td>
+                    </tr>
+                `;
+            }
+        
+            htmlContent += `</table>`;
+        
+            // --------- جدول لكل فرع (ملخص لكل محطة) ---------
+            for (const branch of Object.keys(allDetailsPerBranch)) {
+                htmlContent += `<h3>ملخص محطات الفرع: ${branch}</h3>`;
+                htmlContent += `
+                    <table>
+                        <tr>
+                            <th>المحطة</th>
+                            <th>إجمالي الإجراءات</th>
+                            <th>المنفذ</th>
+                            <th>الجارية</th>
+                            <th>لم يتم التنفيذ</th>
+                        </tr>
+                `;
+        
+                const stations = Object.keys(allDetailsPerBranch[branch]);
+                for (const station of stations) {
+                    const allLocations = allDetailsPerBranch[branch][station];
+        
+                    const totalActions = allLocations.length;
+                    const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                    const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                    const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+        
+                    htmlContent += `
+                        <tr>
+                            <td>${station}</td>
+                            <td>${totalActions}</td>
+                            <td>${doneActions}</td>
+                            <td>${inProgressActions}</td>
+                            <td>${notDoneActions}</td>
+                        </tr>
+                    `;
+                }
+        
+                htmlContent += `</table>`;
+            }
+        
+            const printWindow = window.open('', '', 'height=800,width=1200');
+            if (!printWindow) {
+                alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+                return;
+            }
+        
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        });
+
+
+
+ 
+           
+           
+    
+         
             // طباعة الاجراءات التصحيحة 
           document.getElementById("reportstation").addEventListener("click", () => {
           const branch = document.getElementById("branch").value || "----";
@@ -311,3 +643,4 @@
   </body>
 
 </html>
+
