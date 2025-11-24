@@ -770,6 +770,141 @@
         printWindow.focus();
         printWindow.print();
     });
+    /////تقرير مجمع للفروع كلها
+        document.getElementById("printReportAllBranches").addEventListener("click", async () => {
+        // أولًا جلب كل الفروع
+        const branchesResponse = await fetch(`${scriptURL}?action=getBranches`);
+        const branchesData = await branchesResponse.json();
+    
+        if (branchesData.status !== "success" || !branchesData.branches || branchesData.branches.length === 0) {
+            alert("لا توجد فروع للطباعة!");
+            return;
+        }
+    
+        let htmlContent = `
+            <html>
+            <head>
+                <title>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</title>
+                <style>
+                    body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                    th { background-color: #f0f0f0; }
+                    h2, h3, h4 { text-align: center; margin: 10px 0; }
+                </style>
+            </head>
+            <body>
+                <h2>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</h2>
+        `;
+    
+        // --------- ملخص كل الفروع ---------
+        htmlContent += `
+            <h3>ملخص لكل الفروع</h3>
+            <table>
+                <tr>
+                    <th>الفرع</th>
+                    <th>إجمالي الإجراءات</th>
+                    <th>المنفذ</th>
+                    <th>الجارية</th>
+                    <th>لم يتم التنفيذ</th>
+                </tr>
+        `;
+    
+        const allDetailsPerBranch = {}; // لتخزين التفاصيل لكل فرع ثم لكل محطة
+    
+        for (const branch of branchesData.branches) {
+            // جلب المحطات لكل فرع
+            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+            const stationsData = await stationsResponse.json();
+    
+            let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
+            allDetailsPerBranch[branch] = {}; // لتخزين التفاصيل لكل محطة داخل الفرع
+    
+            if (stationsData.status === "success" && stationsData.stations && stationsData.stations.length > 0) {
+                for (const station of stationsData.stations) {
+                    const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                    const detailsData = await detailsResponse.json();
+    
+                    let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+    
+                    if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
+                        const allLocations = detailsData.details;
+    
+                        totalActions = allLocations.length;
+                        doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                        inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                        notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+    
+                        allDetailsPerBranch[branch][station] = allLocations; // تخزين التفاصيل لكل محطة
+                    }
+    
+                    branchTotal += totalActions;
+                    branchDone += doneActions;
+                    branchInProgress += inProgressActions;
+                    branchNotDone += notDoneActions;
+                }
+            }
+    
+            htmlContent += `
+                <tr>
+                    <td>${branch}</td>
+                    <td>${branchTotal}</td>
+                    <td>${branchDone}</td>
+                    <td>${branchInProgress}</td>
+                    <td>${branchNotDone}</td>
+                </tr>
+            `;
+        }
+    
+        htmlContent += `</table>`;
+    
+        // --------- جدول لكل فرع (ملخص لكل محطة) ---------
+        for (const branch of Object.keys(allDetailsPerBranch)) {
+            htmlContent += `<h3>ملخص محطات الفرع: ${branch}</h3>`;
+            htmlContent += `
+                <table>
+                    <tr>
+                        <th>المحطة</th>
+                        <th>إجمالي الإجراءات</th>
+                        <th>المنفذ</th>
+                        <th>الجارية</th>
+                        <th>لم يتم التنفيذ</th>
+                    </tr>
+            `;
+    
+            const stations = Object.keys(allDetailsPerBranch[branch]);
+            for (const station of stations) {
+                const allLocations = allDetailsPerBranch[branch][station];
+    
+                const totalActions = allLocations.length;
+                const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+    
+                htmlContent += `
+                    <tr>
+                        <td>${station}</td>
+                        <td>${totalActions}</td>
+                        <td>${doneActions}</td>
+                        <td>${inProgressActions}</td>
+                        <td>${notDoneActions}</td>
+                    </tr>
+                `;
+            }
+    
+            htmlContent += `</table>`;
+          // فتح نافذة الطباعة
+          const printWindow = window.open('', '', 'height=800,width=1200');
+          if (!printWindow) {
+              alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+              return;
+          }
+      
+          printWindow.document.write(htmlContent);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+      });
 
 
 
@@ -781,6 +916,7 @@
 
 </body>
 </html>
+
 
 
 
