@@ -777,7 +777,8 @@
         // جلب كل الفروع
         const branchesResponse = await fetch(`${scriptURL}?action=getBranches`);
         const branchesData = await branchesResponse.json();
-    
+        
+        console.log("branchesData:", branchesData);
         if (branchesData.status !== "success" || !branchesData.branches || branchesData.branches.length === 0) {
             alert("لا توجد فروع للطباعة!");
             return;
@@ -913,6 +914,7 @@
 
 </body>
 </html>
+
 
 
 
