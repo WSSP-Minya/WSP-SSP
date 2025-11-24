@@ -264,9 +264,11 @@
           .then(res => res.json())
           .then(data => {
             console.log("Received station details:", data);  // 👈 عرض البيانات في الـ Console
-            if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
-              console.log("detailed data:", data.details);"
-            else {
+            if (data.status === "success" && data.details.length > 0){
+              console.log("Detailed data:", data.details);   // 👈 وضعه داخل الـ if
+              fillStationDetails(data.details);
+             
+            }else {
               locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
               riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
               branchcomment.value = wspcomment.value = "";
@@ -654,6 +656,7 @@
 
 </body>
 </html>
+
 
 
 
