@@ -111,7 +111,8 @@
     </div>
     <div>
       <button type="button" id="printReport">Print</button>
-      <button type="button" id="printReport2">Print branch</button>
+      <button type="button" id="printReport2">Print Branch</button>
+      <button type="button" id="printReportAll">Print All</button>
     </div>
    
   </form>
@@ -771,7 +772,7 @@
         printWindow.print();
     });
     /////تقرير مجمع للفروع كلها
-        document.getElementById("printReportAllBranches").addEventListener("click", async () => {
+        document.getElementById("printReportAll").addEventListener("click", async () => {
         // أولًا جلب كل الفروع
         const branchesResponse = await fetch(`${scriptURL}?action=getBranches`);
         const branchesData = await branchesResponse.json();
@@ -916,6 +917,7 @@
 
 </body>
 </html>
+
 
 
 
