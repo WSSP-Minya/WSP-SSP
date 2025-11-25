@@ -164,6 +164,48 @@
                 .catch(err => console.error("Error fetching station details:", err));
             });
           };
+         // ملء تفاصيل الموقع
+          function fillStationDetails(details) {
+            locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
+            locationSelect.detailsMap = {};
+            details.forEach((detail, index) => {
+              const option = document.createElement("option");
+              option.value = index;  // أرسل نص الموقع
+              option.textContent = detail.location || "Unnamed Location";
+              locationSelect.appendChild(option);
+              locationSelect.detailsMap[index] = detail;
+            });
+          }
+    
+          locationSelect.addEventListener("change", () => {
+            const selectedKey = locationSelect.value;
+            if (!selectedKey) return;
+    
+            const detail = locationSelect.detailsMap[selectedKey];
+    
+            if (detail) {
+              riskInput.value = detail.risk || "";
+              corractionInput.value = detail.corraction || "";
+              durationInput.value = detail.duration || "";
+    
+              let status = (detail.status || "").trim();
+              switch (true) {
+                case /تم/.test(status): status = "تم"; break;
+                case /جار/.test(status): status = "جارى"; break;
+                case /لم/.test(status): status = "لم يتم"; break;
+                default: status = "";
+              }
+              statusSelect.value = status;
+              branchcomment.value = detail.branchcomment || "";
+              wspcomment.value = detail.wspcomment || "";
+    
+              if (detail.attachment) {
+                document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
+              } else {
+                document.getElementById("filename").textContent = "No File";
+              }
+            }
+          });
 
           // طباعة الاجراءات التصحيحة لمحطة واحدة
           document.getElementById("reportstation").addEventListener("click", () => {
@@ -666,6 +708,7 @@
   </body>
 
 </html>
+
 
 
 
