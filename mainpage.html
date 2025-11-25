@@ -6,6 +6,11 @@
         <link rel="stylesheet" href="mainpage.css">
     </head>
     <body>
+        <!-- زر Logout -->
+        <div class="topbar">
+            <button class="logout-button" onclick="logout()">Logout</button>
+        </div>
+
                
         <div class="options">
             <button onclick="AccessedToPage('waterqualitymonitoring')" class="buttonlabel">
@@ -52,6 +57,12 @@
             waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
             reportsButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
         }
+            //  تسجيل الخروج
+            function logout() {
+                sessionStorage.clear(); // مسح بيانات الجلسة
+                alert("You have been logged out");
+                window.location.href = "login.html"; // إعادة توجيه لصفحة تسجيل الدخول
+            }
   
 
 
@@ -64,6 +75,7 @@
 
 
 </html>
+
 
 
 
