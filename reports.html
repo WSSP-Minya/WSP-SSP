@@ -207,122 +207,121 @@
 
           // طباعة الاجراءات التصحيحة لمحطة واحدة
           document.getElementById("reportstation").addEventListener("click", () => {
-          const branch = document.getElementById("branch").value || "----";
-          const station = document.getElementById("station").value || "----";
-          const certifiedDate = document.getElementById("certifieddate").value || "----";
-      
-          const locationSelect = document.getElementById("location");
-          const detailsMap = locationSelect.detailsMap;
-      
-          if (!detailsMap || Object.keys(detailsMap).length === 0) {
-              alert("No Data for Print!");
-              return;
-          }
-            
-          // جميع الإجراءات
-            const allLocations = Object.values(detailsMap) || [];
-            
-            
-            // 2) عدد الاجراءات المنفذة 
-            const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;      
-            // 2) عدد الإجراءات الجارية
-            const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
-            // 4) عدد الإجراءات لم يتم التنفيذ
-            const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-            // 1) إجمالي عدد الإجراءات التصحيحية
-            const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-      
-          // تصفية المواقع المعتمدة فقط (checkbox = false)
-          const approvedLocations = Object.values(detailsMap).filter(detail => detail.checkbox === false);
-      
-          if (approvedLocations.length === 0) {
-              alert("لا توجد مواقع معتمدة للطباعة!");
-              return;
-          }
-      
-          let rowsHtml = approvedLocations.map(detail => `
-              <tr>
-                  <td>${detail.location || ""}</td>
-                  <td>${detail.risk || ""}</td>
-                  <td>${detail.corraction || ""}</td>
-                  <td>${detail.duration || ""}</td>
-                  <td>${detail.status || ""}</td>
-                  
-              </tr>
-          `).join("");
-    
-            
-    
-      
-          const htmlContent = `
-              <html>
-              <head>
-                  <title>تقرير الاعتماد</title>
-                  <style>
-                      body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
-                      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                      th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
-                      th { background-color: #f0f0f0; }
-                      h2 { text-align: center; }
-                      p { text-align: center;}
-                      /* تحديد أقل عرض لكل عمود (يمكن تعديلها كما تريد) */
-                      th:nth-child(1), td:nth-child(1) { width: 10%; } /* الموقع */
-                      th:nth-child(2), td:nth-child(2) { width: 15%; } /* الخطر */
-                      th:nth-child(3), td:nth-child(3) { width: 25%; } /* الإجراء التصحيحي */
-                      th:nth-child(4), td:nth-child(4) { width: 10%; } /* المدة */
-                      th:nth-child(5), td:nth-child(5) { width: 10%; } /* الموقف التنفيذي */
-                      th:nth-child(6), td:nth-child(6) { width: 25%; } /* الملاحظات */
-                  </style>
-              </head>
-              <body>
-                  <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
-                  <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${station} &nbsp;&nbsp;&nbsp;&nbsp <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
-                 <table>
-                   <thead>
-                     <tr>
-                        <th>عدد الإجراءات التصحيحية</th>
-                        <th>عدد الإجراءات المنفذة</th>
-                        <th>عدد الإجراءات الجارية</th>
-                        <th>عدد الإجراءات لم يتم التنفيذ</th>
-                    </tr>
-                   </thead>
-                   <tbody>
-                     <td>${totalActionsCount}</td>
-                     <td>${doneActionsCount}</td>
-                     <td>${inProgressActionsCount}</td>
-                     <td>${notDoneActionsCount}</td>
+          
+              // بيانات الرأس
+              const branch = document.getElementById("branch").value || "----";
+              const station = document.getElementById("station").value || "----";
+              const certifiedDate = document.getElementById("certifieddate").value || "----";
+          
+              // جميع التفاصيل المرسلة من fillStationDetails
+              const locationSelect = document.getElementById("location");
+              const detailsMap = locationSelect.detailsMap;
+          
+              if (!detailsMap || Object.keys(detailsMap).length === 0) {
+                  alert("No Data for Print!");
+                  return;
+              }
+          
+              // تحويل Object إلى Array
+              const allLocations = Object.values(detailsMap) || [];
+          
+              // حساب الإحصائيات
+              const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
+              const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+              const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+              const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+          
+              // المواقع المعتمدة فقط للطباعة
+              const approvedLocations = allLocations.filter(detail => detail.checkbox === false);
+          
+              if (approvedLocations.length === 0) {
+                  alert("لا توجد مواقع معتمدة للطباعة!");
+                  return;
+              }
+          
+              // إنشاء صفوف جدول التفاصيل
+              let rowsHtml = approvedLocations.map(detail => `
+                  <tr>
+                      <td>${detail.location || ""}</td>
+                      <td>${detail.risk || ""}</td>
+                      <td>${detail.corraction || ""}</td>
+                      <td>${detail.duration || ""}</td>
+                      <td>${detail.status || ""}</td>
+                  </tr>
+              `).join("");
+          
+              // HTML كامل للتقرير
+              const htmlContent = `
+                  <html>
+                  <head>
+                      <title>تقرير الاعتماد</title>
+                      <style>
+                          body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                          th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; text-align:center; }
+                          th { background-color: #f0f0f0; }
+                          h2 { text-align: center; }
+                          p { text-align: center; }
+                      </style>
+                  </head>
+          
+                  <body>
+          
+                      <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
+          
+                      <p>
+                          <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
+                          <strong>النظام:</strong> ${station} &nbsp;&nbsp;
+                          <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
+                      </p>
+          
+                      <!-- جدول الإحصائيات -->
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>عدد الإجراءات التصحيحية</th>
+                                  <th>عدد الإجراءات المنفذة</th>
+                                  <th>عدد الإجراءات الجارية</th>
+                                  <th>عدد الإجراءات لم يتم التنفيذ</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>${totalActionsCount}</td>
+                                  <td>${doneActionsCount}</td>
+                                  <td>${inProgressActionsCount}</td>
+                                  <td>${notDoneActionsCount}</td>
+                              </tr>
+                          </tbody>
+                      </table>
+          
+                      <!-- جدول التفاصيل -->
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>الموقع</th>
+                                  <th>الخطر</th>
+                                  <th>الإجراء التصحيحي</th>
+                                  <th>المدة الزمنية</th>
+                                  <th>الموقف التنفيذي</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              ${rowsHtml}
+                          </tbody>
+                      </table>
+          
+                  </body>
+                  </html>
+              `;
+          
+              const printWindow = window.open('', '', 'height=600,width=800');
+              printWindow.document.write(htmlContent);
+              printWindow.document.close();
+              printWindow.focus();
+              printWindow.print();
+          });
 
-
-                   </tbody>
-                  </table>
-                  
-    
-                  <table>
-                      <thead>
-                          <tr>
-                              <th>الموقع</th>
-                              <th>الخطر</th>
-                              <th>الإجراء التصحيحي</th>
-                              <th>المدة الزمنية</th>
-                              <th>الموقف التنفيذي</th>
-                              
-                          </tr>
-                      </thead>
-                      <tbody>
-                          ${rowsHtml}
-                      </tbody>
-                  </table>
-              </body>
-              </html>
-          `;
-      
-          const printWindow = window.open('', '', 'height=600,width=800');
-          printWindow.document.write(htmlContent);
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.print();
-      });
-    
         ///////كل المحطات
             const locationSelect= document.getElementById("location");
             document.getElementById("reportbranch").addEventListener("click", async () => {
@@ -715,6 +714,7 @@
   </body>
 
 </html>
+
 
 
 
