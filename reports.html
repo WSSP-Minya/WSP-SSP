@@ -74,7 +74,7 @@
     
   
           window.onload = () => {
-            console.log("Page Loaded - JS is working");
+           
             const email = sessionStorage.getItem("email");
             const department = sessionStorage.getItem("department");
             const branchSelect = document.getElementById("branch");
@@ -114,9 +114,6 @@
                   console.log("datastation:", data)
                   if (data.status === "success") {
                     stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                    // تتبع المحطات والتواريخ المستلمة
-                    console.log("Stations:", data.stations);
-                    console.log("Certified Dates:", data.certifiedDates);
                     branchStations = data.stations;
                     branchDates = data.certifiedDates;
       
@@ -709,6 +706,7 @@
   </body>
 
 </html>
+
 
 
 
