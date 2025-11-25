@@ -277,15 +277,24 @@
               <body>
                   <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
                   <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;&nbsp;&nbsp; <strong>النظام:</strong> ${station} &nbsp;&nbsp;&nbsp;&nbsp <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
-                  <p>
-                      <strong>عدد الإجراءات التصحيحية:</strong> ${totalActionsCount}
-                      &nbsp;&nbsp;&nbsp;
-                      <strong>عدد الإجراءات المنفذة:</strong> ${doneActionsCount}
-                      &nbsp;&nbsp;&nbsp;
-                      <strong>عدد الإجراءات الجارية:</strong> ${inProgressActionsCount}
-                      &nbsp;&nbsp;&nbsp;
-                      <strong>عدد الإجراءات لم يتم التنفيذ:</strong> ${notDoneActionsCount}
-                  </p>
+                 <table>
+                   <thead>
+                     <tr>
+                        <th>عدد الإجراءات التصحيحية</th>
+                        <th>عدد الإجراءات المنفذة</th>
+                        <th>عدد الإجراءات الجارية</th>
+                        <th>عدد الإجراءات لم يتم التنفيذ</th>
+                    </tr>
+                   </thead>
+                   <tbody>
+                     <td>${totalActionsCount}</td>
+                     <td>${doneActionsCount}</td>
+                     <td>${inProgressActionsCount}</td>
+                     <td>${notDoneActionsCount}</td>
+
+
+                   </tbody>
+                  </table>
                   
     
                   <table>
@@ -706,6 +715,7 @@
   </body>
 
 </html>
+
 
 
 
