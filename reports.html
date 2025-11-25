@@ -204,123 +204,128 @@
             });
           };
          
+          ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
+         document.getElementById("reportstation").addEventListener("click", () => {
 
-          // طباعة الاجراءات التصحيحة لمحطة واحدة
-          document.getElementById("reportstation").addEventListener("click", () => {
-          
-              // بيانات الرأس
-              const branch = document.getElementById("branch").value || "----";
-              const station = document.getElementById("station").value || "----";
-              const certifiedDate = document.getElementById("certifieddate").value || "----";
-          
-              // جميع التفاصيل المرسلة من fillStationDetails
-              const locationSelect = document.getElementById("location");
-              const detailsMap = locationSelect.detailsMap;
-          
-              if (!detailsMap || Object.keys(detailsMap).length === 0) {
-                  alert("No Data for Print!");
-                  return;
-              }
-          
-              // تحويل Object إلى Array
-              const allLocations = Object.values(detailsMap) || [];
-          
-              // حساب الإحصائيات
-              const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
-              const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
-              const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-              const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-          
-              // المواقع المعتمدة فقط للطباعة
-              const approvedLocations = allLocations.filter(detail => detail.checkbox === false);
-          
-              if (approvedLocations.length === 0) {
-                  alert("لا توجد مواقع معتمدة للطباعة!");
-                  return;
-              }
-          
-              // إنشاء صفوف جدول التفاصيل
-              let rowsHtml = approvedLocations.map(detail => `
-                  <tr>
-                      <td>${detail.location || ""}</td>
-                      <td>${detail.risk || ""}</td>
-                      <td>${detail.corraction || ""}</td>
-                      <td>${detail.duration || ""}</td>
-                      <td>${detail.status || ""}</td>
-                  </tr>
-              `).join("");
-          
-              // HTML كامل للتقرير
-              const htmlContent = `
-                  <html>
-                  <head>
-                      <title>تقرير الاعتماد</title>
-                      <style>
-                          body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
-                          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                          th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; text-align:center; }
-                          th { background-color: #f0f0f0; }
-                          h2 { text-align: center; }
-                          p { text-align: center; }
-                      </style>
-                  </head>
-          
-                  <body>
-          
-                      <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
-          
-                      <p>
-                          <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
-                          <strong>النظام:</strong> ${station} &nbsp;&nbsp;
-                          <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
-                      </p>
-          
-                      <!-- جدول الإحصائيات -->
-                      <table>
-                          <thead>
-                              <tr>
-                                  <th>عدد الإجراءات التصحيحية</th>
-                                  <th>عدد الإجراءات المنفذة</th>
-                                  <th>عدد الإجراءات الجارية</th>
-                                  <th>عدد الإجراءات لم يتم التنفيذ</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              <tr>
-                                  <td>${totalActionsCount}</td>
-                                  <td>${doneActionsCount}</td>
-                                  <td>${inProgressActionsCount}</td>
-                                  <td>${notDoneActionsCount}</td>
-                              </tr>
-                          </tbody>
-                      </table>
-          
-                      <!-- جدول التفاصيل -->
-                      <table>
-                          <thead>
-                              <tr>
-                                  <th>الموقع</th>
-                                  <th>الخطر</th>
-                                  <th>الإجراء التصحيحي</th>
-                                  <th>المدة الزمنية</th>
-                                  <th>الموقف التنفيذي</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              ${rowsHtml}
-                          </tbody>
-                      </table>
-          
-                  </body>
-                  </html>
+          const branch = document.getElementById("branch").value || "----";
+          const station = document.getElementById("station").value || "----";
+          const certifiedDate = document.getElementById("certifieddate").value || "----";
+      
+          const locationSelect = document.getElementById("location");
+          const detailsMap = locationSelect.detailsMap;
+      
+          if (!detailsMap || Object.keys(detailsMap).length === 0) {
+              alert("No Data for Print!");
+              return;
+          }
+      
+          const allLocations = Object.values(detailsMap) || [];
+      
+          const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
+          const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+          const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+          const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+      
+          const approvedLocations = allLocations.filter(detail => detail.checkbox === false);
+      
+          if (approvedLocations.length === 0) {
+              alert("لا توجد مواقع معتمدة للطباعة!");
+              return;
+          }
+      
+          let rowsHtml = approvedLocations.map(detail => {
+              // تغيير لون الصف حسب حالة التنفيذ
+              let rowColor = "";
+              if (detail.status?.trim() === "تم") rowColor = "background-color:#d4edda;"; // أخضر فاتح
+              else if (detail.status?.trim() === "جارى") rowColor = "background-color:#fff3cd;"; // أصفر فاتح
+              else if (detail.status?.trim() === "لم يتم") rowColor = "background-color:#f8d7da;"; // أحمر فاتح
+      
+              return `
+              <tr style="${rowColor}">
+                  <td>${detail.location || ""}</td>
+                  <td>${detail.risk || ""}</td>
+                  <td>${detail.corraction || ""}</td>
+                  <td>${detail.duration || ""}</td>
+                  <td>${detail.status || ""}</td>
+              </tr>
               `;
-          
-              const printWindow = window.open('', '', 'height=600,width=800');
-              printWindow.document.write(htmlContent);
-              printWindow.document.close();
-              printWindow.focus();
-              printWindow.print();
-          });
+          }).join("");
+      
+          const htmlContent = `
+              <html>
+              <head>
+                  <title>تقرير الاعتماد</title>
+                  <style>
+                      body { font-family: Arial, sans-serif; direction: rtl; text-align: right; margin: 20px; }
+                      h2 { text-align: center; margin-bottom: 10px; }
+                      p { text-align: center; margin-bottom: 20px; }
+                      
+                      table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+                      th, td { border: 1px solid #000; padding: 8px; text-align: center; word-wrap: break-word; }
+                      th { background-color: #343a40; color: #fff; }
+                      tr:nth-child(even) td { background-color: #f2f2f2; }
+      
+                      /* جدول الإحصائيات */
+                      .summary-table th { background-color: #007bff; color: #fff; }
+                  </style>
+              </head>
+              <body>
+      
+                  <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
+      
+                  <p>
+                      <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
+                      <strong>النظام:</strong> ${station} &nbsp;&nbsp;
+                      <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
+                  </p>
+      
+                  <!-- جدول الإحصائيات -->
+                  <table class="summary-table">
+                      <thead>
+                          <tr>
+                              <th>عدد الإجراءات التصحيحية</th>
+                              <th>عدد الإجراءات المنفذة</th>
+                              <th>عدد الإجراءات الجارية</th>
+                              <th>عدد الإجراءات لم يتم التنفيذ</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>${totalActionsCount}</td>
+                              <td>${doneActionsCount}</td>
+                              <td>${inProgressActionsCount}</td>
+                              <td>${notDoneActionsCount}</td>
+                          </tr>
+                      </tbody>
+                  </table>
+      
+                  <!-- جدول التفاصيل -->
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>الموقع</th>
+                              <th>الخطر</th>
+                              <th>الإجراء التصحيحي</th>
+                              <th>المدة الزمنية</th>
+                              <th>الموقف التنفيذي</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          ${rowsHtml}
+                      </tbody>
+                  </table>
+      
+              </body>
+              </html>
+          `;
+      
+          const printWindow = window.open('', '', 'height=700,width=900');
+          printWindow.document.write(htmlContent);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+      });
+
 
         ///////كل المحطات
             const locationSelect= document.getElementById("location");
@@ -714,6 +719,7 @@
   </body>
 
 </html>
+
 
 
 
