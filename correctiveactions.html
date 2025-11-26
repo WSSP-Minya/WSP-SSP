@@ -542,9 +542,11 @@
       const branch = document.getElementById("branch").value || "----";
       const station = document.getElementById("station").value || "----";
       const certifiedDate = document.getElementById("certifieddate").value || "----";
+         
   
       const locationSelect = document.getElementById("location");
       const detailsMap = locationSelect.detailsMap;
+      const approvedLocations = allLocations.filter(detail => detail.checkbox === false);
   
       if (!detailsMap || Object.keys(detailsMap).length === 0) {
           alert("No Data for Print!");
@@ -631,6 +633,7 @@
 
 </body>
 </html>
+
 
 
 
