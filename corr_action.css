@@ -1,285 +1,167 @@
-
-
-
-
-
-.username,
-.region{
-  color: red;
-  font-family: Monospace;
-  border-color: grey;
-  border-style: groove;
-  padding:10px;
-  margin: 5px;
-  width:fit-content;
-  margin-left:79%;
-  font-weight: bolder;
-}
-
-#username{
-  margin-left:15px;
-}
-
-h1{
-  border-radius: 10px;
-  border-style: groove;
-  border-color: grey;
-  width:fit-content;
-  padding:2px;
-  text-align:center;
-  margin:auto;
- }
- 
- .generalinfo{
-  font-size: 25px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  padding: 2px;
-  text-align: center;
-  gap: 5px;
-  color: red;
-}
-
-.generalinfo input,
-.generalinfo select{
-  color: red;
-  font-size: 20px;
-  width:150px ;
-  
-}
-
-.risk,
-.action{
-  font-size: 25px;
-  color:blue;
-  display:inline-flex;
-  padding:5px;
-  border-radius: 15px;
-  border-style:groove;
-  border-color: rgba(225, 225, 225, 0.5);
-  width: fit-content;
-  justify-content: center; 
-  margin-bottom: 5PX;
-}
-
-.risk{
-  margin-bottom: 5px;
-}
-.risk select{
-  color: blue;
-  font-size: 25px;
-  font-family: 'Times New Roman', Times, serif;
-  width:1120px;
-  height: auto;
-  margin-left:151px;
-
-}
-.action input{
-  color: blue;
-  font-size: 25px;
-  font-family: 'Times New Roman', Times, serif;
-  width:1110px;
-  height: auto;
-  margin-left:20px;
-}
-
-.branchresponse{
-  font-size: 25px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap:5px;
-  text-align:center;
-  border-radius:15px;
-  border-style: groove;
-  border-color: rgba(225, 225, 225, 0.50);
-  font-family: 'Times New Roman', Times, serif;
-  padding:5px;
-  width: 1315px;
-  color:blue;
-  margin-bottom: 5px;
-
-}
-
-.branchrespose input,
-.branchresponse select{
-  color:red;
-  width:150 px;
-  margin-left:2px;
-  font-size: 20px;
-  text-align: center;
-}
-
-
-
-.branchremark{
-   border-radius: 15px;
-   font-size:25px;
-   color:blue;
-   border-style:groove;
-   border-color: rgba(225, 225, 225, 0.50);
-   width:1315px;
-   height: 50px;
-   padding:5px;
-   margin-bottom: 5px;
-}
-
-.branchremark textarea{
-  width: 1120px;
-  height: 45px;
-  color:black;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 25px;
-  margin-left: 91px;
-  resize: none;
-}
-
-.wspcomment{
-   border-radius: 15px;
-   font-size:25px;
-   color:blue;
-   border-style:groove;
-   border-color: rgba(225, 225, 225, 0.50);
-   width:1325px;
-   
-   
-}
-.wspcomment textarea{
-  width: 1125px;
-  color:black;
-  font-family: 'Times New Roman', Times, serif;
-  font-size: 25px; 
-  margin-left:20px;
-  overflow: auto;
-  resize: none;
-  box-sizing: border-box;
-  
-}
-
-.duration input{
-  color: blue;
-  font-size: 20px;
-  font-family: 'Times New Roman', Times, serif;
-  margin-left: 3px;
-  box-sizing: content-box;
-  width: 50px;
-  text-align: center;
-}
-
-.buttons button{
-  justify-content: space-between;
-  font-size: 15px;
-  color:red;
-  display: inline-flex;
-  transform: translateX(450%);
-}
-
-/* ====== General Page Styling ====== */
+/* ===== الصفحة بالكامل ===== */
 body {
-  font-family: "Segoe UI", Tahoma, sans-serif;
-  background: #f5f6fa;
-  margin: 0;
-  padding: 20px;
+    margin: 0;
+    background: #f4f6fa;
+    background-image: url("https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png");
+    font-family: "Segoe UI", sans-serif;
 }
 
-h1 {
-  text-align: center;
-  color: #333;
+
+/* === TOPBAR === */
+.topbar {
+    width: 100%;
+    height: 65px;
+    background: rgba(135, 206, 250, 0.637);
+    display: flex;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-style: groove;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
 }
 
-/* ====== Layout Containers ====== */
-.username, .region, .generalinfo, .location, .risk, .action,
-.branchresponse, .branchremark, .wspcomment {
-  margin-bottom: 20px;
+/* زر Logout على اليسار */
+.logout-button {
+    background: #3c94e7;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: auto; /* ← يدفع العناصر الأخرى لليمين */
+}
+.logout-button:hover {
+    background: #c0392b;
 }
 
-.generalinfo, .branchresponse {
-  display: flex;
-  gap: 20px;
-  flex-wrap: wrap;
+/* === صندوق الـ Section بجانب الشعار === */
+.userinfo {
+    background: rgba(255, 255, 255, 0.733);
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #d0d0d0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    min-width: 140px;
+    margin-right: 10px;
 }
 
-.generalinfo div, .branchresponse div {
-  flex: 1;
-  min-width: 250px;
+.userinfo label{
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    
 }
 
-/* ====== Labels ====== */
-label, .infolabel {
-  display: block;
-  margin-bottom: 6px;
-  font-weight: bold;
-  color: #444;
+.userinfo input{
+    padding: 4px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
 }
 
-/* ====== Inputs & Selects ====== */
-input, select, textarea {
-  width: 100%;
-  padding: 8px 10px;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  font-size: 15px;
-  box-sizing: border-box;
+/* الشعار على أقصى اليمين */
+.logo {
+    
+    width:4%;
 }
 
-input[readonly] {
-  background: #eaeaea;
+
+
+/* =================== محتوى الصفحة ================== */
+.page-container {
+    margin-top: auto;
+    padding: 20px 40px;
 }
 
+/* عنوان الصفحة */
+form h1 {
+    text-align: center;
+    color: #333;
+    margin-top: 5%;
+    
+    
+  
+    
+}
+
+/* GRID للمعلومات */
+.generalinfo,
+.branchresponse {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin: 0 0;
+}
+
+/* كيانات فردية */
+.location,
+.risk,
+.action,
+.branchremark,
+.wspcomment {
+    margin: 20px 0;
+}
+
+/* تنسيق المدخلات */
+input,
+select,
 textarea {
-  resize: vertical;
-  min-height: 90px;
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #bbb;
+    border-radius: 5px;
+    font-size: 15px;
+    font-weight: bolder;
 }
 
-/* ====== File Input ====== */
-#filename {
-  margin-top: 5px;
-  font-size: 14px;
-  color: #555;
+/* textarea */
+textarea {
+    height: 80px;
+    resize: none;
+    font-size: 15px;
+    font-weight:bolder;
 }
 
-/* ====== Buttons ====== */
+/* الأزرار */
 .buttons {
-  display: flex;
-  gap: 15px;
-  margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin: 25px 0;
 }
 
-button {
-  padding: 10px 18px;
-  font-size: 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-}
-
+.wspbutton,
 .branchbutton {
-  background: #3498db;
-  color: white;
+    background: #3498db;
+    color: white;
+    padding: 10px 25px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
 }
 
-.wspbutton {
-  background: #27ae60;
-  color: white;
+.wspbutton:hover,
+.branchbutton:hover {
+    background: #21bb88;
 }
 
 #printReport {
-  margin-top: 15px;
-  background: #8e44ad;
-  color: white;
-  padding: 10px 18px;
-  border-radius: 5px;
-  cursor: pointer;
+    display: block;
+    margin: auto;
+    background: #27ae60;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
 }
 
-/* Hover Effects */
-button:hover {
-  opacity: 0.85;
+#printReport:hover {
+    background: #1e8c4c;
 }
-
-/* ===== Responsive Design ===== */
-@media (max-width: 768px) {
-  .generalinfo, .branchresponse {
-    flex-direction: column;
-  }
-}
-
