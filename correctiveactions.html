@@ -159,6 +159,37 @@
           filenameDiv.textContent = "No File";
         }
       });
+      ///تغيير لون background لل duration حسب قرب انتهاء الاجراء
+      function updateDurationBackground() {
+          const certifiedInput = document.getElementById("certifieddate");
+          const durationInput = document.getElementById("duration");
+      
+          const certifiedDate = new Date(certifiedInput.value);
+          const today = new Date();
+      
+          if (!certifiedDate || isNaN(certifiedDate)) return;
+      
+          // الفرق بالأيام
+          const diffTime = certifiedDate - today;
+          const diffDays = diffTime / (1000 * 60 * 60 * 24);
+      
+          // مثال: تحديد اللون بناءً على الأيام المتبقية
+          if (diffDays > 60) {          // أكثر من شهرين
+              durationInput.style.backgroundColor = "#d4edda"; // أخضر فاتح
+          } else if (diffDays > 30) {   // أقل من شهرين وأكثر من شهر
+              durationInput.style.backgroundColor = "#fff3cd"; // أصفر فاتح
+          } else if (diffDays >= 0) {   // أقل من شهر
+              durationInput.style.backgroundColor = "#f8d7da"; // أحمر فاتح
+          } else {                       // انتهى التاريخ
+              durationInput.style.backgroundColor = "#f5c6cb"; // أحمر داكن
+          }
+      }
+      
+      // استدعاء الدالة عند تحميل الصفحة
+      document.addEventListener("DOMContentLoaded", () => {
+          updateDurationBackground();
+      });
+
   
       let branchStations = [];
       let branchDates = [];
@@ -548,28 +579,25 @@
       const branch = document.getElementById("branch").value || "----";
       const station = document.getElementById("station").value || "----";
       const certifiedDate = document.getElementById("certifieddate").value || "----";
-         
   
       const locationSelect = document.getElementById("location");
       const detailsMap = locationSelect.detailsMap;
-      const approvedLocations = allLocations.filter(detail => detail.checkbox === false);
   
       if (!detailsMap || Object.keys(detailsMap).length === 0) {
           alert("No Data for Print!");
           return;
       }
-        
-      // جميع الإجراءات
-        const allLocations = Object.values(detailsMap) || [];
-        
-        
-        
-      if (approvedLocations.length === 0) {
-          alert("لا توجد مواقع معتمدة للطباعة!");
+  
+      // جميع المواقع (بدون فلترة)
+      const allLocations = Object.values(detailsMap) || [];
+  
+      // إذا لم توجد بيانات
+      if (allLocations.length === 0) {
+          alert("لا توجد بيانات للطباعة!");
           return;
       }
   
-      let rowsHtml = approvedLocations.map(detail => `
+      let rowsHtml = allLocations.map(detail => `
           <tr>
               <td>${detail.location || ""}</td>
               <td>${detail.risk || ""}</td>
@@ -579,8 +607,7 @@
               <td>${detail.notes || ""}</td>
           </tr>
       `).join("");
-
-        
+  
       const htmlContent = `
           <html>
           <head>
@@ -591,22 +618,19 @@
                   th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
                   th { background-color: #f0f0f0; }
                   h2 { text-align: center; }
-                  p { text-align: center;}
-                  /* تحديد أقل عرض لكل عمود (يمكن تعديلها كما تريد) */
-                  th:nth-child(1), td:nth-child(1) { width: 10%; } /* الموقع */
-                  th:nth-child(2), td:nth-child(2) { width: 15%; } /* الخطر */
-                  th:nth-child(3), td:nth-child(3) { width: 25%; } /* الإجراء التصحيحي */
-                  th:nth-child(4), td:nth-child(4) { width: 10%; } /* المدة */
-                  th:nth-child(5), td:nth-child(5) { width: 10%; } /* الموقف التنفيذي */
-                  th:nth-child(6), td:nth-child(6) { width: 25%; } /* الملاحظات */
+                  p { text-align: center; }
+                  th:nth-child(1), td:nth-child(1) { width: 10%; }
+                  th:nth-child(2), td:nth-child(2) { width: 15%; }
+                  th:nth-child(3), td:nth-child(3) { width: 25%; }
+                  th:nth-child(4), td:nth-child(4) { width: 10%; }
+                  th:nth-child(5), td:nth-child(5) { width: 10%; }
+                  th:nth-child(6), td:nth-child(6) { width: 25%; }
               </style>
           </head>
           <body>
               <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
-              <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;<strong>النظام:</strong> ${station} &nbsp;&nbsp <strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
-             
-              
-
+              <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;<strong>النظام:</strong> ${station} &nbsp;&nbsp;<strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
+  
               <table>
                   <thead>
                       <tr>
@@ -633,11 +657,13 @@
       printWindow.print();
   });
 
+
   </script>
 
   
 
 </body>
 </html>
+
 
 
