@@ -7,17 +7,15 @@
 
 </head>
 <body>
-  <body>
    <div class="topbar">
 
       <button class="logout-button" onclick="logout()">Logout</button>
 
-      <div class="userinfo">
+       <div class="userinfo">
              
             <label>Section</label>
             <input id="section" disabled>
-         
-      </div>
+       </div>
 
       <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
   </div>
@@ -186,9 +184,8 @@
       }
       
       // استدعاء الدالة عند تحميل الصفحة
-      document.addEventListener("DOMContentLoaded", () => {
-          updateDurationBackground();
-      });
+       certifiedDateInput.addEventListener("change", updateDurationBackground);
+
 
   
       let branchStations = [];
@@ -664,6 +661,7 @@
 
 </body>
 </html>
+
 
 
 
