@@ -192,7 +192,8 @@
       let branchDates = [];
   
         // ملء تفاصيل الموقع
-      function fillStationDetails(details) {
+      window.fillStationDetails = function(details) {
+
         locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
         locationSelect.detailsMap = {};
         details.forEach((detail, index) => {
@@ -687,6 +688,7 @@
 
 </body>
 </html>
+
 
 
 
