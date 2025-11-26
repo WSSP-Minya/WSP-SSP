@@ -495,6 +495,25 @@
       
             if (result.result === "Updated") {
               alert("تم تحديث البيانات بنجاح ✅");
+              // 🔄 تحديث قائمة المواقع بعد التحديث مباشرة
+              const currentStation = document.getElementById("station").value;
+              
+              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation))
+                  .then(res => res.json())
+                  .then(data => {
+                      if (data.status === "success") {
+                          fillStationDetails(data.details);
+              
+                          // إعادة اختيار نفس الموقع إذا رغبت
+                          if (locationText) {
+                              const keys = Object.keys(locationSelect.detailsMap);
+                              const foundKey = keys.find(k => locationSelect.detailsMap[k].location === locationText);
+                              if (foundKey) locationSelect.value = foundKey;
+                          }
+                      }
+                  })
+                  .catch(err => console.error("Error refreshing locations:", err));
+
               
                // 🔹 إذا كان الزر المستخدم هو WSP، نعرض رسالة اعتماد الاجراء
               if (event.target.classList.contains("wspbutton")) {
@@ -517,7 +536,14 @@
                       .then(res => res.json())
                       .then(res => {
                           if (res.result === "Approved") {
-                              alert("تم اعتماد الاجراء بنجاح ✅");                            
+                              alert("تم اعتماد الاجراء بنجاح ✅");
+                            ///تحديث lpcation بعد اعتماد الاجراء
+                              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation))
+                                .then(res => res.json())
+                                .then(data => {
+                                    if (data.status === "success") fillStationDetails(data.details);
+                                });
+
                           } else {
                               alert("حدث خطأ أثناء اعتماد الاجراء.");
                           }
@@ -661,6 +687,7 @@
 
 </body>
 </html>
+
 
 
 
