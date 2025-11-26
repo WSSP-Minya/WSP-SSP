@@ -172,3 +172,114 @@ h1{
   display: inline-flex;
   transform: translateX(450%);
 }
+
+/* ====== General Page Styling ====== */
+body {
+  font-family: "Segoe UI", Tahoma, sans-serif;
+  background: #f5f6fa;
+  margin: 0;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  color: #333;
+}
+
+/* ====== Layout Containers ====== */
+.username, .region, .generalinfo, .location, .risk, .action,
+.branchresponse, .branchremark, .wspcomment {
+  margin-bottom: 20px;
+}
+
+.generalinfo, .branchresponse {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.generalinfo div, .branchresponse div {
+  flex: 1;
+  min-width: 250px;
+}
+
+/* ====== Labels ====== */
+label, .infolabel {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: bold;
+  color: #444;
+}
+
+/* ====== Inputs & Selects ====== */
+input, select, textarea {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+input[readonly] {
+  background: #eaeaea;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 90px;
+}
+
+/* ====== File Input ====== */
+#filename {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* ====== Buttons ====== */
+.buttons {
+  display: flex;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+button {
+  padding: 10px 18px;
+  font-size: 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.branchbutton {
+  background: #3498db;
+  color: white;
+}
+
+.wspbutton {
+  background: #27ae60;
+  color: white;
+}
+
+#printReport {
+  margin-top: 15px;
+  background: #8e44ad;
+  color: white;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Hover Effects */
+button:hover {
+  opacity: 0.85;
+}
+
+/* ===== Responsive Design ===== */
+@media (max-width: 768px) {
+  .generalinfo, .branchresponse {
+    flex-direction: column;
+  }
+}
+
