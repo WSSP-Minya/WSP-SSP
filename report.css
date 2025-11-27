@@ -1,84 +1,142 @@
+/* ===== الصفحة بالكامل ===== */
 body {
-    font-family: Arial, sans-serif;
-    direction: rtl;
     margin: 0;
-    background: #f5f5f5;
+    background: #f4f6fa;
+    background-image: url("https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png");
+    font-family: "Segoe UI", sans-serif;
 }
 
-/* 🔵 TOPBAR */
+
+/* === TOPBAR === */
 .topbar {
     width: 100%;
-    background: #1a73e8;
-    color: white;
-    padding: 12px;
+    height: 65px;
+    background: rgba(135, 206, 250, 0.637);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-style: groove;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
 }
 
-/* اللوجو */
-.logo {
-    height: 50px;
+/* زر Logout على اليسار */
+.logout-button {
+    background: #3c94e7;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: auto; /* ← يدفع العناصر الأخرى لليمين */
+}
+.logout-button:hover {
+    background: #c0392b;
 }
 
-/* صندوق Section */
+/* === صندوق الـ Section بجانب الشعار === */
 .userinfo {
-    background: white;
-    padding: 8px 12px;
-    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.733);
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #d0d0d0;
     display: flex;
     align-items: center;
     gap: 8px;
-    color: #000;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    min-width: 140px;
+    margin-right: 10px;
 }
 
-.userinfo input {
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 4px 8px;
-}
-
-/* زر Logout */
-.logout-button {
-    background: #d9534f;
-    border: none;
-    padding: 8px 15px;
-    border-radius: 6px;
-    color: white;
-    cursor: pointer;
+.userinfo label{
+    font-size: 13px;
     font-weight: bold;
+    color: #333;
+    
 }
-.logout-button:hover {
-    background: #c9302c;
+
+.userinfo input{
+    padding: 4px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+}
+
+/* الشعار على أقصى اليمين */
+.logo {
+    
+    width:4%;
+}
+
+.generalinfo {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 h1 {
     text-align: center;
-    margin-top: 25px;
+    font-size: 24px;
+    margin-top: 5%;
 }
 
-/* general info */
-.generalinfo {
+.form-row {
     display: flex;
-    gap: 20px;
-    justify-content: center;
-    margin-top: 30px;
+    justify-content: space-between;
+    gap: 15px;
 }
 
-.generalinfo div {
-    display: flex;
-    flex-direction: column;
-    width: 220px;
+.form-field {
+    flex: 1;
 }
 
-.generalinfo input,
-.generalinfo select {
-    padding: 7px;
-    border: 1px solid #aaa;
-    border-radius: 6px;
+.infolabel {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
 }
 
-/* buttons */
-.buttons {
-    text-align: center;
-    margin-top: 40px
+select, input[type="date"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.form-buttons {
+    display: flex; /* عرض الأزرار في صف واحد */
+    justify-content: center; /* توزيع الأزرار عبر المساحة المتاحة */
+    gap: 2px; /* المسافة بين الأزرار */
+    margin-top: 20px;
+}
+
+#reportstation,
+#reportbranch,
+#reportall {
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #3c94e7;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+#reportstation:hover,
+#reportbranch:hover,
+#reportall:hover {
+    background-color: #45a049;
+}
+
+#reportstation:active,
+#reportbranch:active,
+#reportall:active {
+    background-color: #388e3c;
+}
