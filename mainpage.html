@@ -9,6 +9,10 @@
         <!-- زر Logout -->
         <div class="topbar">
             <button class="logout-button" onclick="logout()">Logout</button>
+            <div class="userinfo">
+                <label>Section</label>
+                <input id="section" disabled>
+            </div>
             <img class="logo" src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png">
         </div>
 
@@ -41,7 +45,8 @@
             </button> 
         </div>
         <script>
-            const department = sessionStorage.getItem("department");
+            const department = sessionStorage.getItem("department");     
+            document.getElementById("section").value = department || "";
             function AccessedToPage(pagename){
                 alert("Accessed to "+pagename);
                 window.location.href= pagename+".html";
@@ -76,6 +81,7 @@
 
 
 </html>
+
 
 
 
