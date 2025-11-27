@@ -64,6 +64,7 @@ body {
     border-radius: 4px;
     text-align:center;
     width:90px;
+    font-weight:bold;
 }
 
 /* الشعار على أقصى اليمين */
@@ -142,3 +143,18 @@ select, input[type="date"] {
 #reportall:active {
     background-color: #388e3c;
 }
+/* ===== متجاوب للشاشات الصغيرة ===== */
+@media (max-width: 768px) {
+    .buttonlabel {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+@media (max-width: 500px) {
+    .buttonlabel {
+        width: 90%;
+        height: 230px;
+    }
+}
+
