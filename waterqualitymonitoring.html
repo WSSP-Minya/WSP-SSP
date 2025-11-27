@@ -481,7 +481,15 @@
       link.click();
       document.body.removeChild(link);
     }
+
+    //  تسجيل الخروج
+    function logout() {
+        sessionStorage.clear(); // مسح بيانات الجلسة
+        alert("You have been logged out");
+        window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
+    }
 </script>
+
 
 
 
