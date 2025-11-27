@@ -218,9 +218,9 @@
 
           let status = (detail.status || "").trim();
           switch (true) {
-            case /تم/.test(status): status = "تم"; break;
-            case /جار/.test(status): status = "جارى"; break;
-            case /لم/.test(status): status = "لم يتم"; break;
+             case /تم/.test(status): status = "تم"; break;
+            case /جارى/.test(status): status = "جارى"; break;
+            case /لم يتم/.test(status): status = "لم يتم"; break;
             default: status = "";
           }
           statusSelect.value = status;
@@ -688,6 +688,7 @@
 
 </body>
 </html>
+
 
 
 
