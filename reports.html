@@ -2,19 +2,20 @@
 <html>
   <head>
     <title>Reports</title>
+    <link rel="stylesheet" href="report.css" />
    
   </head>
   <body>
      
-        <div class="username">
-          <label for="email" class="dislabel">Email</label>
-          <input id="email" value="" disabled>
-        </div>
-      
-        <div class="region">
-          <label for="section" class="dislabel">Section</label>
-          <input id="section" value="" disabled>
-        </div>
+      <div class="topbar">
+           <button class="logout-button" onclick="logout()">Logout</button>
+           <div class="userinfo"> 
+                <label>Section</label>
+                <input id="section" disabled>
+           </div>
+    
+           <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+      </div>
       
         <form onsubmit="return false;">
           <h1>Reports</h1>
@@ -783,6 +784,7 @@
   </body>
 
 </html>
+
 
 
 
