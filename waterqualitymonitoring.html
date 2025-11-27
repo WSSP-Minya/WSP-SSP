@@ -224,13 +224,7 @@
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
     
-      if (!email || !department) {
-        alert("يرجى تسجيل الدخول أولاً");
-        window.location = "login.html";
-        return;
-      }
-    
-      document.getElementById("username").value = email;
+      
       document.getElementById("section").value = department;
     
       if (department !== "WSP") {
@@ -487,6 +481,7 @@
       document.body.removeChild(link);
     }
 </script>
+
 
 
 
