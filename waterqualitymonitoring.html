@@ -13,16 +13,15 @@
 
 <body>
     <!-- المستخدم وعنوان الصفحة-->
-<div class="username">
-    <label for="username" class="dislabel" type="label">Email</label>
-    <input id="username" value="" disabled> 
-   
-</div>
-<div class="region">
-    <label for="section" class="dislabel" type="label">Section</label>
-    <input id="section" value="" disabled> 
-   
-</div>
+    <div class="topbar">
+           <button class="logout-button" onclick="logout()">Logout</button>
+           <div class="userinfo"> 
+                <label>Section</label>
+                <input id="section" disabled>
+           </div>
+    
+           <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+    </div>
 
 <br>
 <br>
@@ -488,6 +487,7 @@
       document.body.removeChild(link);
     }
 </script>
+
 
 
 
