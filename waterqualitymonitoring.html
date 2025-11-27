@@ -218,8 +218,9 @@
     
     // عند تحميل الصفحة
     window.onload = () => {
-      
+      email = sessionStorage.getItem("email");
       department = sessionStorage.getItem("department");
+        
     
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
@@ -481,6 +482,7 @@
       document.body.removeChild(link);
     }
 </script>
+
 
 
 
