@@ -64,6 +64,7 @@ body {
     border-radius: 4px;
     width:90px;
     text-align:center;
+    font-weight:bold;
 }
 
 /* الشعار على أقصى اليمين */
@@ -131,4 +132,5 @@ body {
         height: 230px;
     }
 }
+
 
