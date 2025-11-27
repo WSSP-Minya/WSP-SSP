@@ -64,6 +64,7 @@ body {
     border-radius: 4px;
     width:90px;
     text-align:center;
+    font-weight:bold;
 }
 
 /* الشعار على أقصى اليمين */
@@ -172,4 +173,18 @@ textarea {
 
 #printReport:hover {
     background: #1e8c4c;
+}
+/* ===== متجاوب للشاشات الصغيرة ===== */
+@media (max-width: 768px) {
+    .buttonlabel {
+        width: 220px;
+        height: 220px;
+    }
+}
+
+@media (max-width: 500px) {
+    .buttonlabel {
+        width: 90%;
+        height: 230px;
+    }
 }
