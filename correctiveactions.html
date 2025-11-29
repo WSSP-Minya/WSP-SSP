@@ -120,7 +120,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzz4hmsC6jC_FUgpfuo3HGrVVQvek0nThcwO3BhgtKNNBg_Nr_RE-6A0G80QTwr_wj8zw/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwVmG55Ira9zdlbR4uYR_97VeSLRY_oWySBZ_GuA0-WAnaHeY5E9FZt9YW0QU4-_EPdPg/exec";
     
   
     window.onload = () => {
@@ -197,6 +197,8 @@
         locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
         locationSelect.detailsMap = {};
         details.forEach((detail, index) => {
+          // تجاهل الصفوف التي تحتوي على WSP إذا المستخدم ليس WSP
+          if (department !== "WSP" && (detail.executor || "").trim() === "WSP"){ return;}
 
           const option = document.createElement("option");
           option.value = index;  // أرسل نص الموقع
@@ -689,6 +691,7 @@
 
 </body>
 </html>
+
 
 
 
