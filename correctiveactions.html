@@ -172,11 +172,11 @@
           const diffDays = diffTime / (1000 * 60 * 60 * 24);
       
           // مثال: تحديد اللون بناءً على الأيام المتبقية
-          if (diffDays > 60) {          // أكثر من شهرين
+          if (diffDays < 60) {          // أكثر من شهرين
               durationInput.style.backgroundColor = "#d4edda"; // أخضر فاتح
-          } else if (diffDays > 30) {   // أقل من شهرين وأكثر من شهر
+          } else if (diffDays < 30) {   // أقل من شهرين وأكثر من شهر
               durationInput.style.backgroundColor = "#fff3cd"; // أصفر فاتح
-          } else if (diffDays >= 0) {   // أقل من شهر
+          } else if (diffDays <= 0) {   // أقل من شهر
               durationInput.style.backgroundColor = "#f8d7da"; // أحمر فاتح
           } else {                       // انتهى التاريخ
               durationInput.style.backgroundColor = "#f5c6cb"; // أحمر داكن
@@ -688,6 +688,7 @@
 
 </body>
 </html>
+
 
 
 
