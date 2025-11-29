@@ -197,6 +197,10 @@
         locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
         locationSelect.detailsMap = {};
         details.forEach((detail, index) => {
+         // 🔹 تجاهل الصفوف التي تحتوي على "WSP" في عمود executor غير إذا كان المستخدم WSP
+        if (department !== "WSP" && (detail.executor || "").trim() === "WSP") {
+            return; // تخطي هذا الصف
+        }
           const option = document.createElement("option");
           option.value = index;  // أرسل نص الموقع
           option.textContent = detail.location || "Unnamed Location";
@@ -688,6 +692,7 @@
 
 </body>
 </html>
+
 
 
 
