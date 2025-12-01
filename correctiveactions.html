@@ -231,6 +231,10 @@
           riskInput.value = detail.risk || "";
           corractionInput.value = detail.corraction || "";
           durationInput.value = detail.duration || "";
+          certifiedDateInput.value = detail.certifieddate || ""; ////
+
+          // تحديث لون الـ duration بعد تعبئة البيانات
+          updateDurationBackground();
 
           let status = (detail.status || "").trim();
           switch (true) {
@@ -711,6 +715,7 @@
 
 </body>
 </html>
+
 
 
 
