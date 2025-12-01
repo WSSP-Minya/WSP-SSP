@@ -73,7 +73,7 @@
 
       
      <script>
-          const scriptURL = "https://script.google.com/macros/s/AKfycbwrLBbRp_FJ-jLlv7TdqhBueD3acmZjz8RXiglh--NyYrfhl_nHZn2ErTXV-xBYBiEfAg/exec";
+          const scriptURL = "https://script.google.com/macros/s/AKfycby2x5YYVS5VlI8zuRjecdVXGR3zIZMDGUjE1b1bAVl14pXsYh0ymvwtcBzx1tXL_RHf6A/exec";
     
   
           window.onload = () => {
@@ -136,10 +136,12 @@
                 });
             }
             // ملء تفاصيل الموقع
-            function fillStationDetails(details) {
+             window.fillStationDetails = function(details) {
               locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
               locationSelect.detailsMap = {};
               details.forEach((detail, index) => {
+                              
+               
                 const option = document.createElement("option");
                 option.value = index;  // أرسل نص الموقع
                 option.textContent = detail.location || "Unnamed Location";
@@ -161,9 +163,9 @@
       
                 let status = (detail.status || "").trim();
                 switch (true) {
-                  case /تم/.test(status): status = "تم"; break;
-                  case /جار/.test(status): status = "جارى"; break;
-                  case /لم/.test(status): status = "لم يتم"; break;
+                  case /^تم$/.test(status): status = "تم"; break;
+                  case /^جارى$/.test(status): status = "جارى"; break;
+                  case /^لم يتم$/.test(status): status = "لم يتم"; break;
                   default: status = "";
                 }
                 statusSelect.value = status;
@@ -704,6 +706,7 @@
   </body>
 
 </html>
+
 
 
 
