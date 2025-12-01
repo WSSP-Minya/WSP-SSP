@@ -159,36 +159,42 @@
       });
       ///تغيير لون background لل duration حسب قرب انتهاء الاجراء
       function updateDurationBackground() {
-          const certifiedInput = document.getElementById("certifieddate");
-          const durationInput = document.getElementById("duration");
-      
-          const certifiedDate = new Date(certifiedInput.value);
-          const today = new Date();
-      
-          if (!certifiedDate || isNaN(certifiedDate)) return;
-      
-          // الفرق بالأيام
-          const diffTime = certifiedDate - today;
-          const diffDays = diffTime / (1000 * 60 * 60 * 24);
-      
-          
-          // --------------- تغيير اللون بناءا على قرب انتهاء مده الاجراء ----------------
-          if (diffDays <= 0) {
-              durationInput.style.backgroundColor = "#f5c6cb"; // أحمر غامق — منتهي
-          } 
-          else if (diffDays <= 90) {
-              durationInput.style.backgroundColor = "#f8d7da"; // أحمر — أقل من 3 شهور
-          } 
-          else if (diffDays <= 180) {
-              durationInput.style.backgroundColor = "#fff3cd"; // أصفر — أقل من 6 شهور
-          } 
-          else {
-              durationInput.style.backgroundColor = "#d4edda"; // أخضر
-          }
-      }
-      
-      // استدعاء الدالة عند تحميل الصفحة
-       certifiedDateInput.addEventListener("change", updateDurationBackground);
+        const certifiedInput = document.getElementById("certifieddate");
+        const durationInput = document.getElementById("duration");
+    
+        if (!certifiedInput || !durationInput) return; // حماية
+    
+        if (!certifiedInput.value) return; // إذا لم يتم إدخال التاريخ
+    
+        const certifiedDate = new Date(certifiedInput.value);
+        const today = new Date();
+    
+        certifiedDate.setHours(0,0,0,0);
+        today.setHours(0,0,0,0);
+    
+        const diffTime = certifiedDate - today;
+        const diffDays = diffTime / (1000 * 60 * 60 * 24);
+    
+        // تغيير اللون
+        if (diffDays <= 0) {
+            durationInput.style.backgroundColor = "#f5c6cb"; // أحمر غامق
+        } 
+        else if (diffDays <= 90) {
+            durationInput.style.backgroundColor = "#f8d7da"; // أحمر فاتح
+        } 
+        else if (diffDays <= 180) {
+            durationInput.style.backgroundColor = "#fff3cd"; // أصفر
+        } 
+        else {
+            durationInput.style.backgroundColor = "#d4edda"; // أخضر
+        }
+    }
+    
+    // استدعاء الدالة عند تغيير التاريخ
+    document.getElementById("certifieddate").addEventListener("change", updateDurationBackground);
+    
+    // استدعاء الدالة عند تحميل الصفحة لعرض اللون مباشرة
+    updateDurationBackground();
 
 
   
@@ -704,6 +710,7 @@
 
 </body>
 </html>
+
 
 
 
