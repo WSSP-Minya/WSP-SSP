@@ -204,7 +204,7 @@
           // تجاهل الصفوف التي تحتوي على WSP إذا المستخدم ليس WSP
           if (department !== "WSP" && (detail.executor || "").trim() === "WSP"){ return;}
           // 2️⃣ تجاهل الصفوف التي checkbox = true إذا المستخدم ليس WSP
-          if (department !== "WSP" && detail.checkbox === true) { return;}
+          if (department === "WSP" && detail.checkbox === true) { return;}
 
           const option = document.createElement("option");
           option.value = index;  // أرسل نص الموقع
@@ -704,6 +704,7 @@
 
 </body>
 </html>
+
 
 
 
