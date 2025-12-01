@@ -157,6 +157,28 @@
           filenameDiv.textContent = "No File";
         }
       });
+      function parseDateSmart(dateStr) {
+          // إذا كان الشكل yyyy-mm-dd (شكل input type="date")
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+              const [y, m, d] = dateStr.split("-");
+              return new Date(y, m - 1, d);
+          }
+      
+          // إذا كان الشكل dd/mm/yyyy
+          if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+              const [d, m, y] = dateStr.split("/");
+              return new Date(y, m - 1, d);
+          }
+      
+          // إذا كان الشكل mm/dd/yyyy
+          if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+              const [m, d, y] = dateStr.split("/");
+              return new Date(y, m - 1, d);
+          }
+      
+          return new Date(dateStr); // fallback
+      }
+
       ///تغيير لون background لل duration حسب قرب انتهاء الاجراء
       function updateDurationBackground() {
           const certifiedInput = document.getElementById("certifieddate");
@@ -165,23 +187,24 @@
           if (!certifiedInput || !durationInput) return;
           if (!certifiedInput.value || !durationInput.value) return;
       
-          // تقسيم تاريخ Google Sheet (mm/dd/yyyy)
-          let parts = certifiedInput.value.split("/");
-          let certifiedDate = new Date(parts[2], parts[0] - 1, parts[1]);
+          // قراءة التاريخ بالصيغ المختلفة
+          let certifiedDate = parseDateSmart(certifiedInput.value);
+      
+          if (isNaN(certifiedDate.getTime())) {
+              console.log("❌ تاريخ غير صالح:", certifiedInput.value);
+              return;
+          }
       
           const durationMonths = parseInt(durationInput.value);
           if (isNaN(durationMonths)) return;
       
-          // حساب تاريخ نهاية المدة (بالشهور)
           let endDate = new Date(certifiedDate);
           endDate.setMonth(endDate.getMonth() + durationMonths);
       
-          // توحيد الوقت
           const today = new Date();
-          today.setHours(0, 0, 0, 0);
-          endDate.setHours(0, 0, 0, 0);
+          today.setHours(0,0,0,0);
+          endDate.setHours(0,0,0,0);
       
-          // حساب الفرق بالشهور
           let monthsLeft =
               (endDate.getFullYear() - today.getFullYear()) * 12 +
               (endDate.getMonth() - today.getMonth());
@@ -190,18 +213,17 @@
           console.log("End Date:", endDate);
           console.log("Months left:", monthsLeft);
       
-          // ----------------- التلوين حسب الشهور -----------------
           if (monthsLeft <= 0) {
-              durationInput.style.backgroundColor = "#f5c6cb"; // أحمر غامق — انتهى
+              durationInput.style.backgroundColor = "#f5c6cb"; // red
+          }
+          else if (monthsLeft <= 1) {
+              durationInput.style.backgroundColor = "#f8d7da"; // light red
           }
           else if (monthsLeft <= 3) {
-              durationInput.style.backgroundColor = "#f8d7da"; // أحمر — أقل من شهر
-          }
-          else if (monthsLeft <= 6) {
-              durationInput.style.backgroundColor = "#fff3cd"; // أصفر — أقل من 3 شهور
+              durationInput.style.backgroundColor = "#fff3cd"; // yellow
           }
           else {
-              durationInput.style.backgroundColor = "#d4edda"; // أخضر
+              durationInput.style.backgroundColor = "#d4edda"; // green
           }
       }
 
@@ -723,6 +745,7 @@
 
 </body>
 </html>
+
 
 
 
