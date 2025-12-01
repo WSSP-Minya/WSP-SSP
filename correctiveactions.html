@@ -191,7 +191,6 @@
           let certifiedDate = parseDateSmart(certifiedInput.value);
       
           if (isNaN(certifiedDate.getTime())) {
-              console.log("❌ تاريخ غير صالح:", certifiedInput.value);
               return;
           }
       
@@ -209,17 +208,14 @@
               (endDate.getFullYear() - today.getFullYear()) * 12 +
               (endDate.getMonth() - today.getMonth());
       
-          console.log("Certified:", certifiedDate);
-          console.log("End Date:", endDate);
-          console.log("Months left:", monthsLeft);
-      
+                
           if (monthsLeft <= 0) {
               durationInput.style.backgroundColor = "#7A0000"; // red
           }
-          else if (monthsLeft <= 1) {
+          else if (monthsLeft <= 3) {
               durationInput.style.backgroundColor = "#f8d7da"; // light red
           }
-          else if (monthsLeft <= 3) {
+          else if (monthsLeft <= 12) {
               durationInput.style.backgroundColor = "#fff3cd"; // yellow
           }
           else {
@@ -745,6 +741,7 @@
 
 </body>
 </html>
+
 
 
 
