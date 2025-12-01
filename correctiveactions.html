@@ -120,7 +120,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbwrLBbRp_FJ-jLlv7TdqhBueD3acmZjz8RXiglh--NyYrfhl_nHZn2ErTXV-xBYBiEfAg/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycby2x5YYVS5VlI8zuRjecdVXGR3zIZMDGUjE1b1bAVl14pXsYh0ymvwtcBzx1tXL_RHf6A/exec";
     
   
     window.onload = () => {
@@ -171,15 +171,19 @@
           const diffTime = certifiedDate - today;
           const diffDays = diffTime / (1000 * 60 * 60 * 24);
       
-          // مثال: تحديد اللون بناءً على الأيام المتبقية
-          if (diffDays < 60) {          // أكثر من شهرين
-              durationInput.style.backgroundColor = "#d4edda"; // أخضر فاتح
-          } else if (diffDays < 30) {   // أقل من شهرين وأكثر من شهر
-              durationInput.style.backgroundColor = "#fff3cd"; // أصفر فاتح
-          } else if (diffDays <= 0) {   // أقل من شهر
-              durationInput.style.backgroundColor = "#f8d7da"; // أحمر فاتح
-          } else {                       // انتهى التاريخ
-              durationInput.style.backgroundColor = "#f5c6cb"; // أحمر داكن
+          
+          // --------------- تغيير اللون بناءا على قرب انتهاء مده الاجراء ----------------
+          if (diffDays <= 0) {
+              durationInput.style.backgroundColor = "#f5c6cb"; // أحمر غامق — منتهي
+          } 
+          else if (diffDays <= 90) {
+              durationInput.style.backgroundColor = "#f8d7da"; // أحمر — أقل من 3 شهور
+          } 
+          else if (diffDays <= 180) {
+              durationInput.style.backgroundColor = "#fff3cd"; // أصفر — أقل من 6 شهور
+          } 
+          else {
+              durationInput.style.backgroundColor = "#d4edda"; // أخضر
           }
       }
       
@@ -700,6 +704,7 @@
 
 </body>
 </html>
+
 
 
 
