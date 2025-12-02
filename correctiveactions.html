@@ -476,8 +476,9 @@
         formData.append("email", email);
         formData.append("department", currentDepartment);
        // في formData نرسل القيمة مباشرة
-        formData.append("location", locationText); // نص الموقع
-        formData.append("risk", riskText); // الخطر المرتبط تلقائيًا
+        formData.append("location", locationText.trim()); // نص الموقع
+        formData.append("risk", riskText.trim()); // الخطر المرتبط تلقائيًا
+        
         formData.append("corraction", document.getElementById("corraction").value);
         formData.append("duration", document.getElementById("duration").value);
         formData.append("status", document.getElementById("status").value);
@@ -746,6 +747,7 @@
 
 </body>
 </html>
+
 
 
 
