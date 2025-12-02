@@ -120,7 +120,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxhYkA8HmxuCQnUXfYzvhczjGTqWKJOcKRXOyzwaWgq4r_BM5GuVqPBGQMIWBTOPuQAQQ/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwAlskQzAffvUqkgs7TV9Rts9vTINzuzaix1CuJx22iFbqO9rySatxG9O69p6N-wqGHwA/exec";
     
   
     window.onload = () => {
@@ -451,10 +451,16 @@
     
         // 📝 نص الموقع الحقيقي
         const locationText = detail.location;
+        // 📝 الخطر المرتبط تلقائيًا بالموقع
+        const riskText = detail.risk;
+
+        // في formData نرسل القيمة مباشرة
+        formData.append("location", locationText); // نص الموقع
+        formData.append("risk", riskText); // الخطر المرتبط تلقائيًا
+
     
         if (action === "update" && 
             (!locationText ||
-             !riskInput.value ||
              !corractionInput.value ||
              !durationInput.value)) {
           alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
@@ -471,8 +477,9 @@
         formData.append("station", document.getElementById("station").value);
         formData.append("email", email);
         formData.append("department", currentDepartment);
-        formData.append("location", locationText); // ✅ هنا نص الموقع
-        formData.append("risk", document.getElementById("risk").value);
+       // في formData نرسل القيمة مباشرة
+        formData.append("location", locationText); // نص الموقع
+        formData.append("risk", riskText); // الخطر المرتبط تلقائيًا
         formData.append("corraction", document.getElementById("corraction").value);
         formData.append("duration", document.getElementById("duration").value);
         formData.append("status", document.getElementById("status").value);
@@ -741,6 +748,7 @@
 
 </body>
 </html>
+
 
 
 
