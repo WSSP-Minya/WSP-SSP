@@ -934,8 +934,10 @@
                 let filtered = [];
     
                 detailsData.details.forEach(det => {
-                    if (department === "WSP" && detail.checkbox === true) { return;}
-    
+                  // تجاهل الصفوف التي checkbox فيها true
+                  if (det.checkbox === true) return;
+
+                       
                     const durationMonths = parseInt(det.duration);
     
                     if (isNaN(durationMonths)) return;
@@ -1018,6 +1020,7 @@
   </body>
 
 </html>
+
 
 
 
