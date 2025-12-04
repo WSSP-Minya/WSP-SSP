@@ -699,6 +699,167 @@
           alert("You have been logged out");
           window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
         }
+       
+        ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
+         document.getElementById("reportwspcomments").addEventListener("click", () => {
+          const branch = document.getElementById("branch").value || "----";
+          const station = document.getElementById("station").value || "----";
+          const certifiedDate = document.getElementById("certifieddate").value || "----";
+      
+          const locationSelect = document.getElementById("location");
+          const detailsMap = locationSelect.detailsMap;
+      
+          if (!detailsMap || Object.keys(detailsMap).length === 0) {
+              alert("No Data for Print!");
+              return;
+          }
+      
+          const allLocations = Object.values(detailsMap) || [];
+      
+          const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
+          const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+          const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+          const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+      
+          if (allLocations.length === 0) {
+              alert("لا توجد بيانات للطباعة!");
+              return;
+          }
+      
+          let rowsHtml = allLocations.map(detail => {
+              // تغيير لون الصف حسب حالة التنفيذ
+              let rowColor = "";
+              if (detail.status?.trim() === "جارى") rowColor = "background-color:#fff3cd;"; // أصفر فاتح
+              else if (detail.status?.trim() === "لم يتم") rowColor = "background-color:#f8d7da;"; // أحمر فاتح
+      
+              return `
+              <tr style="${rowColor}">
+                  <td>${detail.location || ""}</td>
+                  <td>${detail.risk || ""}</td>
+                  <td>${detail.corraction || ""}</td>
+                  <td>${detail.duration || ""}</td>
+                  <td>${detail.status || ""}</td>
+                  <td>${detail.wspcomment || ""}</td>
+              </tr>
+              `;
+          }).join("");
+      
+          const htmlContent = `
+              <html>
+              <head>
+                  <title>تقرير مرور</title>
+                  <style>
+                      body {font-family: Arial, sans-serif; direction: rtl; text-align: right; margin: 20px;}
+                      h2 {text-align: center;margin-bottom: 10px;}
+                      p {text-align: center; margin-bottom: 20px; font-size: 16px;}
+                      table {
+                          width: 100%;
+                          border-collapse: collapse;
+                          margin-bottom: 30px;
+                      }
+                      th, td {
+                          border: 1px solid #000;
+                          padding: 8px;
+                          text-align: center;
+                          word-wrap: break-word;
+                      }
+                      th {
+                          background-color: #f0f0f0;
+                          color: black;
+                          font-weight: bold;
+                      }
+                      tr:nth-child(even) td {
+                          background-color: #f9f9f9;
+                      }
+                      .logo-container {
+                          text-align: right; /* محاذاة الصور لليمين */
+                          margin-bottom: 20px;
+                          display: flex;
+                          justify-content: flex-start; /* محاذاة الصور لليمين */
+                          gap: 10px;
+                      }
+                      .logo-container img {
+                          width: 80px; /* تغيير الحجم حسب الحاجة */
+                          margin-top: 5px;
+                      }
+                      .summary-table th {
+                          background-color: #dcdcdc;
+                          font-weight: bold;
+                      }
+                      .summary-table td {
+                          text-align: center;
+                          padding: 10px;
+                      }
+                      .content-section {
+                          margin-top: 20px;
+                      }
+                  </style>
+              </head>
+              <body>
+                  <div class="logo-container">
+                      <img src="https://wssp.hcww.com.eg/public/company_logo/menia.png" alt="logo">
+                      <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" alt="logo">
+                  </div>
+                  <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
+                  <p>
+                      <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
+                      <strong>النظام:</strong> ${station} &nbsp;&nbsp;
+                      <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
+                  </p>
+      
+                  <!-- جدول الإحصائيات -->
+                  <div class="content-section">
+                      <h3>ملخص الموقف التنفيذى للإجراءات التصحيحية</h3>
+                      <table class="summary-table">
+                          <thead>
+                              <tr>
+                                  <th>عدد الإجراءات التصحيحية</th>
+                                  <th>عدد الإجراءات المنفذة</th>
+                                  <th>عدد الإجراءات الجارية</th>
+                                  <th>عدد الإجراءات لم يتم التنفيذ</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              <tr>
+                                  <td>${totalActionsCount}</td>
+                                  <td>${doneActionsCount}</td>
+                                  <td>${inProgressActionsCount}</td>
+                                  <td>${notDoneActionsCount}</td>
+                              </tr>
+                          </tbody>
+                      </table>
+                  </div>
+      
+                  <!-- جدول التفاصيل -->
+                  <div class="content-section">
+                      <h3>تفاصيل الإجراءات التصحيحية</h3>
+                      <table>
+                          <thead>
+                              <tr>
+                                  <th>الموقع</th>
+                                  <th>الخطر</th>
+                                  <th>الإجراء التصحيحي</th>
+                                  <th>المدة الزمنية</th>
+                                  <th>الموقف التنفيذي</th>
+                                  <th>ملاحظات WSP</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              ${rowsHtml}
+                          </tbody>
+                      </table>
+                  </div>
+              </body>
+              </html>
+          `;
+      
+          const printWindow = window.open('', '', 'height=700,width=900');
+          printWindow.document.write(htmlContent);
+          printWindow.document.close();
+          printWindow.focus();
+          printWindow.print();
+      });
+
   
 
 
@@ -706,6 +867,7 @@
   </body>
 
 </html>
+
 
 
 
