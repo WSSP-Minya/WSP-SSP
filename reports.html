@@ -863,6 +863,17 @@
       });
 
        // تقرير لمحطات الفرع عن الاجراءات التى قاربت مدة انتهائها
+       function parseDateSmart(dateStr) {
+          if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) {
+              const [y, m, d] = dateStr.split("-");
+              return new Date(y, m - 1, d);
+          }
+          if (/^\d{2}\/\d{2}\/\d{4}$/.test(dateStr)) {
+              const [d, m, y] = dateStr.split("/");
+              return new Date(y, m - 1, d);
+          }
+          return new Date(dateStr);
+      }
        document.getElementById("reportdeadlinebranch").addEventListener("click", async () => {
 
         const branchSelect = document.getElementById("branch");
@@ -1006,6 +1017,7 @@
   </body>
 
 </html>
+
 
 
 
