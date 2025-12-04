@@ -68,6 +68,7 @@
                 <button type="button" id="reportbranch" >Report Branch</button>
                 <button type="button" id="reportall" >Report All</button>
                 <button type="button" id="reportwspcomments" >Report WSP</button>
+                <button type="button" id="reportdeadlinebranch" >Report Deadline</button>
             </div>
       </form>
 
@@ -860,14 +861,179 @@
           printWindow.focus();
           printWindow.print();
       });
-
-  
-
+       //طابعة
+      document.getElementById("reportdeadlinebranch").addEventListener("click", async () => {
+        const branch = document.getElementById("branch").value || "----";
+    
+        // جلب جميع المحطات للفرع من السيرفر
+        const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+        const stationsData = await stationsResponse.json();
+    
+        if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
+            alert("لا توجد محطات لهذا الفرع للطباعة!");
+            return;
+        }
+    
+        let htmlContent = `
+            <html>
+            <head>
+                <title>تقرير الاعتماد لكل المحطات</title>
+                <style>
+                    body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                    th { background-color: #f0f0f0; }
+                    h2, h3 { text-align: center; }
+                    .logo-container {
+                        text-align: center;
+                        margin-bottom: 20px;
+                        margin-left:100%;
+                        display: flex;
+                        gap: 5px;
+                    }
+                
+                    .logo-container img {
+                        width: 60px;
+                    }
+                </style>
+            </head>
+            <body>
+                <div class="logo-container">
+                    <img src="https://wssp.hcww.com.eg/public/company_logo/menia.png" alt="logo">
+                    <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" alt="logo">
+                </div>
+                <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات فرع: ${branch}</h2>
+        `;
+    
+        // --------- جدول الملخص لجميع المحطات ---------
+        htmlContent += `
+            <h3>ملخص جميع المحطات</h3>
+            <table>
+                <tr>
+                    <th>المحطة</th>
+                    <th>إجمالي الإجراءات</th>
+                    <th>المنفذ</th>
+                    <th>الجارية</th>
+                    <th>لم يتم التنفيذ</th>
+                </tr>
+        `;
+    
+        const allDetailsPerStation = {}; // لتخزين التفاصيل لكل محطة
+    
+        // فلتر الإجراءات التصحيحية التي قربت مدتها من الانتهاء (أقل من 3 شهور)
+        const filterActionsCloseToExpiry = (actions) => {
+            const currentDate = new Date();
+            const thresholdMonths = 3; // 3 شهور
+            return actions.filter(action => {
+                const duration = action.duration; // نفترض أن "duration" هو تاريخ النهاية
+                if (!duration) return false; // إذا لم يكن هناك مدة، يتم تجاهل هذا الإجراء
+    
+                const endDate = new Date(duration); // تحويل المدة إلى تاريخ
+                const diffTime = endDate - currentDate; // الفرق بين الوقت الحالي ووقت الانتهاء
+                const diffMonths = diffTime / (1000 * 3600 * 24 * 30); // تحويل الفرق إلى شهور
+    
+                return diffMonths <= thresholdMonths; // إذا كانت المدة المتبقية 3 شهور أو أقل
+            });
+        };
+    
+        // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
+        const stationPromises = stationsData.stations.map(async (station) => {
+            const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+            const detailsData = await detailsResponse.json();
+    
+            let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+    
+            if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
+                const allLocations = detailsData.details;
+    
+                // تصفية الإجراءات القريبة من الانتهاء
+                const filteredActions = filterActionsCloseToExpiry(allLocations);
+    
+                totalActions = filteredActions.length;
+                doneActions = filteredActions.filter(item => item.status?.trim() === "تم").length;
+                inProgressActions = filteredActions.filter(item => item.status?.trim() === "جارى").length;
+                notDoneActions = filteredActions.filter(item => item.status?.trim() === "لم يتم").length;
+    
+                // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
+                allDetailsPerStation[station] = filteredActions;
+            }
+    
+            return { station, totalActions, doneActions, inProgressActions, notDoneActions };
+        });
+    
+        const stationSummary = await Promise.all(stationPromises);
+    
+        // إضافة بيانات المحطات في جدول الملخص
+        stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+            htmlContent += `
+                <tr>
+                    <td>${station}</td>
+                    <td>${totalActions}</td>
+                    <td>${doneActions}</td>
+                    <td>${inProgressActions}</td>
+                    <td>${notDoneActions}</td>
+                </tr>
+            `;
+        });
+    
+        htmlContent += `</table>`;
+    
+        // --------- الجداول التفصيلية لكل محطة ---------
+        // إضافة التفاصيل لكل محطة باستخدام البيانات المخزنة في allDetailsPerStation
+        for (const station of Object.keys(allDetailsPerStation)) {
+            const filteredLocations = allDetailsPerStation[station];
+    
+            if (filteredLocations.length > 0) {
+                const detailRowsHtml = filteredLocations.map(detail => `
+                    <tr>
+                        <td>${detail.location || ""}</td>
+                        <td>${detail.risk || ""}</td>
+                        <td>${detail.corraction || ""}</td>
+                        <td>${detail.duration || ""}</td>
+                        <td>${detail.status || ""}</td>
+                    </tr>
+                `).join("");
+    
+                htmlContent += `
+                    <h4>تفاصيل الإجراءات القريبة من الانتهاء لكل موقع في محطة: ${station}</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>الموقع</th>
+                                <th>الخطر</th>
+                                <th>الإجراء التصحيحي</th>
+                                <th>المدة الزمنية</th>
+                                <th>الموقف التنفيذي</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${detailRowsHtml}
+                        </tbody>
+                    </table>
+                `;
+            }
+        }
+    
+        htmlContent += `</body></html>`;
+    
+        // فتح نافذة الطباعة
+        const printWindow = window.open('', '', 'height=800,width=1000');
+        if (!printWindow) {
+            alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+            return;
+        }
+    
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+    });
 
      </script>
   </body>
 
 </html>
+
 
 
 
