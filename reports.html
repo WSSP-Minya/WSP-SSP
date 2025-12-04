@@ -210,7 +210,8 @@
                 .catch(err => console.error("Error fetching station details:", err));
             });
           };
-         
+  /////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////
           ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
          document.getElementById("reportstation").addEventListener("click", () => {
           const branch = document.getElementById("branch").value || "----";
@@ -370,7 +371,7 @@
       });
 
 
-        ///////كل المحطات
+        /////////////////////////////// كل المحطات الفرع الواحد المختار
         document.getElementById("reportbranch").addEventListener("click", async () => {
             const branch = document.getElementById("branch").value || "----";
         
@@ -517,7 +518,7 @@
             printWindow.print();
         });
 
-        /////تقرير مجمع للفروع كلها
+       //////////////////////تقرير مجمع للفروع كلها
             
             document.getElementById("reportall").addEventListener("click", async () => {
               const branchSelect = document.getElementById("branch");
@@ -701,8 +702,9 @@
           alert("You have been logged out");
           window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
         }
-       
-        ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
+  /////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////       
+        /////////////طباعة تقرير ملاحظات WSP  الاجراءات التصحيحية لمحطة واحدة
          document.getElementById("reportwspcomments").addEventListener("click", () => {
           const branch = document.getElementById("branch").value || "----";
           const station = document.getElementById("station").value || "----";
@@ -861,7 +863,8 @@
           printWindow.focus();
           printWindow.print();
       });
-
+  /////////////////////////////////////////////////////////////////////////////////////////////
+ /////////////////////////////////////////////////////////////////////////////////////////////
        // تقرير لمحطات الفرع عن الاجراءات التى قاربت مدة انتهائها
       // دالة مساعدة لتحليل التواريخ من صيغ مختلفة
       function parseDateSmart(dateStr) {
@@ -889,19 +892,34 @@
           let htmlContent = `
           <html>
           <head>
-              <title>تقرير الإجراءات قاربت على الانتهاء</title>
+              <title>تقرير الإجراءات شارفت على انتهاء مدتها</title>
               <style>
                   body { font-family: Arial; direction: rtl; text-align: right; }
                   table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                   th, td { border: 1px solid #000; padding: 6px; }
                   th { background-color: #f0f0f0; }
                   h2, h3 { text-align: center; }
+                  .logo-container {
+                          text-align: right; /* محاذاة الصور لليمين */
+                          margin-bottom: 20px;
+                          display: flex;
+                          justify-content: flex-start; /* محاذاة الصور لليمين */
+                          gap: 10px;
+                      }
+                      .logo-container img {
+                          width: 80px; /* تغيير الحجم حسب الحاجة */
+                          margin-top: 5px;
+                      }
                   .red { background:#7A0000; color:white; }
                   .lightred { background:#f8d7da; }
               </style>
           </head>
           <body>
-              <h2>تقرير الإجراءات التي انتهت أو قاربت على الانتهاء</h2>
+              <div class="logo-container">
+                 <img src="https://wssp.hcww.com.eg/public/company_logo/menia.png" alt="logo">
+                 <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" alt="logo">
+              </div>
+              <h2>تقرير بالإجراءات شارفت على انتهاء مدتها والمنتهية</h2>
           `;
       
           const today = new Date();
@@ -1010,6 +1028,7 @@
   </body>
 
 </html>
+
 
 
 
