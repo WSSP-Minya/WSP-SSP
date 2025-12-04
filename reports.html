@@ -931,11 +931,11 @@
       
                   let filtered = [];
       
-                  detailsData.details.forEach(det => {
+                  detailsData.details.forEach(detail => {
                       // تجاهل الصفوف التي فيها checkbox=true
-                      if (det.checkbox === true) return;
+                      if (detail.checkbox === true) return;
       
-                      const durationMonths = parseInt(det.duration);
+                      const durationMonths = parseInt(detail.duration);
                       if (isNaN(durationMonths)) return;
       
                       let endDate = new Date(certifiedDate);
@@ -948,9 +948,9 @@
       
                       // المطلوب فقط (≤ 3)
                       if (monthsLeft <= 3) {
-                          det.monthsLeft = monthsLeft;
-                          det.endDate = endDate.toISOString().slice(0,10);
-                          filtered.push(det);
+                          detail.monthsLeft = monthsLeft;
+                          detail.endDate = endDate.toISOString().slice(0,10);
+                          filtered.push(detail);
                       }
                   });
       
@@ -963,25 +963,24 @@
                               <th>الموقع</th>
                               <th>الخطر</th>
                               <th>الإجراء التصحيحي</th>
-                              <th>المدة (شهور)</th>
                               <th>تاريخ الانتهاء</th>
-                              <th>متبقي (شهور)</th>
                               <th>الموقف</th>
+                              <th>ملاحظات WSP</th>
                           </tr>
                   `;
       
-                  filtered.forEach(det => {
-                      let rowClass = (det.monthsLeft <= 0) ? "red" : "lightred";
+                  filtered.forEach(detail => {
+                      let rowClass = (detail.monthsLeft <= 0) ? "red" : "lightred";
       
                       htmlContent += `
                           <tr class="${rowClass}">
-                              <td>${det.location || ""}</td>
-                              <td>${det.risk || ""}</td>
-                              <td>${det.corraction || ""}</td>
-                              <td>${det.duration}</td>
-                              <td>${det.endDate}</td>
-                              <td>${det.monthsLeft}</td>
-                              <td>${det.status || ""}</td>
+                              <td>${detail.location || ""}</td>
+                              <td>${detail.risk || ""}</td>
+                              <td>${detail.corraction || ""}</td>
+                              <td>${detail.endDate}</td>
+                              <td>${detail.status || ""}</td>
+                              <td>${detail.wspcomment}</td>
+                              
                           </tr>
                       `;
                   });
@@ -1011,6 +1010,7 @@
   </body>
 
 </html>
+
 
 
 
