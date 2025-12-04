@@ -877,8 +877,13 @@
        document.getElementById("reportdeadlinebranch").addEventListener("click", async () => {
 
         const branchSelect = document.getElementById("branch");
-        const branchOptions = Array.from(branchSelect.options)
-            .filter(opt => opt.value && opt.value !== "----");
+        const selectedBranch = branchSelect.value;
+        
+        if (!selectedBranch || selectedBranch === "----") {
+            alert("يرجى اختيار فرع!");
+            return;
+        }
+
     
         if (branchOptions.length === 0) {
             alert("لا توجد فروع للطباعة!");
@@ -1020,6 +1025,7 @@
   </body>
 
 </html>
+
 
 
 
