@@ -934,6 +934,7 @@
                 let filtered = [];
     
                 detailsData.details.forEach(det => {
+                    if (department === "WSP" && detail.checkbox === true) { return;}
     
                     const durationMonths = parseInt(det.duration);
     
@@ -1017,6 +1018,7 @@
   </body>
 
 </html>
+
 
 
 
