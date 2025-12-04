@@ -6,71 +6,141 @@
    
   </head>
   <body>
-     
       <div class="topbar">
            <button class="logout-button" onclick="logout()">Logout</button>
            <div class="userinfo"> 
                 <label>Section</label>
                 <input id="section" disabled>
-           </div>
-    
-           <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+            </div>
+          
+            <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
       </div>
       
-      <form onsubmit="return false;">
-          <h1>Reports</h1>
-          <br><br>
+      <h1 style="text-align:center;">Reports</h1>
       
-          <div class="generalinfo">
-            <div>
-              <label class="infolabel">Branch</label>
-              <select id="branch">
-                <option value="" selected disabled>Select Branch</option>
-                <option value="العدوه">العدوه</option>
-                <option value="مغاغة">مغاغة</option>
-                <option value="بنى مزار">بنى مزار</option>
-                <option value="مطاى">مطاى</option>
-                <option value="سمالوط">سمالوط</option>
-                <option value="المنيا">المنيا</option>
-                <option value="ابوقرقاص">ابوقرقاص</option>
-                <option value="ملوى">ملوى</option>
-                <option value="ديرمواس">ديرمواس</option>
-              </select>
-            </div>
+      <!-- قسم الإجراءات التصحيحية -->
+      <h2>Corrective Actions Reports</h2>
+      <div class="grid">
+          <div class="card" onclick="openModal('modal1')"> 
+              <div class="icon">
+                  <img src="https://cdn-icons-png.flaticon.com/512/9503/9503512.png" alt="executionstatus">
+              </div> 
+              Execution Status
+          </div>
+          <div class="card" onclick="openModal('modal2')"> 
+              <div class="icon">
+                  <img src="https://e7.pngegg.com/pngimages/368/153/png-clipart-business-illustration-audit-report-business-glass-hand.png" alt="wspaudition">
+              </div> 
+              WSP Audition
+          </div>
+          <div class="card" onclick="openModal('modal3')"> 
+              <div class="icon">
+                  <img src="https://cdn-icons-png.flaticon.com/512/1479/1479689.png" alt="deadlinetimeaction">
+              </div> 
+              Deadline Time Action
+          </div>
+           <div class="card" onclick="openModal('modal4')"> 
+              <div class="icon">
+                  <img src="https://us.123rf.com/450wm/dezydezy/dezydezy1710/dezydezy171000039/88027503-customer-satisfaction-meter-vector-satisfaction-feedback-scale-vector.jpg?ver=6" alt="performanceindex">
+              </div> 
+              Performance Index
+          </div>
+      </div>
       
-            <div>
-              <label class="infolabel">Station</label>
-              <select id="station">
-                <option value="" selected disabled>Select Station</option>
-              </select>
-            </div>
-            <div>
-              <label class="infolabel">Certified Date</label>
-              <input type="date" id="certifieddate" readonly>
-            </div>
-            <div hidden>
-              <label>Status</label>
-              <select id="status">
-                <option value="" selected disabled>Select Status</option>
-                <option value="تم">تم</option>
-                <option value="جارى">جارى</option>
-                <option value="لم يتم">لم يتم</option>
-              </select>
-            </div>
-            <div class="location" hidden>
-              <label>Location</label>
-              <select id="location">
-                <option value="">Select Location</option>
-              </select>
-            </div>
-            <div class="form-buttons">
-                <button type="button" id="reportstation" >Report Station</button>
-                <button type="button" id="reportbranch" >Report Branch</button>
-                <button type="button" id="reportall" >Report All</button>
-                <button type="button" id="reportwspcomments" >Report WSP</button>
-                <button type="button" id="reportdeadlinebranch" >Report Deadline</button>
-            </div>
-      </form>
+      <!-- قسم جودة المياه -->
+      <h2>Raw Water Quality Monitoring</h2>
+      <div class="grid" >
+          <div class="card" onclick="openModal('modal8')" hidden> <div class="icon"></div> </div>
+          
+      </div>
+      
+      <!-- مودالات 11 تقرير -->
+      <div id="modal1" class="modal">
+          <div class="modal-content">
+              <span class="close" onclick="closeModal('modal1')">&times;</span>
+              <h3 class="modal-title">Execution Status Reports</h3>
+              <form onsubmit="return false;">
+                  <div class="generalinfo">
+                      <label>Branch</label>
+                      <select id="branch_modal1">
+                          <option selected disabled>Select Branch</option>
+                          <option>العدوه</option>
+                          <option>مغاغة</option>
+                          <option>بنى مزار</option>
+                          <option>مطاى</option>
+                          <option>سمالوط</option>
+                          <option>المنيا</option>
+                          <option>ابوقرقاص</option>
+                          <option>ملوى</option>
+                          <option>ديرمواس</option>
+                      </select>
+      
+                      <label>Station</label>
+                      <select id="station_modal1"><option selected disabled>Select Station</option></select>
+      
+                      <label>Certified Date</label>
+                      <input type="date" id="certifieddate_modal1" readonly>
+                  </div>
+                  <div class="form-buttons">
+                      <button type="button" id="reportstation">Report Station</button>
+                      <button type="button" id="reportbranch">Report Branch</button>
+                      <button type="button" id="reportall">Report All</button>
+                      
+                      
+                  </div>
+              </form>
+          </div>
+      </div>
+      
+      <div id="modal2" class="modal">
+          <div class="modal-content">
+              <span class="close" onclick="closeModal('modal2')">&times;</span>
+              <h3 class="modal-title">WSP Auditions</h3>
+              <form onsubmit="return false;">
+                  <div class="generalinfo">
+                      <label>Branch</label>
+                      <select id="branch_modal2">
+                          <option selected disabled>Select Branch</option>
+                          <option>العدوه</option><option>مغاغة</option><option>بنى مزار</option>
+                          <option>مطاى</option><option>سمالوط</option><option>المنيا</option>
+                          <option>ابوقرقاص</option><option>ملوى</option><option>ديرمواس</option>
+                      </select>
+      
+                      <label>Station</label>
+                      <select id="station_modal2"><option selected disabled>Select Station</option></select>
+                  </div>
+                  <div class="form-buttons">
+                      <button type="button" id="reportwsp">Report WSP</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+      
+      <div id="modal3" class="modal">
+          <div class="modal-content">
+              <span class="close" onclick="closeModal('modal3')">&times;</span>
+              <h3 class="modal-title">Deadline Time Action</h3>
+              <form onsubmit="return false;">
+                  <div class="generalinfo">
+                      <label>Branch</label>
+                      <select id="branch_modal2">
+                          <option selected disabled>Select Branch</option>
+                          <option>العدوه</option><option>مغاغة</option><option>بنى مزار</option>
+                          <option>مطاى</option><option>سمالوط</option><option>المنيا</option>
+                          <option>ابوقرقاص</option><option>ملوى</option><option>ديرمواس</option>
+                      </select>
+      
+                      <label>Station</label>
+                      <select id="station_modal2"><option selected disabled>Select Station</option></select>
+                  </div>
+                  <div class="form-buttons">
+                      <button type="button" id="reportdeadline">Report Deadline</button>
+                  </div>
+              </form>
+          </div>
+      </div>
+      <div id="modal4" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('modal4')">&times;</span><h3 class="modal-title">Performance Index</h3></div></div>
+
 
 
       
@@ -86,7 +156,7 @@
             const stationSelect = document.getElementById("station");
             const certifiedDateInput = document.getElementById("certifieddate");
             const locationSelect = document.getElementById("location");
-      
+                  
       
         
             
@@ -210,6 +280,22 @@
                 .catch(err => console.error("Error fetching station details:", err));
             });
           };
+         function openModal(id) {
+            // أغلق كل المودالات أولاً
+            document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+            document.getElementById(id).style.display = "block";
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).style.display = "none";
+        }
+        
+        // إغلاق عند الضغط خارج المودال
+        window.onclick = function(event) {
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) m.style.display = "none";
+            });
+        }
   /////////////////////////////////////////////////////////////////////////////////////////////
  /////////////////////////////////////////////////////////////////////////////////////////////
           ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
@@ -1028,6 +1114,7 @@
   </body>
 
 </html>
+
 
 
 
