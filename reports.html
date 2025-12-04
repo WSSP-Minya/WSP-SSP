@@ -861,11 +861,152 @@
           printWindow.focus();
           printWindow.print();
       });
+
+       // تقرير لمحطات الفرع عن الاجراءات التى قاربت مدة انتهائها
+       document.getElementById("reportdeadlinebranch").addEventListener("click", async () => {
+
+        const branchSelect = document.getElementById("branch");
+        const branchOptions = Array.from(branchSelect.options)
+            .filter(opt => opt.value && opt.value !== "----");
+    
+        if (branchOptions.length === 0) {
+            alert("لا توجد فروع للطباعة!");
+            return;
+        }
+    
+        let htmlContent = `
+        <html>
+        <head>
+            <title>تقرير الإجراءات قاربت على الانتهاء</title>
+            <style>
+                body { font-family: Arial; direction: rtl; text-align: right; }
+                table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                th, td { border: 1px solid #000; padding: 6px; }
+                th { background-color: #f0f0f0; }
+                h2, h3 { text-align: center; }
+                .red { background:#7A0000; color:white; }
+                .lightred { background:#f8d7da; }
+            </style>
+        </head>
+        <body>
+            <h2>تقرير الإجراءات التي انتهت أو قاربت على الانتهاء</h2>
+        `;
+    
+        const today = new Date();
+        today.setHours(0,0,0,0);
+    
+        for (const br of branchOptions) {
+    
+            const branch = br.value;
+    
+            const resStations = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+            const stationsData = await resStations.json();
+    
+            htmlContent += `<h3>الفرع: ${branch}</h3>`;
+    
+            if (stationsData.status !== "success") continue;
+    
+            for (let i = 0; i < stationsData.stations.length; i++) {
+    
+                const station = stationsData.stations[i];
+                const certDateRaw = stationsData.certifiedDates[i];
+    
+                let certifiedDate = parseDateSmart(certDateRaw);
+    
+                if (!certifiedDate || isNaN(certifiedDate)) continue;
+    
+                const resDetails = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                const detailsData = await resDetails.json();
+    
+                if (detailsData.status !== "success") continue;
+    
+                let filtered = [];
+    
+                detailsData.details.forEach(det => {
+    
+                    const durationMonths = parseInt(det.duration);
+    
+                    if (isNaN(durationMonths)) return;
+    
+                    let endDate = new Date(certifiedDate);
+                    endDate.setMonth(endDate.getMonth() + durationMonths);
+                    endDate.setHours(0,0,0,0);
+    
+                    // حساب المتبقي بالشهور
+                    let monthsLeft = 
+                        (endDate.getFullYear() - today.getFullYear()) * 12 +
+                        (endDate.getMonth() - today.getMonth());
+    
+                    // المطلوب فقط (≤ 3)
+                    if (monthsLeft <= 3) {
+                        det.monthsLeft = monthsLeft;
+                        det.endDate = endDate.toISOString().slice(0,10);
+                        filtered.push(det);
+                    }
+                });
+    
+                if (filtered.length === 0) continue;
+    
+                htmlContent += `
+                    <h4>المحطة: ${station}</h4>
+                    <table>
+                        <tr>
+                            <th>الموقع</th>
+                            <th>الخطر</th>
+                            <th>الإجراء التصحيحي</th>
+                            <th>المدة (شهور)</th>
+                            <th>تاريخ الانتهاء</th>
+                            <th>متبقي (شهور)</th>
+                            <th>الموقف</th>
+                        </tr>
+                `;
+    
+                filtered.forEach(det => {
+    
+                    let rowClass = (det.monthsLeft <= 0) ? "red" : "lightred";
+    
+                    htmlContent += `
+                        <tr class="${rowClass}">
+                            <td>${det.location || ""}</td>
+                            <td>${det.risk || ""}</td>
+                            <td>${det.corraction || ""}</td>
+                            <td>${det.duration}</td>
+                            <td>${det.endDate}</td>
+                            <td>${det.monthsLeft}</td>
+                            <td>${det.status || ""}</td>
+                        </tr>
+                    `;
+                });
+    
+                htmlContent += `</table>`;
+            }
+        }
+    
+        htmlContent += `</body></html>`;
+    
+        const printWindow = window.open('', '', 'width=1200,height=900');
+    
+        if (!printWindow) {
+            alert("المتصفح منع نافذة الطباعة. برجاء السماح بالـ Pop-ups.");
+            return;
+        }
+    
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    
+        setTimeout(() => {
+            printWindow.focus();
+            printWindow.print();
+        }, 300);
+    
+    });
+
   
      </script>
   </body>
 
 </html>
+
 
 
 
