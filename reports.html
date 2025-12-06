@@ -149,159 +149,185 @@
     
   
           window.onload = () => {
-           
-            const email = sessionStorage.getItem("email");
-            const department = sessionStorage.getItem("department");
-            const branchSelect = {
-              branch_modal1: document.getElementById("branch_modal1"),
-              branch_modal2: document.getElementById("branch_modal2"),
-              branch_modal3: document.getElementById("branch_modal3")};
-            const stationSelect = {
-              station_modal1: document.getElementById("station_modal1"),
-              station_modal2: document.getElementById("station_modal2"),
-              station_modal3: document.getElementById("station_modal3")};
-            const certifiedDateInput = document.getElementById("certifieddate");
-            const locationSelect = document.getElementById("location");
-                  
-      
-        
-            
-            document.getElementById("section").value = department || "";
-
-            branchSelect.addEventListener("change", () => {
-            console.log("Branch changed:", branchSelect.value);
-            fetchStations(branchSelect.value);
-        });
-
-
-            let branchStations = [];
-            let branchDates = [];
-        
-            
-      
-            // جلب المحطات بناءً على الفرع
-            function fetchStations(branch) {
-              if (!branch) {
-              console.log("Branch is not provided or invalid.");
-              return;}
-              console.log("Fetching stations for branch:", branch);
-              stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-      
-              const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
-      
-              fetch(url)
-                .then(res => res.json())
-                .then(data => {
-                  console.log("datastation:", data)
-                  if (data.status === "success") {
-                    stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                    branchStations = data.stations;
-                    branchDates = data.certifiedDates;
-      
-                    data.stations.forEach(station => {
-                      const option = document.createElement("option");
-                      option.value = station;
-                      option.textContent = station;
-                      stationSelect.appendChild(option);
-                    });
-                  } else {
-                    stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-                  }
-                })
-                .catch(err => {
-                  console.error("Error fetching stations:", err);
-                  stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-                });
-            }
-            // ملء تفاصيل الموقع
-             window.fillStationDetails = function(details) {
-              locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-              locationSelect.detailsMap = {};
-              details.forEach((detail, index) => {
-                              
-               
-                const option = document.createElement("option");
-                option.value = index;  // أرسل نص الموقع
-                option.textContent = detail.location || "Unnamed Location";
-                locationSelect.appendChild(option);
-                locationSelect.detailsMap[index] = detail;
+              // استرجاع البيانات المخزنة في sessionStorage
+              const email = sessionStorage.getItem("email");
+              const department = sessionStorage.getItem("department");
+          
+              // تعريف الكائنات التي تحتوي على العناصر التي تحتوي على الفروع والمحطات
+              const branchSelect = {
+                  branch_modal1: document.getElementById("branch_modal1"),
+                  branch_modal2: document.getElementById("branch_modal2"),
+                  branch_modal3: document.getElementById("branch_modal3")
+              };
+              const stationSelect = {
+                  station_modal1: document.getElementById("station_modal1"),
+                  station_modal2: document.getElementById("station_modal2"),
+                  station_modal3: document.getElementById("station_modal3")
+              };
+          
+              // تعريف المدخلات الأخرى مثل تاريخ التصديق والموقع
+              const certifiedDateInput = document.getElementById("certifieddate");
+              const locationSelect = document.getElementById("location");
+          
+              // تعيين قيمة القسم المسترجعة في حقل القسم
+              document.getElementById("section").value = department || "";
+          
+              // إضافة مستمع حدث لكل عنصر من عناصر اختيار الفروع
+              Object.values(branchSelect).forEach(branch => {
+                  branch.addEventListener("change", () => {
+                      // عند تغيير الفرع، نقوم باسترجاع المحطات بناءً على الفرع المختار
+                      const selectedBranch = branch.value;
+                      console.log("Branch changed:", selectedBranch);
+                      fetchStations(selectedBranch, branch);
+                  });
               });
-            }
-      
-            locationSelect.addEventListener("change", () => {
-              const selectedKey = locationSelect.value;
-              if (!selectedKey) return;
-      
-              const detail = locationSelect.detailsMap[selectedKey];
-      
-              if (detail) {
-                riskInput.value = detail.risk || "";
-                corractionInput.value = detail.corraction || "";
-                durationInput.value = detail.duration || "";
-      
-                let status = (detail.status || "").trim();
-                switch (true) {
-                  case /^تم$/.test(status): status = "تم"; break;
-                  case /^جارى$/.test(status): status = "جارى"; break;
-                  case /^لم يتم$/.test(status): status = "لم يتم"; break;
-                  default: status = "";
-                }
-                statusSelect.value = status;
-                branchcomment.value = detail.branchcomment || "";
-                wspcomment.value = detail.wspcomment || "";
-      
-                if (detail.attachment) {
-                  document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
-                } else {
-                  document.getElementById("filename").textContent = "No File";
-                }
-              }
-            });
-
-            // عند تغيير المحطة
-            stationSelect.addEventListener("change", () => {
-              const selectedStation = stationSelect.value;
-              const index = branchStations.indexOf(selectedStation);
-              if (index !== -1 && branchDates[index]) {
-                const date = new Date(branchDates[index]);
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                certifiedDateInput.value = `${year}-${month}-${day}`;
-              } else certifiedDateInput.value = "";
-      
-              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
-                .then(res => res.json())
-                .then(data => {
-                 
-                  if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
-                   
-                  else {
-                    locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
-                    riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
-                    branchcomment.value = wspcomment.value = "";
-                    document.getElementById("filename").textContent = "";
+          
+              let branchStations = [];  // لتخزين المحطات الخاصة بالفرع
+              let branchDates = [];     // لتخزين تواريخ التصديق لكل محطة
+          
+              // دالة لجلب المحطات بناءً على الفرع المختار
+              function fetchStations(branch, branchElement) {
+                  if (!branch) {
+                      console.log("Branch is not provided or invalid.");
+                      return;
                   }
-                })
-                .catch(err => console.error("Error fetching station details:", err));
-            });
+                  console.log("Fetching stations for branch:", branch);
+          
+                  // تعيين النص الخاص بتحميل المحطات في القائمة المنسدلة الخاصة بالمحطات
+                  stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+          
+                  // رابط الـ API لجلب المحطات بناءً على الفرع
+                  const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+          
+                  // إرسال الطلب وجلب البيانات
+                  fetch(url)
+                      .then(res => res.json())
+                      .then(data => {
+                          console.log("Stations data:", data);
+                          if (data.status === "success") {
+                              // تحديث القائمة بالمحطات المسترجعة
+                              stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Select Station</option>';
+                              branchStations = data.stations;  // حفظ المحطات
+                              branchDates = data.certifiedDates;  // حفظ تواريخ التصديق
+          
+                              // إضافة المحطات إلى القائمة المنسدلة
+                              data.stations.forEach(station => {
+                                  const option = document.createElement("option");
+                                  option.value = station;
+                                  option.textContent = station;
+                                  stationSelect[branchElement.id].appendChild(option);
+                              });
+                          } else {
+                              stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Not found</option>';
+                          }
+                      })
+                      .catch(err => {
+                          console.error("Error fetching stations:", err);
+                          stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Connection Error</option>';
+                      });
+              }
+          
+              // دالة لملء تفاصيل الموقع بناءً على البيانات المسترجعة
+              window.fillStationDetails = function(details) {
+                  locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
+                  locationSelect.detailsMap = {};  // تخزين تفاصيل الموقع بناءً على الفهرس
+                  details.forEach((detail, index) => {
+                      // إضافة الخيارات للموقع في القائمة المنسدلة
+                      const option = document.createElement("option");
+                      option.value = index;  // قيمة الموقع هي فهرس الموقع
+                      option.textContent = detail.location || "Unnamed Location";  // إذا لم يوجد اسم الموقع، يتم استخدام "Unnamed Location"
+                      locationSelect.appendChild(option);
+                      locationSelect.detailsMap[index] = detail;  // تخزين التفاصيل باستخدام الفهرس كمفتاح
+                  });
+              };
+          
+              // مستمع حدث لتغيير الموقع
+              locationSelect.addEventListener("change", () => {
+                  const selectedKey = locationSelect.value;
+                  if (!selectedKey) return;  // إذا لم يتم اختيار موقع، يتم إنهاء العملية
+          
+                  const detail = locationSelect.detailsMap[selectedKey];  // استرجاع تفاصيل الموقع
+          
+                  if (detail) {
+                      // تعبئة الحقول بناءً على التفاصيل المسترجعة
+                      riskInput.value = detail.risk || "";
+                      corractionInput.value = detail.corraction || "";
+                      durationInput.value = detail.duration || "";
+          
+                      let status = (detail.status || "").trim();  // تنسيق الحالة
+                      switch (true) {
+                          case /^تم$/.test(status): status = "تم"; break;
+                          case /^جارى$/.test(status): status = "جارى"; break;
+                          case /^لم يتم$/.test(status): status = "لم يتم"; break;
+                          default: status = "";
+                      }
+                      statusSelect.value = status;
+                      branchcomment.value = detail.branchcomment || "";
+                      wspcomment.value = detail.wspcomment || "";
+          
+                      // إذا كانت هناك مرفقات، عرضها
+                      if (detail.attachment) {
+                          document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
+                      } else {
+                          document.getElementById("filename").textContent = "No File";  // إذا لم توجد مرفقات
+                      }
+                  }
+              });
+          
+              // عند تغيير المحطة
+              Object.values(stationSelect).forEach(station => {
+                  station.addEventListener("change", () => {
+                      const selectedStation = station.value;
+                      const index = branchStations.indexOf(selectedStation);  // الحصول على فهرس المحطة
+                      if (index !== -1 && branchDates[index]) {
+                          // إذا كانت هناك محطة وتاريخ تصديق، قم بتعبئة تاريخ التصديق
+                          const date = new Date(branchDates[index]);
+                          const year = date.getFullYear();
+                          const month = String(date.getMonth() + 1).padStart(2, '0');
+                          const day = String(date.getDate()).padStart(2, '0');
+                          certifiedDateInput.value = `${year}-${month}-${day}`;
+                      } else {
+                          certifiedDateInput.value = "";  // إذا لم توجد محطة أو تاريخ تصديق
+                      }
+          
+                      // جلب تفاصيل المحطة بناءً على المحطة المختارة
+                      fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
+                          .then(res => res.json())
+                          .then(data => {
+                              if (data.status === "success" && data.details.length > 0) {
+                                  // إذا كانت هناك تفاصيل، قم بملء التفاصيل
+                                  fillStationDetails(data.details);
+                              } else {
+                                  locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
+                                  riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
+                                  branchcomment.value = wspcomment.value = "";
+                                  document.getElementById("filename").textContent = "";
+                              }
+                          })
+                          .catch(err => console.error("Error fetching station details:", err));
+                  });
+              });
           };
-         function openModal(id) {
-            // أغلق كل المودالات أولاً
-            document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-            document.getElementById(id).style.display = "block";
-        }
-        
-        function closeModal(id) {
-            document.getElementById(id).style.display = "none";
-        }
-        
-        // إغلاق عند الضغط خارج المودال
-        window.onclick = function(event) {
-            document.querySelectorAll('.modal').forEach(m => {
-                if (event.target === m) m.style.display = "none";
-            });
-        }
+          
+          // دالة لفتح المودال عند النقر على عنصر
+          function openModal(id) {
+              // إغلاق جميع المودالات أولاً
+              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+              document.getElementById(id).style.display = "block";
+          }
+          
+          // دالة لإغلاق المودال
+          function closeModal(id) {
+              document.getElementById(id).style.display = "none";
+          }
+          
+          // إغلاق المودال عند الضغط خارج المودال
+          window.onclick = function(event) {
+              document.querySelectorAll('.modal').forEach(m => {
+                  if (event.target === m) m.style.display = "none";
+              });
+          };
+
   /////////////////////////////////////////////////////////////////////////////////////////////
  /////////////////////////////////////////////////////////////////////////////////////////////
           ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
@@ -1120,6 +1146,7 @@
   </body>
 
 </html>
+
 
 
 
