@@ -654,7 +654,7 @@
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
                       // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
-                      const stationPromises = stationsData.stations.map(async (station1) => {
+                      const stationPromises = stationsData.stations.map(async (station) => {
                           const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
                           const detailsData = await detailsResponse.json();
           
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
