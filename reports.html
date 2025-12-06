@@ -248,19 +248,19 @@
                       locationSelect.detailsMap[index] = detail;
                   });
               };
-          
+              
               // استماع لتغيير الموقع
               locationSelect.addEventListener("change", () => {
                   const selectedKey = locationSelect.value;
                   if (!selectedKey) return;
-          
+              
                   const detail = locationSelect.detailsMap[selectedKey];
-          
+              
                   if (detail) {
                       riskInput.value = detail.risk || "";
                       corractionInput.value = detail.corraction || "";
                       durationInput.value = detail.duration || "";
-          
+              
                       let status = (detail.status || "").trim();
                       switch (true) {
                           case /^تم$/.test(status): status = "تم"; break;
@@ -271,7 +271,7 @@
                       statusSelect.value = status;
                       branchcomment.value = detail.branchcomment || "";
                       wspcomment.value = detail.wspcomment || "";
-          
+              
                       if (detail.attachment) {
                           document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
                       } else {
@@ -279,7 +279,7 @@
                       }
                   }
               });
-          
+              
               // عند تغيير المحطة في الفرع الأول
               stationSelect1.addEventListener("change", () => {
                   const selectedStation = stationSelect1.value;
@@ -291,7 +291,7 @@
                       const day = String(date.getDate()).padStart(2, '0');
                       certifiedDateInput.value = `${year}-${month}-${day}`;
                   } else certifiedDateInput.value = "";
-          
+              
                   fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
                       .then(res => res.json())
                       .then(data => {
@@ -306,7 +306,7 @@
                       })
                       .catch(err => console.error("Error fetching station details:", err));
               });
-          
+              
               // عند تغيير المحطة في الفرع الثاني
               stationSelect2.addEventListener("change", () => {
                   const selectedStation = stationSelect2.value;
@@ -318,7 +318,7 @@
                       const day = String(date.getDate()).padStart(2, '0');
                       certifiedDateInput.value = `${year}-${month}-${day}`;
                   } else certifiedDateInput.value = "";
-          
+              
                   fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
                       .then(res => res.json())
                       .then(data => {
@@ -332,35 +332,35 @@
                           }
                       })
                       .catch(err => console.error("Error fetching station details:", err));
-                });
-              };
-                // عند تغيير المحطة في الفرع الثاني
-                    stationSelect3.addEventListener("change", () => {
-                        const selectedStation = stationSelect3.value;
-                        const index = branchStations3.indexOf(selectedStation);
-                        if (index !== -1 && branchDates3[index]) {
-                            const date = new Date(branchDates3[index]);
-                            const year = date.getFullYear();
-                            const month = String(date.getMonth() + 1).padStart(2, '0');
-                            const day = String(date.getDate()).padStart(2, '0');
-                            certifiedDateInput.value = `${year}-${month}-${day}`;
-                        } else certifiedDateInput.value = "";
-                
-                        fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
-                            .then(res => res.json())
-                            .then(data => {
-                                if (data.status === "success" && data.details.length > 0) {
-                                    fillStationDetails(data.details);
-                                } else {
-                                    locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
-                                    riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
-                                    branchcomment.value = wspcomment.value = "";
-                                    document.getElementById("filename").textContent = "";
-                                }
-                            })
-                            .catch(err => console.error("Error fetching station details:", err));
-                    });
-                };
+              });
+              
+              // عند تغيير المحطة في الفرع الثالث
+              stationSelect3.addEventListener("change", () => {
+                  const selectedStation = stationSelect3.value;
+                  const index = branchStations3.indexOf(selectedStation);
+                  if (index !== -1 && branchDates3[index]) {
+                      const date = new Date(branchDates3[index]);
+                      const year = date.getFullYear();
+                      const month = String(date.getMonth() + 1).padStart(2, '0');
+                      const day = String(date.getDate()).padStart(2, '0');
+                      certifiedDateInput.value = `${year}-${month}-${day}`;
+                  } else certifiedDateInput.value = "";
+              
+                  fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
+                      .then(res => res.json())
+                      .then(data => {
+                          if (data.status === "success" && data.details.length > 0) {
+                              fillStationDetails(data.details);
+                          } else {
+                              locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
+                              riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
+                              branchcomment.value = wspcomment.value = "";
+                              document.getElementById("filename").textContent = "";
+                          }
+                      })
+                      .catch(err => console.error("Error fetching station details:", err));
+              });
+
           
             // دالة لفتح المودال
             function openModal(id) {
@@ -1179,6 +1179,7 @@
   </body>
 
 </html>
+
 
 
 
