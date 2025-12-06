@@ -178,7 +178,7 @@
               branchSelect.branch_modal1.addEventListener("change", () => {
                   const branch = branchSelect.branch_modal1.value;
                   console.log("Branch changed:", branch);
-                  fetchStations(branch, certifiedDateInput, stationSelect.station_modal1);
+                  fetchStations(branch, stationSelect.station_modal1, certifiedDateInput);
               });
           
               branchSelect.branch_modal2.addEventListener("change", () => {
