@@ -643,8 +643,8 @@
               // تعديل هنا: استخدام Promise.all لتحميل المحطات بشكل متوازي (Parallel Fetching)
               // تم تعديل الكود لاستخدام Promise.all لتحميل بيانات المحطات وتفاصيل المحطات بشكل متوازي
               const branchPromises = branchOptions.map(async (opt) => {
-                  const branch1 = opt.value;
-                  
+                  const branch1 = opt.value.trim();
+                  if (!branch1 || branch1 === "----") return; // تجاهل placeholder
                  
           
                   // جلب المحطات لكل فرع
@@ -1098,6 +1098,7 @@
   </body>
 
 </html>
+
 
 
 
