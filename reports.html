@@ -195,25 +195,18 @@
               fetchStations(branch, stationSelect.station_modal3);
             });
           
-            // جلب المحطات بناءً على الفرع
             function fetchStations(branch, stationSelect, certifiedDateInput) {
               if (!branch || !stationSelect) {
                 console.log("Branch or stationSelect is not provided.");
                 return;
               }
-          
+            
               console.log("Fetching stations for branch:", branch);
-          
-              // تحقق من وجود العنصر stationSelect
-              if (!stationSelect) {
-                console.error("Station select element is not found!");
-                return;
-              }
-          
+            
               stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-          
+            
               const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
-          
+            
               fetch(url)
                 .then(res => res.json())
                 .then(data => {
@@ -222,19 +215,21 @@
                     stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
                     const branchStations = data.stations;
                     const branchDates = data.certifiedDates;
-          
-                    data.stations.forEach(station => {
+            
+                    // تحديث قائمة المحطات في الـ select
+                    branchStations.forEach(station => {
                       const option = document.createElement("option");
                       option.value = station;
                       option.textContent = station;
                       stationSelect.appendChild(option);
                     });
-          
+            
+                    // تعيين تاريخ اعتماد المحطة (إن وجد)
                     if (certifiedDateInput) {
                       certifiedDateInput.value = branchDates[0] || ""; // Set default certified date if available
                     }
                   } else {
-                    stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+                    stationSelect.innerHTML = '<option value="" disabled selected>No stations found</option>';
                   }
                 })
                 .catch(err => {
@@ -242,8 +237,7 @@
                   stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
                 });
             }
-          };
-          
+
           // دالة لفتح المودال عند النقر على عنصر
           function openModal(id) {
             // إغلاق جميع المودالات أولاً
@@ -465,7 +459,7 @@
             // تعديل هنا: استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
             // تم تعديل هذه الكود لجعل تحميل التفاصيل للمحطات يتم بشكل متوازي بدلاً من التتابع
             const stationPromises = stationsData.stations.map(async (station_modal1) => {
-                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station_modal1)}`);
+                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
                 const detailsData = await detailsResponse.json();
         
                 let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
@@ -488,7 +482,7 @@
             const stationSummary = await Promise.all(stationPromises);
         
             // إضافة بيانات المحطات في جدول الملخص
-            stationSummary.forEach(({ station_modal1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+            stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
                 htmlContent += `
                     <tr>
                         <td>${station_modal1}</td>
@@ -1060,6 +1054,7 @@
   </body>
 
 </html>
+
 
 
 
