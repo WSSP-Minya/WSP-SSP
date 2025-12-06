@@ -527,7 +527,7 @@
             stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
                 htmlContent += `
                     <tr>
-                        <td>${station_modal1}</td>
+                        <td>${station}</td>
                         <td>${totalActions}</td>
                         <td>${doneActions}</td>
                         <td>${inProgressActions}</td>
@@ -590,7 +590,7 @@
             
             document.getElementById("reportall").addEventListener("click", async () => {
               const branchSelect = document.getElementById("branch_modal1");
-              const branchOptions = Array.from(branchSelect.options)
+              const branchOptions = Array.from(branchSelect1.options)
                                          .filter(opt => opt.value && opt.value !== "----"); // تجاهل placeholder
           
               if (branchOptions.length === 0) {
@@ -668,7 +668,7 @@
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
           
-                              allDetailsPerBranch[branch_modal1][station_modal1] = allLocations;
+                              allDetailsPerBranch[branch][station] = allLocations;
                           }
           
                           return { station, totalActions, doneActions, inProgressActions, notDoneActions };
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
