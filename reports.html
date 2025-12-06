@@ -541,7 +541,7 @@
             // --------- الجداول التفصيلية لكل محطة ---------
             // إضافة التفاصيل لكل محطة باستخدام البيانات المخزنة في allDetailsPerStation
             for (const station1 of Object.keys(allDetailsPerStation)) {
-                const allLocations = allDetailsPerStation[station];
+                const allLocations = allDetailsPerStation[station1];
                 const detailRowsHtml = allLocations.map(detail => `
                     <tr>
                         <td>${detail.location || ""}</td>
@@ -708,7 +708,7 @@
               htmlContent += `</table>`;
           
               // --------- جدول لكل فرع (ملخص لكل محطة) ---------
-              for (const branch of Object.keys(allDetailsPerBranch)) {
+              for (const branch1 of Object.keys(allDetailsPerBranch)) {
                   htmlContent += `<h3>ملخص محطات الفرع: ${branch1}</h3>`;
                   htmlContent += `
                       <table>
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
