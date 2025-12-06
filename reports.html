@@ -173,6 +173,8 @@
           
               // تحقق من أن كل شيء تم تحميله بشكل صحيح
               console.log(branchSelect, stationSelect);
+             // تعيين القسم في الواجهة
+              document.getElementById("section").value = department || "";
           
               // إذا كانت المحطة محددة، عند تغييرها
               branchSelect.branch_modal1.addEventListener("change", () => {
@@ -1074,6 +1076,7 @@
   </body>
 
 </html>
+
 
 
 
