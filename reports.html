@@ -151,184 +151,91 @@
           const scriptURL = "https://script.google.com/macros/s/AKfycby2x5YYVS5VlI8zuRjecdVXGR3zIZMDGUjE1b1bAVl14pXsYh0ymvwtcBzx1tXL_RHf6A/exec";
     
   
-          window.onload = () => {
-              // استرجاع البيانات المخزنة في sessionStorage
+         window.onload = () => {
               const email = sessionStorage.getItem("email");
               const department = sessionStorage.getItem("department");
           
-              // تعريف الكائنات التي تحتوي على العناصر التي تحتوي على الفروع والمحطات
+              // تحديد كل العناصر الخاصة بكل مودال
               const branchSelect = {
                   branch_modal1: document.getElementById("branch_modal1"),
                   branch_modal2: document.getElementById("branch_modal2"),
                   branch_modal3: document.getElementById("branch_modal3")
               };
+          
               const stationSelect = {
                   station_modal1: document.getElementById("station_modal1"),
                   station_modal2: document.getElementById("station_modal2"),
                   station_modal3: document.getElementById("station_modal3")
               };
           
-              // تعريف المدخلات الأخرى مثل تاريخ التصديق والموقع
               const certifiedDateInput = document.getElementById("certifieddate");
               const locationSelect = document.getElementById("location");
           
-              // تعيين قيمة القسم المسترجعة في حقل القسم
-              document.getElementById("section").value = department || "";
+              // تحقق من أن كل شيء تم تحميله بشكل صحيح
+              console.log(branchSelect, stationSelect);
           
-              // إضافة مستمع حدث لكل عنصر من عناصر اختيار الفروع
-              Object.values(branchSelect).forEach(branch => {
-                  branch.addEventListener("change", () => {
-                      // عند تغيير الفرع، نقوم باسترجاع المحطات بناءً على الفرع المختار
-                      const selectedBranch = branch.value;
-                      console.log("Branch changed:", selectedBranch);
-                      fetchStations(selectedBranch, branch);
-                  });
+              // إذا كانت المحطة محددة، عند تغييرها
+              branchSelect.branch_modal1.addEventListener("change", () => {
+                  const branch = branchSelect.branch_modal1.value;
+                  console.log("Branch changed:", branch);
+                  fetchStations(branch, stationSelect.station_modal1);
               });
           
-              let branchStations = [];  // لتخزين المحطات الخاصة بالفرع
-              let branchDates = [];     // لتخزين تواريخ التصديق لكل محطة
+              branchSelect.branch_modal2.addEventListener("change", () => {
+                  const branch = branchSelect.branch_modal2.value;
+                  console.log("Branch changed:", branch);
+                  fetchStations(branch, stationSelect.station_modal2);
+              });
           
-              // دالة لجلب المحطات بناءً على الفرع المختار
-              function fetchStations(branch, branchElement) {
-                  if (!branch) {
-                      console.log("Branch is not provided or invalid.");
+              branchSelect.branch_modal3.addEventListener("change", () => {
+                  const branch = branchSelect.branch_modal3.value;
+                  console.log("Branch changed:", branch);
+                  fetchStations(branch, stationSelect.station_modal3);
+              });
+          
+              // جلب المحطات بناءً على الفرع
+              function fetchStations(branch, stationSelect) {
+                  if (!branch || !stationSelect) {
+                      console.log("Branch or stationSelect is not provided.");
                       return;
                   }
+          
                   console.log("Fetching stations for branch:", branch);
           
-                  // تعيين النص الخاص بتحميل المحطات في القائمة المنسدلة الخاصة بالمحطات
-                  stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+                  // تحقق من وجود العنصر stationSelect
+                  if (!stationSelect) {
+                      console.error("Station select element is not found!");
+                      return;
+                  }
           
-                  // رابط الـ API لجلب المحطات بناءً على الفرع
+                  stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+          
                   const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
           
-                  // إرسال الطلب وجلب البيانات
                   fetch(url)
                       .then(res => res.json())
                       .then(data => {
-                          console.log("Stations data:", data);
+                          console.log("datastation:", data);
                           if (data.status === "success") {
-                              // تحديث القائمة بالمحطات المسترجعة
-                              stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              branchStations = data.stations;  // حفظ المحطات
-                              branchDates = data.certifiedDates;  // حفظ تواريخ التصديق
+                              stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+                              branchStations = data.stations;
+                              branchDates = data.certifiedDates;
           
-                              // إضافة المحطات إلى القائمة المنسدلة
                               data.stations.forEach(station => {
                                   const option = document.createElement("option");
                                   option.value = station;
                                   option.textContent = station;
-                                  stationSelect[branchElement.id].appendChild(option);
+                                  stationSelect.appendChild(option);
                               });
                           } else {
-                              stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Not found</option>';
+                              stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
                           }
                       })
                       .catch(err => {
                           console.error("Error fetching stations:", err);
-                          stationSelect[branchElement.id].innerHTML = '<option value="" disabled selected>Connection Error</option>';
+                          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
                       });
               }
-          
-              // دالة لملء تفاصيل الموقع بناءً على البيانات المسترجعة
-              window.fillStationDetails = function(details) {
-                  locationSelect.innerHTML = '<option value="" disabled selected>Select Location</option>';
-                  locationSelect.detailsMap = {};  // تخزين تفاصيل الموقع بناءً على الفهرس
-                  details.forEach((detail, index) => {
-                      // إضافة الخيارات للموقع في القائمة المنسدلة
-                      const option = document.createElement("option");
-                      option.value = index;  // قيمة الموقع هي فهرس الموقع
-                      option.textContent = detail.location || "Unnamed Location";  // إذا لم يوجد اسم الموقع، يتم استخدام "Unnamed Location"
-                      locationSelect.appendChild(option);
-                      locationSelect.detailsMap[index] = detail;  // تخزين التفاصيل باستخدام الفهرس كمفتاح
-                  });
-              };
-          
-              // مستمع حدث لتغيير الموقع
-              locationSelect.addEventListener("change", () => {
-                  const selectedKey = locationSelect.value;
-                  if (!selectedKey) return;  // إذا لم يتم اختيار موقع، يتم إنهاء العملية
-          
-                  const detail = locationSelect.detailsMap[selectedKey];  // استرجاع تفاصيل الموقع
-          
-                  if (detail) {
-                      // تعبئة الحقول بناءً على التفاصيل المسترجعة
-                      riskInput.value = detail.risk || "";
-                      corractionInput.value = detail.corraction || "";
-                      durationInput.value = detail.duration || "";
-          
-                      let status = (detail.status || "").trim();  // تنسيق الحالة
-                      switch (true) {
-                          case /^تم$/.test(status): status = "تم"; break;
-                          case /^جارى$/.test(status): status = "جارى"; break;
-                          case /^لم يتم$/.test(status): status = "لم يتم"; break;
-                          default: status = "";
-                      }
-                      statusSelect.value = status;
-                      branchcomment.value = detail.branchcomment || "";
-                      wspcomment.value = detail.wspcomment || "";
-          
-                      // إذا كانت هناك مرفقات، عرضها
-                      if (detail.attachment) {
-                          document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
-                      } else {
-                          document.getElementById("filename").textContent = "No File";  // إذا لم توجد مرفقات
-                      }
-                  }
-              });
-          
-              // عند تغيير المحطة
-              Object.values(stationSelect).forEach(station => {
-                  station.addEventListener("change", () => {
-                      const selectedStation = station.value;
-                      const index = branchStations.indexOf(selectedStation);  // الحصول على فهرس المحطة
-                      if (index !== -1 && branchDates[index]) {
-                          // إذا كانت هناك محطة وتاريخ تصديق، قم بتعبئة تاريخ التصديق
-                          const date = new Date(branchDates[index]);
-                          const year = date.getFullYear();
-                          const month = String(date.getMonth() + 1).padStart(2, '0');
-                          const day = String(date.getDate()).padStart(2, '0');
-                          certifiedDateInput.value = `${year}-${month}-${day}`;
-                      } else {
-                          certifiedDateInput.value = "";  // إذا لم توجد محطة أو تاريخ تصديق
-                      }
-          
-                      // جلب تفاصيل المحطة بناءً على المحطة المختارة
-                      fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
-                          .then(res => res.json())
-                          .then(data => {
-                              if (data.status === "success" && data.details.length > 0) {
-                                  // إذا كانت هناك تفاصيل، قم بملء التفاصيل
-                                  fillStationDetails(data.details);
-                              } else {
-                                  locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
-                                  riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
-                                  branchcomment.value = wspcomment.value = "";
-                                  document.getElementById("filename").textContent = "";
-                              }
-                          })
-                          .catch(err => console.error("Error fetching station details:", err));
-                  });
-              });
-          };
-          
-          // دالة لفتح المودال عند النقر على عنصر
-          function openModal(id) {
-              // إغلاق جميع المودالات أولاً
-              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-              document.getElementById(id).style.display = "block";
-          }
-          
-          // دالة لإغلاق المودال
-          function closeModal(id) {
-              document.getElementById(id).style.display = "none";
-          }
-          
-          // إغلاق المودال عند الضغط خارج المودال
-          window.onclick = function(event) {
-              document.querySelectorAll('.modal').forEach(m => {
-                  if (event.target === m) m.style.display = "none";
-              });
           };
 
   /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1149,6 +1056,7 @@
   </body>
 
 </html>
+
 
 
 
