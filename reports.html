@@ -500,8 +500,8 @@
         
             // تعديل هنا: استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
             // تم تعديل هذه الكود لجعل تحميل التفاصيل للمحطات يتم بشكل متوازي بدلاً من التتابع
-            const stationPromises = stationsData.stations.map(async (station) => {
-                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+            const stationPromises = stationsData.stations.map(async (station1) => {
+                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                 const detailsData = await detailsResponse.json();
         
                 let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
@@ -517,17 +517,17 @@
                     allDetailsPerStation[station] = allLocations;
                 }
         
-                return { station, totalActions, doneActions, inProgressActions, notDoneActions };
+                return { station1, totalActions, doneActions, inProgressActions, notDoneActions };
             });
         
             // تعديل هنا: استخدام Promise.all لانتظار جميع الوعود (promises) المتعلقة بالمحطات
             const stationSummary = await Promise.all(stationPromises);
         
             // إضافة بيانات المحطات في جدول الملخص
-            stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+            stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
                 htmlContent += `
                     <tr>
-                        <td>${station}</td>
+                        <td>${station1}</td>
                         <td>${totalActions}</td>
                         <td>${doneActions}</td>
                         <td>${inProgressActions}</td>
@@ -540,7 +540,7 @@
         
             // --------- الجداول التفصيلية لكل محطة ---------
             // إضافة التفاصيل لكل محطة باستخدام البيانات المخزنة في allDetailsPerStation
-            for (const station of Object.keys(allDetailsPerStation)) {
+            for (const station1 of Object.keys(allDetailsPerStation)) {
                 const allLocations = allDetailsPerStation[station];
                 const detailRowsHtml = allLocations.map(detail => `
                     <tr>
@@ -553,7 +553,7 @@
                 `).join("");
         
                 htmlContent += `
-                    <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station}</h4>
+                    <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station1}</h4>
                     <table>
                         <thead>
                             <tr>
@@ -643,10 +643,10 @@
               // تعديل هنا: استخدام Promise.all لتحميل المحطات بشكل متوازي (Parallel Fetching)
               // تم تعديل الكود لاستخدام Promise.all لتحميل بيانات المحطات وتفاصيل المحطات بشكل متوازي
               const branchPromises = branchOptions.map(async (opt) => {
-                  const branch = opt.value;
+                  const branch1 = opt.value;
           
                   // جلب المحطات لكل فرع
-                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
                   const stationsData = await stationsResponse.json();
           
                   let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
@@ -654,8 +654,8 @@
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
                       // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
-                      const stationPromises = stationsData.stations.map(async (station) => {
-                          const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                      const stationPromises = stationsData.stations.map(async (station1) => {
+                          const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                           const detailsData = await detailsResponse.json();
           
                           let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
@@ -668,10 +668,10 @@
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
           
-                              allDetailsPerBranch[branch][station] = allLocations;
+                              allDetailsPerBranch[branch1][station1] = allLocations;
                           }
           
-                          return { station, totalActions, doneActions, inProgressActions, notDoneActions };
+                          return { station1, totalActions, doneActions, inProgressActions, notDoneActions };
                       });
           
                       // استخدام Promise.all لتحميل تفاصيل كل المحطات بشكل متوازي
@@ -686,17 +686,17 @@
                       });
                   }
           
-                  return { branch, branchTotal, branchDone, branchInProgress, branchNotDone };
+                  return { branch1, branchTotal, branchDone, branchInProgress, branchNotDone };
               });
           
               // الانتظار حتى يتم تحميل جميع الفروع والمحطات بالتوازي
               const branchSummary = await Promise.all(branchPromises);
           
               // إضافة بيانات الفروع في جدول الملخص
-              branchSummary.forEach(({ branch, branchTotal, branchDone, branchInProgress, branchNotDone }) => {
+              branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone }) => {
                   htmlContent += `
                       <tr>
-                          <td>${branch}</td>
+                          <td>${branch1}</td>
                           <td>${branchTotal}</td>
                           <td>${branchDone}</td>
                           <td>${branchInProgress}</td>
@@ -709,7 +709,7 @@
           
               // --------- جدول لكل فرع (ملخص لكل محطة) ---------
               for (const branch of Object.keys(allDetailsPerBranch)) {
-                  htmlContent += `<h3>ملخص محطات الفرع: ${branch}</h3>`;
+                  htmlContent += `<h3>ملخص محطات الفرع: ${branch1}</h3>`;
                   htmlContent += `
                       <table>
                           <tr>
@@ -721,9 +721,9 @@
                           </tr>
                   `;
           
-                  const stations = Object.keys(allDetailsPerBranch[branch]);
-                  for (const station of stations) {
-                      const allLocations = allDetailsPerBranch[branch][station];
+                  const stations = Object.keys(allDetailsPerBranch[branch1]);
+                  for (const station1 of stations) {
+                      const allLocations = allDetailsPerBranch[branch1][station1];
           
                       const totalActions = allLocations.length;
                       const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
@@ -732,7 +732,7 @@
           
                       htmlContent += `
                           <tr>
-                              <td>${station}</td>
+                              <td>${station1}</td>
                               <td>${totalActions}</td>
                               <td>${doneActions}</td>
                               <td>${inProgressActions}</td>
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
