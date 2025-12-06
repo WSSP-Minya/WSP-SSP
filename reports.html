@@ -237,6 +237,24 @@
                       });
               }
           };
+                 // دالة لفتح المودال عند النقر على عنصر
+          function openModal(id) {
+              // إغلاق جميع المودالات أولاً
+              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+              document.getElementById(id).style.display = "block";
+          }
+          
+          // دالة لإغلاق المودال
+          function closeModal(id) {
+              document.getElementById(id).style.display = "none";
+          }
+          
+          // إغلاق المودال عند الضغط خارج المودال
+          window.onclick = function(event) {
+              document.querySelectorAll('.modal').forEach(m => {
+                  if (event.target === m) m.style.display = "none";
+              });
+          };
 
   /////////////////////////////////////////////////////////////////////////////////////////////
  /////////////////////////////////////////////////////////////////////////////////////////////
@@ -1056,6 +1074,7 @@
   </body>
 
 </html>
+
 
 
 
