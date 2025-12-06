@@ -178,7 +178,7 @@
               branchSelect.branch_modal1.addEventListener("change", () => {
                   const branch = branchSelect.branch_modal1.value;
                   console.log("Branch changed:", branch);
-                  fetchStations(branch, stationSelect.station_modal1);
+                  fetchStations(branch, certifiedDateInput, stationSelect.station_modal1);
               });
           
               branchSelect.branch_modal2.addEventListener("change", () => {
@@ -260,8 +260,8 @@
  /////////////////////////////////////////////////////////////////////////////////////////////
           ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
          document.getElementById("reportstation").addEventListener("click", () => {
-          const branch = document.getElementById("branch").value || "----";
-          const station = document.getElementById("station").value || "----";
+          const branch = document.getElementById("branch_modal1").value || "----";
+          const station = document.getElementById("station_modal1").value || "----";
           const certifiedDate = document.getElementById("certifieddate").value || "----";
       
           const locationSelect = document.getElementById("location");
@@ -359,8 +359,8 @@
                   </div>
                   <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
                   <p>
-                      <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
-                      <strong>النظام:</strong> ${station} &nbsp;&nbsp;
+                      <strong>الفرع:</strong> ${branch_modal1} &nbsp;&nbsp;
+                      <strong>النظام:</strong> ${station_modal1} &nbsp;&nbsp;
                       <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
                   </p>
       
@@ -419,10 +419,10 @@
 
         /////////////////////////////// كل المحطات الفرع الواحد المختار
         document.getElementById("reportbranch").addEventListener("click", async () => {
-            const branch = document.getElementById("branch").value || "----";
+            const branch = document.getElementById("branch_modal1").value || "----";
         
             // جلب جميع المحطات للفرع من السيرفر
-            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch_modal1)}`);
             const stationsData = await stationsResponse.json();
         
             if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
@@ -458,7 +458,7 @@
                       <img src="https://wssp.hcww.com.eg/public/company_logo/menia.png" alt="logo">
                       <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" alt="logo">
                     </div>
-                    <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات فرع: ${branch}</h2>
+                    <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لكل محطات فرع: ${branch_modal1}</h2>
             `;
         
             // --------- جدول الملخص لجميع المحطات ---------
@@ -478,8 +478,8 @@
         
             // تعديل هنا: استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
             // تم تعديل هذه الكود لجعل تحميل التفاصيل للمحطات يتم بشكل متوازي بدلاً من التتابع
-            const stationPromises = stationsData.stations.map(async (station) => {
-                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+            const stationPromises = stationsData.stations.map(async (station_modal1) => {
+                const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station_modal1)}`);
                 const detailsData = await detailsResponse.json();
         
                 let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
@@ -495,17 +495,17 @@
                     allDetailsPerStation[station] = allLocations;
                 }
         
-                return { station, totalActions, doneActions, inProgressActions, notDoneActions };
+                return { station_modal1, totalActions, doneActions, inProgressActions, notDoneActions };
             });
         
             // تعديل هنا: استخدام Promise.all لانتظار جميع الوعود (promises) المتعلقة بالمحطات
             const stationSummary = await Promise.all(stationPromises);
         
             // إضافة بيانات المحطات في جدول الملخص
-            stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+            stationSummary.forEach(({ station_modal1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
                 htmlContent += `
                     <tr>
-                        <td>${station}</td>
+                        <td>${station_modal1}</td>
                         <td>${totalActions}</td>
                         <td>${doneActions}</td>
                         <td>${inProgressActions}</td>
@@ -531,7 +531,7 @@
                 `).join("");
         
                 htmlContent += `
-                    <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station}</h4>
+                    <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station_modal1}</h4>
                     <table>
                         <thead>
                             <tr>
@@ -567,7 +567,7 @@
        //////////////////////تقرير مجمع للفروع كلها
             
             document.getElementById("reportall").addEventListener("click", async () => {
-              const branchSelect = document.getElementById("branch");
+              const branchSelect = document.getElementById("branch_modal1");
               const branchOptions = Array.from(branchSelect.options)
                                          .filter(opt => opt.value && opt.value !== "----"); // تجاهل placeholder
           
@@ -624,16 +624,16 @@
                   const branch = opt.value;
           
                   // جلب المحطات لكل فرع
-                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch_modal1)}`);
                   const stationsData = await stationsResponse.json();
           
                   let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
-                  allDetailsPerBranch[branch] = {};
+                  allDetailsPerBranch[branch_modal1] = {};
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
                       // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
-                      const stationPromises = stationsData.stations.map(async (station) => {
-                          const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                      const stationPromises = stationsData.stations.map(async (station_modal1) => {
+                          const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station_modal1)}`);
                           const detailsData = await detailsResponse.json();
           
                           let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
@@ -646,7 +646,7 @@
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
           
-                              allDetailsPerBranch[branch][station] = allLocations;
+                              allDetailsPerBranch[branch_modal1][station_modal1] = allLocations;
                           }
           
                           return { station, totalActions, doneActions, inProgressActions, notDoneActions };
@@ -664,14 +664,14 @@
                       });
                   }
           
-                  return { branch, branchTotal, branchDone, branchInProgress, branchNotDone };
+                  return { branch_modal1, branchTotal, branchDone, branchInProgress, branchNotDone };
               });
           
               // الانتظار حتى يتم تحميل جميع الفروع والمحطات بالتوازي
               const branchSummary = await Promise.all(branchPromises);
           
               // إضافة بيانات الفروع في جدول الملخص
-              branchSummary.forEach(({ branch, branchTotal, branchDone, branchInProgress, branchNotDone }) => {
+              branchSummary.forEach(({ branch_modal1, branchTotal, branchDone, branchInProgress, branchNotDone }) => {
                   htmlContent += `
                       <tr>
                           <td>${branch}</td>
@@ -687,7 +687,7 @@
           
               // --------- جدول لكل فرع (ملخص لكل محطة) ---------
               for (const branch of Object.keys(allDetailsPerBranch)) {
-                  htmlContent += `<h3>ملخص محطات الفرع: ${branch}</h3>`;
+                  htmlContent += `<h3>ملخص محطات الفرع: ${branch_modal1}</h3>`;
                   htmlContent += `
                       <table>
                           <tr>
@@ -699,9 +699,9 @@
                           </tr>
                   `;
           
-                  const stations = Object.keys(allDetailsPerBranch[branch]);
+                  const stations = Object.keys(allDetailsPerBranch[branch_modal1]);
                   for (const station of stations) {
-                      const allLocations = allDetailsPerBranch[branch][station];
+                      const allLocations = allDetailsPerBranch[branch_modal1][station_modal1];
           
                       const totalActions = allLocations.length;
                       const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
@@ -710,7 +710,7 @@
           
                       htmlContent += `
                           <tr>
-                              <td>${station}</td>
+                              <td>${station_modal1}</td>
                               <td>${totalActions}</td>
                               <td>${doneActions}</td>
                               <td>${inProgressActions}</td>
@@ -1074,6 +1074,7 @@
   </body>
 
 </html>
+
 
 
 
