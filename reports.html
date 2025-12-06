@@ -1095,7 +1095,7 @@
                   let certifiedDate = parseDateSmart(certDateRaw);
                   if (!certifiedDate || isNaN(certifiedDate)) continue;
       
-                  const resDetails = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station3)}`);
+                  const resDetails = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
                   const detailsData = await resDetails.json();
                   if (detailsData.status !== "success") continue;
       
@@ -1127,7 +1127,7 @@
                   if (filtered.length === 0) continue;
       
                   htmlContent += `
-                      <h4>المحطة: ${station3}</h4>
+                      <h4>المحطة: ${station}</h4>
                       <table>
                           <tr>
                               <th>الموقع</th>
@@ -1180,6 +1180,7 @@
   </body>
 
 </html>
+
 
 
 
