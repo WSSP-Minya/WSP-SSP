@@ -188,6 +188,8 @@
               let branchDates1 = [];
               let branchStations2 = [];
               let branchDates2 = [];
+              let branchStations3 = [];
+              let branchDates3 = [];
 
           
               // جلب المحطات بناءً على الفرع
@@ -213,6 +215,9 @@
                               } else if (stationSelect === stationSelect2) {
                                   branchStations2 = data.stations;
                                   branchDates2 = data.certifiedDates;
+                              } else if (stationSelect === stationSelect3) {
+                                  branchStations3 = data.stations;
+                                  branchDates3 = data.certifiedDates;
                               }
           
                               data.stations.forEach(station => {
@@ -327,8 +332,35 @@
                           }
                       })
                       .catch(err => console.error("Error fetching station details:", err));
-              });
-          };
+                });
+              };
+                // عند تغيير المحطة في الفرع الثاني
+                    stationSelect3.addEventListener("change", () => {
+                        const selectedStation = stationSelect3.value;
+                        const index = branchStations3.indexOf(selectedStation);
+                        if (index !== -1 && branchDates3[index]) {
+                            const date = new Date(branchDates3[index]);
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            certifiedDateInput.value = `${year}-${month}-${day}`;
+                        } else certifiedDateInput.value = "";
+                
+                        fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
+                            .then(res => res.json())
+                            .then(data => {
+                                if (data.status === "success" && data.details.length > 0) {
+                                    fillStationDetails(data.details);
+                                } else {
+                                    locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
+                                    riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
+                                    branchcomment.value = wspcomment.value = "";
+                                    document.getElementById("filename").textContent = "";
+                                }
+                            })
+                            .catch(err => console.error("Error fetching station details:", err));
+                    });
+                };
           
             // دالة لفتح المودال
             function openModal(id) {
@@ -1147,6 +1179,7 @@
   </body>
 
 </html>
+
 
 
 
