@@ -646,7 +646,7 @@
                   const branch = opt.value;
           
                   // جلب المحطات لكل فرع
-                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
                   const stationsData = await stationsResponse.json();
           
                   let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
@@ -654,7 +654,7 @@
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
                       // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
-                      const stationPromises = stationsData.stations.map(async (station_modal1) => {
+                      const stationPromises = stationsData.stations.map(async (station1) => {
                           const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
                           const detailsData = await detailsResponse.json();
           
@@ -668,7 +668,7 @@
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
           
-                              allDetailsPerBranch[branch][station] = allLocations;
+                              allDetailsPerBranch[branch1][station] = allLocations;
                           }
           
                           return { station, totalActions, doneActions, inProgressActions, notDoneActions };
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
