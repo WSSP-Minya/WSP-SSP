@@ -180,19 +180,19 @@
               branchSelect.branch_modal1.addEventListener("change", () => {
                   const branch = branchSelect.branch_modal1.value;
                   console.log("Branch changed:", branch);
-                  fetchStations(branch_modal1, stationSelect.station_modal1, certifiedDateInput);
+                  fetchStations(branch, stationSelect.station_modal1, certifiedDateInput);
               });
           
               branchSelect.branch_modal2.addEventListener("change", () => {
                   const branch = branchSelect.branch_modal2.value;
                   console.log("Branch changed:", branch);
-                  fetchStations(branch_modal2, stationSelect.station_modal2);
+                  fetchStations(branch, stationSelect.station_modal2);
               });
           
               branchSelect.branch_modal3.addEventListener("change", () => {
                   const branch = branchSelect.branch_modal3.value;
                   console.log("Branch changed:", branch);
-                  fetchStations(branch_modal3, stationSelect.station_modal3);
+                  fetchStations(branch, stationSelect.station_modal3);
               });
           
               // جلب المحطات بناءً على الفرع
@@ -424,7 +424,7 @@
             const branch = document.getElementById("branch_modal1").value || "----";
         
             // جلب جميع المحطات للفرع من السيرفر
-            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch_modal1)}`);
+            const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
             const stationsData = await stationsResponse.json();
         
             if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
@@ -1076,6 +1076,7 @@
   </body>
 
 </html>
+
 
 
 
