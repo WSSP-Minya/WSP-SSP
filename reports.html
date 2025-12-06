@@ -514,7 +514,7 @@
                     notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
         
                     // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
-                    allDetailsPerStation[station] = allLocations;
+                    allDetailsPerStation[station1] = allLocations;
                 }
         
                 return { station1, totalActions, doneActions, inProgressActions, notDoneActions };
@@ -650,7 +650,7 @@
                   const stationsData = await stationsResponse.json();
           
                   let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
-                  allDetailsPerBranch[branch] = {};
+                  allDetailsPerBranch[branch1] = {};
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
                       // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
@@ -678,7 +678,7 @@
                       const stationSummary = await Promise.all(stationPromises);
           
                       // إضافة بيانات المحطات في جدول الملخص
-                      stationSummary.forEach(({ station, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+                      stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
                           branchTotal += totalActions;
                           branchDone += doneActions;
                           branchInProgress += inProgressActions;
@@ -1096,6 +1096,7 @@
   </body>
 
 </html>
+
 
 
 
