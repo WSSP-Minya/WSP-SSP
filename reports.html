@@ -149,161 +149,164 @@
       
      <script>
           const scriptURL = "https://script.google.com/macros/s/AKfycby2x5YYVS5VlI8zuRjecdVXGR3zIZMDGUjE1b1bAVl14pXsYh0ymvwtcBzx1tXL_RHf6A/exec";
-    
-  
-         window.onload = () => {
-              const email = sessionStorage.getItem("email");
-              const department = sessionStorage.getItem("department");
+
+          window.onload = () => {
+            const email = sessionStorage.getItem("email");
+            const department = sessionStorage.getItem("department");
           
-              // تحديد كل العناصر الخاصة بكل مودال
-              const branchSelect = {
-                  branch_modal1: document.getElementById("branch_modal1"),
-                  branch_modal2: document.getElementById("branch_modal2"),
-                  branch_modal3: document.getElementById("branch_modal3")
-              };
+            // تحديد كل العناصر الخاصة بكل مودال
+            const branchSelect = {
+              branch_modal1: document.getElementById("branch_modal1"),
+              branch_modal2: document.getElementById("branch_modal2"),
+              branch_modal3: document.getElementById("branch_modal3")
+            };
           
-              const stationSelect = {
-                  station_modal1: document.getElementById("station_modal1"),
-                  station_modal2: document.getElementById("station_modal2"),
-                  station_modal3: document.getElementById("station_modal3")
-              };
+            const stationSelect = {
+              station_modal1: document.getElementById("station_modal1"),
+              station_modal2: document.getElementById("station_modal2"),
+              station_modal3: document.getElementById("station_modal3")
+            };
           
-              const certifiedDateInput = document.getElementById("certifieddate");
-              const locationSelect = document.getElementById("location");
+            const certifiedDateInput = document.getElementById("certifieddate");
+            const locationSelect = document.getElementById("location");
           
-              // تحقق من أن كل شيء تم تحميله بشكل صحيح
-              console.log(branchSelect, stationSelect);
-             // تعيين القسم في الواجهة
-              document.getElementById("section").value = department || "";
+            // تحقق من أن كل شيء تم تحميله بشكل صحيح
+            console.log(branchSelect, stationSelect);
           
-              // إذا كانت المحطة محددة، عند تغييرها
-              branchSelect.branch_modal1.addEventListener("change", () => {
-                  const branch = branchSelect.branch_modal1.value;
-                  console.log("Branch changed:", branch);
-                  fetchStations(branch, stationSelect.station_modal1, certifiedDateInput);
-              });
+            // تعيين القسم في الواجهة
+            document.getElementById("section").value = department || "";
           
-              branchSelect.branch_modal2.addEventListener("change", () => {
-                  const branch = branchSelect.branch_modal2.value;
-                  console.log("Branch changed:", branch);
-                  fetchStations(branch, stationSelect.station_modal2);
-              });
+            // أحداث التغيير الخاصة بالفرع
+            branchSelect.branch_modal1.addEventListener("change", () => {
+              const branch = branchSelect.branch_modal1.value;
+              console.log("Branch changed:", branch);
+              fetchStations(branch, stationSelect.station_modal1, certifiedDateInput);
+            });
           
-              branchSelect.branch_modal3.addEventListener("change", () => {
-                  const branch = branchSelect.branch_modal3.value;
-                  console.log("Branch changed:", branch);
-                  fetchStations(branch, stationSelect.station_modal3);
-              });
+            branchSelect.branch_modal2.addEventListener("change", () => {
+              const branch = branchSelect.branch_modal2.value;
+              console.log("Branch changed:", branch);
+              fetchStations(branch, stationSelect.station_modal2);
+            });
           
-              // جلب المحطات بناءً على الفرع
-              function fetchStations(branch, stationSelect) {
-                  if (!branch || !stationSelect) {
-                      console.log("Branch or stationSelect is not provided.");
-                      return;
-                  }
+            branchSelect.branch_modal3.addEventListener("change", () => {
+              const branch = branchSelect.branch_modal3.value;
+              console.log("Branch changed:", branch);
+              fetchStations(branch, stationSelect.station_modal3);
+            });
           
-                  console.log("Fetching stations for branch:", branch);
-          
-                  // تحقق من وجود العنصر stationSelect
-                  if (!stationSelect) {
-                      console.error("Station select element is not found!");
-                      return;
-                  }
-          
-                  stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-          
-                  const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
-          
-                  fetch(url)
-                      .then(res => res.json())
-                      .then(data => {
-                          console.log("datastation:", data);
-                          if (data.status === "success") {
-                              stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              branchStations = data.stations;
-                              branchDates = data.certifiedDates;
-          
-                              data.stations.forEach(station => {
-                                  const option = document.createElement("option");
-                                  option.value = station;
-                                  option.textContent = station;
-                                  stationSelect.appendChild(option);
-                              });
-                          } else {
-                              stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-                          }
-                      })
-                      .catch(err => {
-                          console.error("Error fetching stations:", err);
-                          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-                      });
+            // جلب المحطات بناءً على الفرع
+            function fetchStations(branch, stationSelect, certifiedDateInput) {
+              if (!branch || !stationSelect) {
+                console.log("Branch or stationSelect is not provided.");
+                return;
               }
+          
+              console.log("Fetching stations for branch:", branch);
+          
+              // تحقق من وجود العنصر stationSelect
+              if (!stationSelect) {
+                console.error("Station select element is not found!");
+                return;
+              }
+          
+              stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+          
+              const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+          
+              fetch(url)
+                .then(res => res.json())
+                .then(data => {
+                  console.log("datastation:", data);
+                  if (data.status === "success") {
+                    stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+                    const branchStations = data.stations;
+                    const branchDates = data.certifiedDates;
+          
+                    data.stations.forEach(station => {
+                      const option = document.createElement("option");
+                      option.value = station;
+                      option.textContent = station;
+                      stationSelect.appendChild(option);
+                    });
+          
+                    if (certifiedDateInput) {
+                      certifiedDateInput.value = branchDates[0] || ""; // Set default certified date if available
+                    }
+                  } else {
+                    stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+                  }
+                })
+                .catch(err => {
+                  console.error("Error fetching stations:", err);
+                  stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+                });
+            }
           };
-                 // دالة لفتح المودال عند النقر على عنصر
+          
+          // دالة لفتح المودال عند النقر على عنصر
           function openModal(id) {
-              // إغلاق جميع المودالات أولاً
-              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-              document.getElementById(id).style.display = "block";
+            // إغلاق جميع المودالات أولاً
+            document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+            document.getElementById(id).style.display = "block";
           }
           
           // دالة لإغلاق المودال
           function closeModal(id) {
-              document.getElementById(id).style.display = "none";
+            document.getElementById(id).style.display = "none";
           }
           
           // إغلاق المودال عند الضغط خارج المودال
           window.onclick = function(event) {
-              document.querySelectorAll('.modal').forEach(m => {
-                  if (event.target === m) m.style.display = "none";
-              });
+            document.querySelectorAll('.modal').forEach(m => {
+              if (event.target === m) m.style.display = "none";
+            });
           };
-
-  /////////////////////////////////////////////////////////////////////////////////////////////
- /////////////////////////////////////////////////////////////////////////////////////////////
-          ////طباعة تقرير الاجراءات التصحيحية لمحطة واحدة
-         document.getElementById("reportstation").addEventListener("click", () => {
-          const branch = document.getElementById("branch_modal1").value || "----";
-          const station = document.getElementById("station_modal1").value || "----";
-          const certifiedDate = document.getElementById("certifieddate").value || "----";
-      
-          const locationSelect = document.getElementById("location");
-          const detailsMap = locationSelect.detailsMap;
-      
-          if (!detailsMap || Object.keys(detailsMap).length === 0) {
+          
+          // تقرير الإجراءات التصحيحية لمحطة واحدة
+          document.getElementById("reportstation").addEventListener("click", () => {
+            const branch = document.getElementById("branch_modal1").value || "----";
+            const station = document.getElementById("station_modal1").value || "----";
+            const certifiedDate = document.getElementById("certifieddate").value || "----";
+          
+            const locationSelect = document.getElementById("location");
+            const detailsMap = locationSelect.detailsMap;
+          
+            if (!detailsMap || Object.keys(detailsMap).length === 0) {
               alert("No Data for Print!");
               return;
-          }
-      
-          const allLocations = Object.values(detailsMap) || [];
-      
-          const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
-          const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
-          const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-          const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-      
-          if (allLocations.length === 0) {
+            }
+          
+            const allLocations = Object.values(detailsMap) || [];
+          
+            const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
+            const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
+            const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+            const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+          
+            if (allLocations.length === 0) {
               alert("لا توجد بيانات للطباعة!");
               return;
-          }
-      
-          let rowsHtml = allLocations.map(detail => {
+            }
+          
+            let rowsHtml = allLocations.map(detail => {
               // تغيير لون الصف حسب حالة التنفيذ
               let rowColor = "";
               if (detail.status?.trim() === "جارى") rowColor = "background-color:#fff3cd;"; // أصفر فاتح
               else if (detail.status?.trim() === "لم يتم") rowColor = "background-color:#f8d7da;"; // أحمر فاتح
-      
+          
               return `
-              <tr style="${rowColor}">
+                <tr style="${rowColor}">
                   <td>${detail.location || ""}</td>
                   <td>${detail.risk || ""}</td>
                   <td>${detail.corraction || ""}</td>
                   <td>${detail.duration || ""}</td>
                   <td>${detail.status || ""}</td>
-              </tr>
+                </tr>
               `;
-          }).join("");
-      
-          const htmlContent = `
+            }).join("");
+          
+            const htmlContent = `
               <html>
               <head>
                   <title>تقرير الاعتماد</title>
@@ -331,26 +334,15 @@
                           background-color: #f9f9f9;
                       }
                       .logo-container {
-                          text-align: right; /* محاذاة الصور لليمين */
+                          text-align: right;
                           margin-bottom: 20px;
                           display: flex;
-                          justify-content: flex-start; /* محاذاة الصور لليمين */
+                          justify-content: flex-start;
                           gap: 10px;
                       }
                       .logo-container img {
-                          width: 80px; /* تغيير الحجم حسب الحاجة */
+                          width: 80px;
                           margin-top: 5px;
-                      }
-                      .summary-table th {
-                          background-color: #dcdcdc;
-                          font-weight: bold;
-                      }
-                      .summary-table td {
-                          text-align: center;
-                          padding: 10px;
-                      }
-                      .content-section {
-                          margin-top: 20px;
                       }
                   </style>
               </head>
@@ -361,15 +353,14 @@
                   </div>
                   <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
                   <p>
-                      <strong>الفرع:</strong> ${branch_modal1} &nbsp;&nbsp;
-                      <strong>النظام:</strong> ${station_modal1} &nbsp;&nbsp;
+                      <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
+                      <strong>النظام:</strong> ${station} &nbsp;&nbsp;
                       <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
                   </p>
-      
-                  <!-- جدول الإحصائيات -->
-                  <div class="content-section">
+          
+                  <div>
                       <h3>ملخص الموقف التنفيذى للإجراءات التصحيحية</h3>
-                      <table class="summary-table">
+                      <table>
                           <thead>
                               <tr>
                                   <th>عدد الإجراءات التصحيحية</th>
@@ -388,35 +379,28 @@
                           </tbody>
                       </table>
                   </div>
-      
-                  <!-- جدول التفاصيل -->
-                  <div class="content-section">
-                      <h3>تفاصيل الإجراءات التصحيحية</h3>
-                      <table>
-                          <thead>
-                              <tr>
-                                  <th>الموقع</th>
-                                  <th>الخطر</th>
-                                  <th>الإجراء التصحيحي</th>
-                                  <th>المدة الزمنية</th>
-                                  <th>الموقف التنفيذي</th>
-                              </tr>
-                          </thead>
-                          <tbody>
-                              ${rowsHtml}
-                          </tbody>
-                      </table>
-                  </div>
+          
+                  <table>
+                      <thead>
+                          <tr>
+                              <th>الموقع</th>
+                              <th>الخطر</th>
+                              <th>الإجراء التصحيحي</th>
+                              <th>مدة التنفيذ</th>
+                              <th>حالة التنفيذ</th>
+                          </tr>
+                      </thead>
+                      <tbody>${rowsHtml}</tbody>
+                  </table>
               </body>
               </html>
-          `;
-      
-          const printWindow = window.open('', '', 'height=700,width=900');
-          printWindow.document.write(htmlContent);
-          printWindow.document.close();
-          printWindow.focus();
-          printWindow.print();
-      });
+            `;
+          
+            const printWindow = window.open("", "_blank");
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.print();
+          });
 
 
         /////////////////////////////// كل المحطات الفرع الواحد المختار
@@ -1076,6 +1060,7 @@
   </body>
 
 </html>
+
 
 
 
