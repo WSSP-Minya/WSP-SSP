@@ -158,6 +158,8 @@
               // تحديد عناصر DOM
               const branchSelect1 = document.getElementById("branch_modal1");
               const stationSelect1 = document.getElementById("station_modal1");
+              const branchSelect2 = document.getElementById("branch_modal2");
+              const stationSelect2 = document.getElementById("station_modal2");
               const certifiedDateInput = document.getElementById("certifieddate");
               const locationSelect = document.getElementById("location");
           
@@ -776,8 +778,8 @@
  /////////////////////////////////////////////////////////////////////////////////////////////       
         /////////////طباعة تقرير ملاحظات WSP  الاجراءات التصحيحية لمحطة واحدة
          document.getElementById("reportwspcomments").addEventListener("click", () => {
-          const branch = document.getElementById("branch").value || "----";
-          const station = document.getElementById("station").value || "----";
+          const branch2 = document.getElementById("branch_modal2").value || "----";
+          const station2 = document.getElementById("station_modal2").value || "----";
           const certifiedDate = document.getElementById("certifieddate").value || "----";
       
           const locationSelect = document.getElementById("location");
@@ -876,8 +878,8 @@
                   </div>
                   <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
                   <p>
-                      <strong>الفرع:</strong> ${branch} &nbsp;&nbsp;
-                      <strong>النظام:</strong> ${station} &nbsp;&nbsp;
+                      <strong>الفرع:</strong> ${branch2} &nbsp;&nbsp;
+                      <strong>النظام:</strong> ${station2} &nbsp;&nbsp;
                       <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
                   </p>
       
@@ -1098,6 +1100,7 @@
   </body>
 
 </html>
+
 
 
 
