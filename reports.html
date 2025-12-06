@@ -591,7 +591,7 @@
             document.getElementById("reportall").addEventListener("click", async () => {
               const branchSelect = document.getElementById("branch_modal1");
               const branchOptions = Array.from(branchSelect.options)
-                           .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----"); // تجاهل placeholder
+                           .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----" && opt.value !== "Select Branch"); // تجاهل placeholder
           
               if (branchOptions.length === 0) {
                   alert("لا توجد فروع للطباعة!");
@@ -1098,6 +1098,7 @@
   </body>
 
 </html>
+
 
 
 
