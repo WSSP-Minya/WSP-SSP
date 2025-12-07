@@ -193,13 +193,13 @@
 
           
               // جلب المحطات بناءً على الفرع
-              function fetchStations(branch, stationSelect) {
+              function fetchStations(branch, stationSelect1) {
                   if (!branch) {
                       console.log("Branch is not provided or invalid.");
                       return;
                   }
                   console.log("Fetching stations for branch:", branch);
-                  stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+                  stationSelect1.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
           
                   const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
           
@@ -209,13 +209,13 @@
                           console.log("datastation:", data);
                           if (data.status === "success") {
                               stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              if (stationSelect === stationSelect1) {
+                              if (stationSelect1 === stationSelect1) {
                                   branchStations1 = data.stations;
                                   branchDates1 = data.certifiedDates;
-                              } else if (stationSelect === stationSelect2) {
+                              } else if (stationSelect2 === stationSelect2) {
                                   branchStations2 = data.stations;
                                   branchDates2 = data.certifiedDates;
-                              } else if (stationSelect === stationSelect3) {
+                              } else if (stationSelect3 === stationSelect3) {
                                   branchStations3 = data.stations;
                                   branchDates3 = data.certifiedDates;
                               }
@@ -1180,6 +1180,7 @@
   </body>
 
 </html>
+
 
 
 
