@@ -171,7 +171,7 @@
               // إضافة مستمع التغيير للفرع
               branchSelect1.addEventListener("change", () => {
                 console.log("Branch changed:", branchSelect1.value);
-                fetchStations(branchSelect1.value);
+                fetchStations(branchSelect1.value, stationSelect1);
               });
               // إضافة مستمع التغيير للفرع الثاني
               branchSelect2.addEventListener("change", () => {
@@ -193,13 +193,13 @@
 
           
               // جلب المحطات بناءً على الفرع
-              function fetchStations(branch, stationSelect1) {
+              function fetchStations(branch, stationSelect) {
                   if (!branch) {
                       console.log("Branch is not provided or invalid.");
                       return;
                   }
                   console.log("Fetching stations for branch:", branch);
-                  stationSelect1.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+                  stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
           
                   const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
           
@@ -209,13 +209,13 @@
                           console.log("datastation:", data);
                           if (data.status === "success") {
                               stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              if (stationSelect1 === stationSelect1) {
+                              if (stationSelect === stationSelect1) {
                                   branchStations1 = data.stations;
                                   branchDates1 = data.certifiedDates;
-                              } else if (stationSelect2 === stationSelect2) {
+                              } else if (stationSelect === stationSelect2) {
                                   branchStations2 = data.stations;
                                   branchDates2 = data.certifiedDates;
-                              } else if (stationSelect3 === stationSelect3) {
+                              } else if (stationSelect === stationSelect3) {
                                   branchStations3 = data.stations;
                                   branchDates3 = data.certifiedDates;
                               }
@@ -1180,6 +1180,7 @@
   </body>
 
 </html>
+
 
 
 
