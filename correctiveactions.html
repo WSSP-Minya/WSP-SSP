@@ -95,6 +95,7 @@
             <div id="filename">No File</div>
         </div>
         </div>
+            <input value="" hiddin id= "executor">
 
         <div class="branchremark">
         <label>Branch Comment</label>
@@ -120,7 +121,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzWteuOFmMcHLvgHlvRKHHPa9H00NTUgmuiuq1waiuk22n3jqz1qS1lBqVhyc5MwNDTgg/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbwuECc-C7EwnKrp0KoKj0PJkEpTvf_T0L_Y852wpWsXPW5vwdUGZcvIapRFJVbzpU8Rkw/exec";
     
   
     window.onload = () => {
@@ -422,6 +423,7 @@
         const corractionInput = document.getElementById("corraction");
         const durationInput = document.getElementById("duration");
         const statusSelect = document.getElementById("status");
+        const executor = document.getElementById("executor")// اضافة جديدة 
         const branchcomment = document.getElementById("branchcomment");
         const wspcomment = document.getElementById("wspcomment");
         const attachmentInput = document.getElementById("attachment");
@@ -482,6 +484,7 @@
         formData.append("corraction", document.getElementById("corraction").value);
         formData.append("duration", document.getElementById("duration").value);
         formData.append("status", document.getElementById("status").value);
+        formData.append("executor", document.getElementById("executor").value); ///اضافة جديدة
         // 🔹 هنا نرسل الرابط الفعلي وليس قيمة input
         
         formData.append("branchcomment", document.getElementById("branchcomment").value);
@@ -747,6 +750,7 @@
 
 </body>
 </html>
+
 
 
 
