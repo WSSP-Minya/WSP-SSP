@@ -474,8 +474,15 @@
     
       // 🔹 إرسال الملفات مباشرة دون Base64
       if (attachmentInput.files.length > 0) {
-        formData.append("attachment", attachmentInput.files[0]);
+        let file = attachmentInput.files[0];
+        if (file.type.startsWith("image/")) {
+          file = await compressImage(file);
+        }
+        const base64File = await fileToBase64(file);
+        formData.append("fileBase64", base64File);
+        formData.append("fileName", file.name);
       }
+
     
       console.log("📤 FormData ready to send:", formData);
     
@@ -693,6 +700,7 @@
 
 </body>
 </html>
+
 
 
 
