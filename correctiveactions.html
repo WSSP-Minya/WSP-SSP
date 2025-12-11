@@ -464,31 +464,7 @@
           alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
           return;
         }
-      
-
-      
         
-
-                      
-        const formData = new URLSearchParams();
-        formData.append("action", "updatestation");  // 🆕 مهم جدًا
-        formData.append("station", document.getElementById("station").value);
-        formData.append("email", email);
-        formData.append("department", currentDepartment);
-       // في formData نرسل القيمة مباشرة
-        formData.append("location", locationText.trim()); // نص الموقع
-        formData.append("risk", riskText.trim()); // الخطر المرتبط تلقائيًا
-        
-        formData.append("corraction", document.getElementById("corraction").value);
-        formData.append("duration", document.getElementById("duration").value);
-        formData.append("status", document.getElementById("status").value);
-        // 🔹 هنا نرسل الرابط الفعلي وليس قيمة input
-        
-        formData.append("branchcomment", document.getElementById("branchcomment").value);
-        formData.append("wspcomment", document.getElementById("wspcomment").value);
-       
-        // 🔹 إضافة حقل لإرسال البريد من جهة السيرفر
-        formData.append("sendEmail", "true"); // Apps Script سيستخدمه لإرسال البريد
         // ⭐ التعامل مع المرفقات
         let base64File = "";
         let fileName = "";
@@ -508,18 +484,41 @@
             base64File = await fileToBase64(file);
         }
         
+      
+
+      
+        
+
+                      
+        const formData = new FormData();
+        formData.append("action", "updatestation");  // 🆕 مهم جدًا
+        formData.append("station", document.getElementById("station").value);
+        formData.append("email", email);
+        formData.append("department", currentDepartment);
+       // في formData نرسل القيمة مباشرة
+        formData.append("location", locationText.trim()); // نص الموقع
+        formData.append("risk", riskText.trim()); // الخطر المرتبط تلقائيًا
+        
+        formData.append("corraction", document.getElementById("corraction").value);
+        formData.append("duration", document.getElementById("duration").value);
+        formData.append("status", document.getElementById("status").value);
+        // 🔹 هنا نرسل الرابط الفعلي وليس قيمة input
+        
+        formData.append("branchcomment", document.getElementById("branchcomment").value);
+        formData.append("wspcomment", document.getElementById("wspcomment").value);
+       
+        // 🔹 إضافة حقل لإرسال البريد من جهة السيرفر
+        formData.append("sendEmail", "true"); // Apps Script سيستخدمه لإرسال البريد
+        
         // ⭐ إضافة البيانات إلى formData
         formData.append("fileBase64", base64File);
         formData.append("fileName", fileName);
 
         console.log("📤 Form Data sent to server:", formData.toString());
-      
-        fetch(scriptURL, {
+          // ⭐ لا تضف أي هيدر هنا — المتصفح يعرف ما يفعل
+          const res = await fetch(scriptURL, {
           method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
+          
           body: formData.toString()
         })
           .then(response => {
@@ -747,6 +746,7 @@
 
 </body>
 </html>
+
 
 
 
