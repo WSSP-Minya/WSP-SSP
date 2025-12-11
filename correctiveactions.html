@@ -519,7 +519,7 @@
           const res = await fetch(scriptURL, {
           method: "POST",
           
-          body: formData.toString()
+          body: formData
         })
           .then(response => {
             console.log("🔍 Raw response object:", response);
@@ -746,6 +746,7 @@
 
 </body>
 </html>
+
 
 
 
