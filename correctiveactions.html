@@ -117,6 +117,32 @@
         <button type="button" id="printReport">Report</button>
         </div>
     </form>
+     <!-- iframe مخفي لإرسال البيانات -->
+      <iframe name="gsFrame" style="display:none;"></iframe>
+      
+      <!-- نموذج مخفي للإرسال عبر iframe -->
+      <form id="updateForm" 
+            action="https://script.google.com/macros/s/AKfycbxzjU0zTKqq9IPPIuaKFY-5JrPfoTAMX38Xr8HwAwEdVJAsAmi7Zx7PsRRrGC7tS022FA/exec"
+            method="post" 
+            enctype="multipart/form-data" 
+            target="gsFrame">
+          <input type="hidden" name="action" value="updatestation">
+          <input type="hidden" id="stationInput" name="station">
+          <input type="hidden" id="emailInput" name="email">
+          <input type="hidden" id="departmentInput" name="department">
+          <input type="hidden" id="locationInput" name="location">
+          <input type="hidden" id="riskInput" name="risk">
+          <input type="hidden" id="corractionInput" name="corraction">
+          <input type="hidden" id="durationInput" name="duration">
+          <input type="hidden" id="statusInput" name="status">
+          <input type="hidden" id="branchcommentInput" name="branchcomment">
+          <input type="hidden" id="wspcommentInput" name="wspcomment">
+          <input type="file" id="attachmentInput" name="attachment" style="display:none;">
+      </form>
+
+</form>
+
+
     </div>
  
   <script>
@@ -458,48 +484,35 @@
         return;
       }
     
-      // 🔹 إنشاء FormData لدعم الملفات مباشرة
-      const formData = new FormData();
-      formData.append("action", "updatestation");  // اسم الدالة في Apps Script
-      formData.append("station", document.getElementById("station").value);
-      formData.append("email", email);
-      formData.append("department", currentDepartment);
-      formData.append("location", locationText.trim());
-      formData.append("risk", riskText.trim());
-      formData.append("corraction", corractionInput.value);
-      formData.append("duration", durationInput.value);
-      formData.append("status", statusSelect.value);
-      formData.append("branchcomment", branchcomment.value);
-      formData.append("wspcomment", wspcomment.value);
-    
-      // 🔹 إرسال الملفات مباشرة دون Base64
-      if (attachmentInput.files.length > 0) {
-        let file = attachmentInput.files[0];
-        if (file.type.startsWith("image/")) {
-          file = await compressImage(file);
-        }
-        const base64File = await fileToBase64(file);
-        formData.append("fileBase64", base64File);
-        formData.append("fileName", file.name);
-      }
 
-    
-      console.log("📤 FormData ready to send:", formData);
-    
-      fetch(scriptURL, {
-        method: "POST",
-        body: formData
-      })
-        .then(res => res.json())
-        .then(result => {
-          console.log("✅ Response from server:", result);
-    
-          if (result.status === "unauthorized") {
-            alert("غير مصرح لك بالوصول.");
-            return;
+          // 🔹 تعبئة الـ hidden inputs في النموذج المخفي
+          document.getElementById("stationInput").value = document.getElementById("station").value;
+          document.getElementById("emailInput").value = email;
+          document.getElementById("departmentInput").value = currentDepartment;
+          document.getElementById("locationInput").value = locationText;
+          document.getElementById("riskInput").value = riskText;
+          document.getElementById("corractionInput").value = corractionInput.value;
+          document.getElementById("durationInput").value = durationInput.value;
+          document.getElementById("statusInput").value = statusSelect.value;
+          document.getElementById("branchcommentInput").value = branchcomment.value;
+          document.getElementById("wspcommentInput").value = wspcomment.value;
+      
+          // 🔹 إذا هناك ملف مرفق، ننسخه إلى الـ hidden input
+          if (attachmentInput.files.length > 0) {
+              let file = attachmentInput.files[0];
+      
+              // يمكن ضغط الصورة إذا رغبت
+              if (file.type.startsWith("image/")) {
+                  file = await compressImage(file);
+              }
+      
+              const dataTransfer = new DataTransfer();
+              dataTransfer.items.add(file);
+              document.getElementById("attachmentInput").files = dataTransfer.files;
           }
-    
-          if (result.result === "Updated") {
+      
+          // 🔹 إرسال الفورم عبر iframe لتجنب CORS
+          document.getElementById("updateForm").submit()
             alert("تم تحديث البيانات بنجاح ✅");
     
             // 🔄 تحديث قائمة المواقع بعد التحديث مباشرة
@@ -700,6 +713,7 @@
 
 </body>
 </html>
+
 
 
 
