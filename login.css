@@ -10,7 +10,7 @@ body {
 
 body::before{
     content: "";
-    background-image: url("https://github.com/WSSP-Minya/WSP-SSP/blob/main/drops-of-water-water-nature-liquid-40784.webp?raw=true");
+    background-image: url("https://github.com/WSSP-Minya/WSP-SSP/blob/main/drops-of-water-water-nature-liquid-40784.webp");
     background-size: cover;
     background-position: center;
     position: fixed;
@@ -118,4 +118,5 @@ button:hover {
         max-width: 300px;
     }
 }
+
 
