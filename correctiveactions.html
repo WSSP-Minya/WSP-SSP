@@ -441,51 +441,49 @@
 
  
        async function sendCommentsData(event, action) {
-      event = event || window.event;
-      const email = sessionStorage.getItem("email");
-      const department = sessionStorage.getItem("department");
-    
-      const locationSelect = document.getElementById("location");
-      const corractionInput = document.getElementById("corraction");
-      const durationInput = document.getElementById("duration");
-      const statusSelect = document.getElementById("status");
-      const branchcomment = document.getElementById("branchcomment");
-      const wspcomment = document.getElementById("wspcomment");
-      const attachmentInput = document.getElementById("attachment");
-    
-      // 🔹 تحديد القسم الحقيقي الذي يرسل
-      let currentDepartment = department;
-      if (event.target.classList.contains("branchbutton")) {
-        currentDepartment = document.getElementById("branch").value;
-      } else if (event.target.classList.contains("wspbutton")) {
-        currentDepartment = "wsp";
-      }
-    
-      const confirmUpdate = confirm("هل تريد تحديث الموقف التنفيذي والملاحظات والمرفق؟");
-      if (!confirmUpdate) return;
-    
-      const selectedKey = locationSelect.value;
-      if (!selectedKey) {
-        alert("يرجى اختيار الموقع من القائمة!");
-        return;
-      }
-    
-      const detail = locationSelect.detailsMap[selectedKey];
-      if (!detail || !detail.location) {
-        alert("⚠️ الموقع غير صحيح");
-        return;
-      }
-    
-      const locationText = detail.location;
-      const riskText = detail.risk;
-    
-      if (action === "update" && (!locationText || !corractionInput.value || !durationInput.value)) {
-        alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
-        return;
-      }
-    
-
-          // 🔹 تعبئة الـ hidden inputs في النموذج المخفي
+          event = event || window.event;
+          const email = sessionStorage.getItem("email");
+          const department = sessionStorage.getItem("department");
+        
+          const locationSelect = document.getElementById("location");
+          const corractionInput = document.getElementById("corraction");
+          const durationInput = document.getElementById("duration");
+          const statusSelect = document.getElementById("status");
+          const branchcomment = document.getElementById("branchcomment");
+          const wspcomment = document.getElementById("wspcomment");
+          const attachmentInput = document.getElementById("attachment");
+        
+          let currentDepartment = department;
+          if (event.target.classList.contains("branchbutton")) {
+            currentDepartment = document.getElementById("branch").value;
+          } else if (event.target.classList.contains("wspbutton")) {
+            currentDepartment = "wsp";
+          }
+        
+          const confirmUpdate = confirm("هل تريد تحديث الموقف التنفيذي والملاحظات والمرفق؟");
+          if (!confirmUpdate) return;
+        
+          const selectedKey = locationSelect.value;
+          if (!selectedKey) {
+            alert("يرجى اختيار الموقع من القائمة!");
+            return;
+          }
+        
+          const detail = locationSelect.detailsMap[selectedKey];
+          if (!detail || !detail.location) {
+            alert("⚠️ الموقع غير صحيح");
+            return;
+          }
+        
+          const locationText = detail.location;
+          const riskText = detail.risk;
+        
+          if (action === "update" && (!locationText || !corractionInput.value || !durationInput.value)) {
+            alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
+            return;
+          }
+        
+          // 🔹 تعبئة الـ hidden inputs في الفورم
           document.getElementById("stationInput").value = document.getElementById("station").value;
           document.getElementById("emailInput").value = email;
           document.getElementById("departmentInput").value = currentDepartment;
@@ -496,40 +494,48 @@
           document.getElementById("statusInput").value = statusSelect.value;
           document.getElementById("branchcommentInput").value = branchcomment.value;
           document.getElementById("wspcommentInput").value = wspcomment.value;
-      
-          // 🔹 إذا هناك ملف مرفق، ننسخه إلى الـ hidden input
+        
+          // 🔹 إرسال الملف (مع ضغط الصورة إذا كانت صورة)
           if (attachmentInput.files.length > 0) {
-              let file = attachmentInput.files[0];
-      
-              // يمكن ضغط الصورة إذا رغبت
-              if (file.type.startsWith("image/")) {
-                  file = await compressImage(file);
-              }
-      
-              const dataTransfer = new DataTransfer();
-              dataTransfer.items.add(file);
-              document.getElementById("attachmentInput").files = dataTransfer.files;
+            let file = attachmentInput.files[0];
+            if (file.type.startsWith("image/")) {
+              file = await compressImage(file);
+            }
+            const dt = new DataTransfer();
+            dt.items.add(file);
+            document.getElementById("attachmentInput").files = dt.files;
           }
-      
-          // 🔹 إرسال الفورم عبر iframe لتجنب CORS
-          document.getElementById("updateForm").submit()
+        
+          // 🔹 الاستماع لحدث انتهاء تحميل الـ iframe
+          const iframe = document.getElementById("hidden_iframe");
+        
+          const onIframeLoad = () => {
             alert("تم تحديث البيانات بنجاح ✅");
-    
-            // 🔄 تحديث قائمة المواقع بعد التحديث مباشرة
+        
+            // تحديث تفاصيل الموقع بعد التأكد من الإرسال
             const currentStation = document.getElementById("station").value;
             fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation))
               .then(res => res.json())
               .then(data => {
                 if (data.status === "success") {
                   fillStationDetails(data.details);
-    
-                  // إعادة اختيار نفس الموقع إذا رغبت
                   const keys = Object.keys(locationSelect.detailsMap);
                   const foundKey = keys.find(k => locationSelect.detailsMap[k].location === locationText);
                   if (foundKey) locationSelect.value = foundKey;
                 }
               })
               .catch(err => console.error("Error refreshing locations:", err));
+        
+            // إزالة المستمع بعد التنفيذ لتجنب تكرار
+            iframe.removeEventListener("load", onIframeLoad);
+          };
+        
+          iframe.addEventListener("load", onIframeLoad);
+        
+          // 🔹 إرسال الفورم عبر iframe
+          document.getElementById("updateForm").submit();
+        }
+
      
 
 
@@ -713,6 +719,7 @@
 
 </body>
 </html>
+
 
 
 
