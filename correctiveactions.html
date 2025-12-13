@@ -543,7 +543,8 @@
               const formDataApproval = new URLSearchParams();
               formDataApproval.append("action", "approveAction");
               formDataApproval.append("station", currentStation);
-              formDataApproval.append("location", locationText);
+              formDataApproval.append("location", locationText.trim());
+              formDataApproval.append("risk", riskText.trim());
               formDataApproval.append("email", email);
               formDataApproval.append("checkbox", "true");
   
@@ -698,6 +699,7 @@
 
 </body>
 </html>
+
 
 
 
