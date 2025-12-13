@@ -17,7 +17,7 @@
             <input id="section" disabled>
        </div>
 
-      <img src="wsp.22cd4e849308ae80b006.png" class="logo">
+      <img src="https://github.com/WSSP-Minya/WSP-SSP/blob/main/wsp.22cd4e849308ae80b006.png?raw=true" class="logo">
   </div>
     <div class="page-container">
     <form onsubmit="return false;">
@@ -120,7 +120,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycby8LiK4YuHQxB_uF1Dh4V6kSBXuDMcuAK1npVvVGhxChDLxiVQ1PlQoF1lA47unQ1XjVQ/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbzWteuOFmMcHLvgHlvRKHHPa9H00NTUgmuiuq1waiuk22n3jqz1qS1lBqVhyc5MwNDTgg/exec";
     
   
     window.onload = () => {
@@ -470,7 +470,7 @@
         
 
                       
-        const formData = new FormData();
+        const formData = new URLSearchParams();
         formData.append("action", "updatestation");  // 🆕 مهم جدًا
         formData.append("station", document.getElementById("station").value);
         formData.append("email", email);
@@ -490,24 +490,37 @@
         // 🔹 إضافة حقل لإرسال البريد من جهة السيرفر
         formData.append("sendEmail", "true"); // Apps Script سيستخدمه لإرسال البريد
         // ⭐ التعامل مع المرفقات
-       
+        let base64File = "";
+        let fileName = "";
         
        
         
-        // ⭐ المرفق الحقيقي
         if (attachmentInput.files.length > 0) {
-          formData.append("file", attachmentInput.files[0]);
+            let file = attachmentInput.files[0];
+            fileName = file.name;
+        
+            // 📌 ضغط الصورة إذا كانت Image
+            if (file.type.startsWith("image/")) {
+                file = await compressImage(file);
+            }
+        
+            // 📌 تحويل الملف إلى Base64
+            base64File = await fileToBase64(file);
         }
-
         
-           
+        // ⭐ إضافة البيانات إلى formData
+        formData.append("fileBase64", base64File);
+        formData.append("fileName", fileName);
 
-        
+        console.log("📤 Form Data sent to server:", formData.toString());
       
         fetch(scriptURL, {
           method: "POST",
-          
-          body: formData
+          mode: "cors",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: formData.toString()
         })
           .then(response => {
             console.log("🔍 Raw response object:", response);
@@ -734,16 +747,6 @@
 
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
 
 
 
