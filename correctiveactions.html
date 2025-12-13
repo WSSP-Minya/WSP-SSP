@@ -464,6 +464,18 @@
           alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
           return;
         }
+
+        let base64File = "";
+        let fileName = "";
+      
+        if (attachmentInput.files.length > 0) {
+          let file = attachmentInput.files[0];
+          fileName = file.name;
+          if (file.type.startsWith("image/")) {
+            file = await compressImage(file);
+          }
+          base64File = await fileToBase64(file);
+        }
       
 
       
@@ -489,65 +501,37 @@
        
         // 🔹 إضافة حقل لإرسال البريد من جهة السيرفر
         formData.append("sendEmail", "true"); // Apps Script سيستخدمه لإرسال البريد
-        // ⭐ التعامل مع المرفقات
-        let base64File = "";
-        let fileName = "";
-        
        
-        
-        if (attachmentInput.files.length > 0) {
-            let file = attachmentInput.files[0];
-            fileName = file.name;
-        
-            // 📌 ضغط الصورة إذا كانت Image
-            if (file.type.startsWith("image/")) {
-                file = await compressImage(file);
-            }
-        
-            // 📌 تحويل الملف إلى Base64
-            base64File = await fileToBase64(file);
-        }
-        
         // ⭐ إضافة البيانات إلى formData
         formData.append("fileBase64", base64File);
         formData.append("fileName", fileName);
 
         console.log("📤 Form Data sent to server:", formData.toString());
       
-        fetch(scriptURL, {
-          method: "POST",
-          mode: "cors",
-          headers: {
-            "Content-Type": "application/x-www-form-urlencoded"
-          },
-          body: formData.toString()
-        })
-          .then(response => {
-            console.log("🔍 Raw response object:", response);
-            console.log("Raw response:", response);
+       fetch(scriptURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData.toString()
+      })
+      .then(response => response.text())
+      .then(text => {
+        try {
+          const result = JSON.parse(text);
+          console.log("Server response:", result);
+      
+          if (result.status === "unauthorized") {
+            alert("غير مصرح لك بالوصول.");
+            return;
+          }
+      
+          if (result.result === "Updated") {
+            alert("تم تحديث البيانات والمرفق بنجاح ✅");
+          }
+      
+        } catch (e) {
+          console.warn("Non-JSON response due to CORS or server:", text);
+        }
 
-      
-            // ✅ التحقق من حالة الاستجابة قبل تحويلها إلى JSON
-            if (!response.ok) {
-              console.error("❌ Network or server error:", response.status, response.statusText);
-              throw new Error(`HTTP Error: ${response.status}`);
-            }
-      
-            // ✅ تحويل النتيجة إلى JSON
-            return response.json();
-          })
-          .then(result => { 
-            console.log("✅ Response JSON from server:", result);
-            console.log("Result from server:", result);
-
-      
-            if (result.status === "unauthorized") {
-              alert("غير مصرح لك بالوصول.");
-              return;
-            }
-      
-            if (result.result === "Updated") {
-              alert("تم تحديث البيانات بنجاح ✅");
               // 🔄 تحديث قائمة المواقع بعد التحديث مباشرة
               const currentStation = document.getElementById("station").value;
               
@@ -747,6 +731,7 @@
 
 </body>
 </html>
+
 
 
 
