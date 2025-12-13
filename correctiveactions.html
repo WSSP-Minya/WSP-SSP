@@ -539,36 +539,45 @@
   
       // اعتماد الإجراء إذا كان زر WSP
       if (event.target.classList.contains("wspbutton")) {
-          if (confirm("هل تريد اعتماد الاجراء؟")) {
-              const formDataApproval = new URLSearchParams();
-              formDataApproval.append("action", "approveAction");
-              formDataApproval.append("station", currentStation);
-              formDataApproval.append("location", locationText.trim());
-              formDataApproval.append("risk", riskText.trim());
-              formDataApproval.append("email", email);
-              formDataApproval.append("checkbox", "true");
-  
-              try {
-                  const approvalRes = await fetch(scriptURL, {
-                      method: "POST",
-                      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                      body: formDataApproval.toString()
-                  });
-                  const approvalData = await approvalRes.json();
-                  if (approvalData.result === "Approved") {
-                      alert("تم اعتماد الاجراء بنجاح ✅");
-                      const refreshRes = await fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation));
-                      const refreshData = await refreshRes.json();
-                      if (refreshData.status === "success") fillStationDetails(refreshData.details);
-                  } else {
-                      alert("حدث خطأ أثناء اعتماد الاجراء.");
-                  }
-              } catch (err) {
-                  console.error("Approval error:", err);
-                  alert("حدث خطأ أثناء اعتماد الاجراء.");
-              }
-          }
-      }
+        if (confirm("هل تريد اعتماد الاجراء؟")) {
+            const formDataApproval = new URLSearchParams();
+            formDataApproval.append("action", "approveAction");
+            formDataApproval.append("station", currentStation);
+            formDataApproval.append("location", locationText.trim());
+            formDataApproval.append("risk", riskText.trim());
+            formDataApproval.append("email", email);
+            formDataApproval.append("checkbox", "true");
+    
+            try {
+                const approvalRes = await fetch(scriptURL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: formDataApproval.toString()
+                });
+    
+                if (!approvalRes.ok) throw new Error(`HTTP error ${approvalRes.status}`);
+    
+                const approvalData = await approvalRes.json();
+    
+                if (approvalData.result === "Approved") {
+                    alert("تم اعتماد الاجراء بنجاح ✅");
+    
+                    const refreshRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(currentStation)}`);
+                    if (!refreshRes.ok) throw new Error(`HTTP error ${refreshRes.status}`);
+    
+                    const refreshData = await refreshRes.json();
+                    if (refreshData.status === "success") fillStationDetails(refreshData.details);
+                } else {
+                    alert("حدث خطأ أثناء اعتماد الاجراء.");
+                }
+    
+            } catch (err) {
+                console.error("Approval error:", err);
+                alert("حدث خطأ أثناء اعتماد الاجراء.");
+            }
+        }
+    }
+
   
       clearForm();
       fetchData(email, department);
@@ -699,6 +708,7 @@
 
 </body>
 </html>
+
 
 
 
