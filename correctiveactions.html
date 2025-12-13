@@ -414,198 +414,165 @@
 
  
     async function sendCommentsData(event, action) {
-        event = event || window.event; // ضمان وجود event
-        const email = sessionStorage.getItem("email");
-        const department = sessionStorage.getItem("department"); 
-        const locationSelect = document.getElementById("location");
-        const riskInput = document.getElementById("risk");
-        const corractionInput = document.getElementById("corraction");
-        const durationInput = document.getElementById("duration");
-        const statusSelect = document.getElementById("status");
-        const branchcomment = document.getElementById("branchcomment");
-        const wspcomment = document.getElementById("wspcomment");
-        const attachmentInput = document.getElementById("attachment");
-
-            // 🔹 تحديد القسم الحقيقي الذي يرسل (حسب الزر)
-        let currentDepartment = department;
-        if (event.target.classList.contains("branchbutton")) {
-          currentDepartment =  document.getElementById("branch").value;  // ← اسم الفرع الحقيقي;
-        } else if (event.target.classList.contains("wspbutton")) {
+      event = event || window.event;
+      const email = sessionStorage.getItem("email");
+      const department = sessionStorage.getItem("department"); 
+      const locationSelect = document.getElementById("location");
+      const corractionInput = document.getElementById("corraction");
+      const durationInput = document.getElementById("duration");
+      const attachmentInput = document.getElementById("attachment");
+  
+      // تحديد القسم الحقيقي حسب الزر
+      let currentDepartment = department;
+      if (event.target.classList.contains("branchbutton")) {
+          currentDepartment = document.getElementById("branch").value;
+      } else if (event.target.classList.contains("wspbutton")) {
           currentDepartment = "wsp";
-        }
-        const confirmUpdate = confirm("هل تريد تحديث الموقف التنفيذي والملاحظات والمرفق؟");
-        if (!confirmUpdate) return;
-      
-        
-        const selectedKey = locationSelect.value; // هذا index
-        if (!selectedKey) {
+      }
+  
+      if (!confirm("هل تريد تحديث الموقف التنفيذي والملاحظات والمرفق؟")) return;
+  
+      const selectedKey = locationSelect.value;
+      if (!selectedKey) {
           alert("يرجى اختيار الموقع من القائمة!");
           return;
-        }
-    
-        const detail = locationSelect.detailsMap[selectedKey];
-        if (!detail || !detail.location) {
+      }
+  
+      const detail = locationSelect.detailsMap[selectedKey];
+      if (!detail || !detail.location) {
           alert("⚠️ الموقع غير صحيح");
           return;
-        }
-    
-        // 📝 نص الموقع الحقيقي
-        const locationText = detail.location;
-        // 📝 الخطر المرتبط تلقائيًا بالموقع
-        const riskText = detail.risk;
-
-       
-
-    
-        if (action === "update" && 
-            (!locationText ||
-             !corractionInput.value ||
-             !durationInput.value)) {
+      }
+  
+      const locationText = detail.location;
+      const riskText = detail.risk;
+  
+      if (action === "update" && (!locationText || !corractionInput.value || !durationInput.value)) {
           alert("يرجى اختيار صف أو تعبئة جميع الحقول قبل التحديث.");
           return;
-        }
-
-        let base64File = "";
-        let fileName = "";
-      
-        if (attachmentInput.files.length > 0) {
+      }
+  
+      // التعامل مع المرفقات
+      let base64File = "";
+      let fileName = "";
+      if (attachmentInput.files.length > 0) {
           let file = attachmentInput.files[0];
           fileName = file.name;
-          if (file.type.startsWith("image/")) {
-            file = await compressImage(file);
-          }
+          if (file.type.startsWith("image/")) file = await compressImage(file);
           base64File = await fileToBase64(file);
-        }
-      
-
-      
-        
-
-                      
-        const formData = new URLSearchParams();
-        formData.append("action", "updatestation");  // 🆕 مهم جدًا
-        formData.append("station", document.getElementById("station").value);
-        formData.append("email", email);
-        formData.append("department", currentDepartment);
-       // في formData نرسل القيمة مباشرة
-        formData.append("location", locationText.trim()); // نص الموقع
-        formData.append("risk", riskText.trim()); // الخطر المرتبط تلقائيًا
-        
-        formData.append("corraction", document.getElementById("corraction").value);
-        formData.append("duration", document.getElementById("duration").value);
-        formData.append("status", document.getElementById("status").value);
-        // 🔹 هنا نرسل الرابط الفعلي وليس قيمة input
-        
-        formData.append("branchcomment", document.getElementById("branchcomment").value);
-        formData.append("wspcomment", document.getElementById("wspcomment").value);
-       
-        // 🔹 إضافة حقل لإرسال البريد من جهة السيرفر
-        formData.append("sendEmail", "true"); // Apps Script سيستخدمه لإرسال البريد
-       
-        // ⭐ إضافة البيانات إلى formData
-        formData.append("fileBase64", base64File);
-        formData.append("fileName", fileName);
-
-        console.log("📤 Form Data sent to server:", formData.toString());
-      
-       fetch(scriptURL, {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData.toString()
-      })
-      .then(response => response.text())
-      .then(text => {
-        try {
-          const result = JSON.parse(text);
-          console.log("Server response:", result);
-      
-          if (result.status === "unauthorized") {
-            alert("غير مصرح لك بالوصول.");
-            return;
-          }
-      
-          if (result.result === "Updated") {
-            alert("تم تحديث البيانات والمرفق بنجاح ✅");
-          }
-      
-        } catch (e) {
-          console.warn("Non-JSON response due to CORS or server:", text);
-        }
-
-              // 🔄 تحديث قائمة المواقع بعد التحديث مباشرة
-              const currentStation = document.getElementById("station").value;
-              
-              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation))
-                  .then(res => res.json())
-                  .then(data => {
-                      if (data.status === "success") {
-                          fillStationDetails(data.details);
-              
-                          // إعادة اختيار نفس الموقع إذا رغبت
-                          if (locationText) {
-                              const keys = Object.keys(locationSelect.detailsMap);
-                              const foundKey = keys.find(k => locationSelect.detailsMap[k].location === locationText);
-                              if (foundKey) locationSelect.value = foundKey;
-                          }
-                      }
-                  })
-                  .catch(err => console.error("Error refreshing locations:", err));
-
-              
-               // 🔹 إذا كان الزر المستخدم هو WSP، نعرض رسالة اعتماد الاجراء
-              if (event.target.classList.contains("wspbutton")) {
-                  const approve = confirm("هل تريد اعتماد الاجراء؟");
-  
-                  if (approve) {
-                      // 🔹 إرسال تحديث لتفعيل الـ Checkbox أو عمود الاعتماد في Google Sheet
-                      const formDataApproval = new URLSearchParams();
-                      formDataApproval.append("action", "approveAction"); // يجب التعامل مع هذا في Apps Script
-                      formDataApproval.append("station", document.getElementById("station").value);
-                      formDataApproval.append("location", locationText);
-                      formDataApproval.append("email", email);
-                      formDataApproval.append("checkbox", "true"); // ✅ إضافة
-  
-                      fetch(scriptURL, {
-                          method: "POST",
-                          headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                          body: formDataApproval.toString()
-                      })
-                      .then(res => res.json())
-                      .then(res => {
-                          if (res.result === "Approved") {
-                              alert("تم اعتماد الاجراء بنجاح ✅");
-                            ///تحديث lpcation بعد اعتماد الاجراء
-                              fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation))
-                                .then(res => res.json())
-                                .then(data => {
-                                    if (data.status === "success") fillStationDetails(data.details);
-                                });
-
-                          } else {
-                              alert("حدث خطأ أثناء اعتماد الاجراء.");
-                          }
-                      })
-                      .catch(err => {  
-                          console.error("Approval error:", err);
-                      });
-                    } // ← إغلاق if (approve)
-                  } // ← إغلاق if WSP
-              } else if (result.result === "Location not found") {
-                  alert("❌ لم يتم العثور على الموقع المحدد في الشيت.");
-              } else {
-                  console.warn("⚠️ Unexpected result object:", result);
-                  alert("حدث خطأ أثناء التحديث.");
-              }
-      
-              clearForm();
-              fetchData(email, department);
-          })
-          .catch(error => {
-              console.error("💥 Exception caught:", error);
-              alert("حدث خطأ أثناء تنفيذ العملية. راجع الـ Console لمعرفة التفاصيل.");
-          });
       }
-
+  
+      // تجهيز البيانات للإرسال
+      const formData = new URLSearchParams();
+      formData.append("action", "updatestation");
+      formData.append("station", document.getElementById("station").value);
+      formData.append("email", email);
+      formData.append("department", currentDepartment);
+      formData.append("location", locationText.trim());
+      formData.append("risk", riskText.trim());
+      formData.append("corraction", corractionInput.value);
+      formData.append("duration", durationInput.value);
+      formData.append("status", document.getElementById("status").value);
+      formData.append("branchcomment", document.getElementById("branchcomment").value);
+      formData.append("wspcomment", document.getElementById("wspcomment").value);
+      formData.append("sendEmail", "true");
+      formData.append("fileBase64", base64File);
+      formData.append("fileName", fileName);
+  
+      console.log("📤 Sending form data:", formData.toString());
+  
+      let result; // تعريف متغير result قبل try/catch
+  
+      try {
+          const response = await fetch(scriptURL, {
+              method: "POST",
+              headers: { "Content-Type": "application/x-www-form-urlencoded" },
+              body: formData.toString()
+          });
+  
+          const text = await response.text();
+  
+          try {
+              result = JSON.parse(text);
+              console.log("Server response:", result);
+          } catch (e) {
+              console.warn("Non-JSON response (possibly CORS issue):", text);
+              alert("تعذر معالجة الاستجابة من السيرفر.");
+              return;
+          }
+  
+          if (result.status === "unauthorized") {
+              alert("غير مصرح لك بالوصول.");
+              return;
+          }
+  
+          if (result.result === "Updated") {
+              alert("تم تحديث البيانات والمرفق بنجاح ✅");
+          } else if (result.result === "Location not found") {
+              alert("❌ لم يتم العثور على الموقع المحدد في الشيت.");
+              return;
+          } else {
+              console.warn("⚠️ Unexpected result object:", result);
+              alert("حدث خطأ أثناء التحديث.");
+          }
+  
+      } catch (error) {
+          console.error("💥 Error sending data:", error);
+          alert("حدث خطأ أثناء إرسال البيانات. راجع Console.");
+          return;
+      }
+  
+      // تحديث قائمة المواقع بعد التحديث
+      const currentStation = document.getElementById("station").value;
+      try {
+          const detailsResponse = await fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation));
+          const detailsData = await detailsResponse.json();
+          if (detailsData.status === "success") {
+              fillStationDetails(detailsData.details);
+              const keys = Object.keys(locationSelect.detailsMap);
+              const foundKey = keys.find(k => locationSelect.detailsMap[k].location === locationText);
+              if (foundKey) locationSelect.value = foundKey;
+          }
+      } catch (err) {
+          console.error("Error refreshing locations:", err);
+      }
+  
+      // اعتماد الإجراء إذا كان زر WSP
+      if (event.target.classList.contains("wspbutton")) {
+          if (confirm("هل تريد اعتماد الاجراء؟")) {
+              const formDataApproval = new URLSearchParams();
+              formDataApproval.append("action", "approveAction");
+              formDataApproval.append("station", currentStation);
+              formDataApproval.append("location", locationText);
+              formDataApproval.append("email", email);
+              formDataApproval.append("checkbox", "true");
+  
+              try {
+                  const approvalRes = await fetch(scriptURL, {
+                      method: "POST",
+                      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                      body: formDataApproval.toString()
+                  });
+                  const approvalData = await approvalRes.json();
+                  if (approvalData.result === "Approved") {
+                      alert("تم اعتماد الاجراء بنجاح ✅");
+                      const refreshRes = await fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(currentStation));
+                      const refreshData = await refreshRes.json();
+                      if (refreshData.status === "success") fillStationDetails(refreshData.details);
+                  } else {
+                      alert("حدث خطأ أثناء اعتماد الاجراء.");
+                  }
+              } catch (err) {
+                  console.error("Approval error:", err);
+                  alert("حدث خطأ أثناء اعتماد الاجراء.");
+              }
+          }
+      }
+  
+      clearForm();
+      fetchData(email, department);
+  }
+  
 
       function clearForm() {
         document.getElementById("location").value = "";
@@ -731,6 +698,7 @@
 
 </body>
 </html>
+
 
 
 
