@@ -815,7 +815,10 @@
               htmlContent += `</table>`;
           
               // --------- جدول لكل فرع (ملخص لكل محطة) ---------
-              for (const branch1 of Object.keys(allDetailsPerBranch)) {
+              for (const branchSummaryItem of branchSummary) {
+                const branch1 = branchSummaryItem.branch1;
+                if (!allDetailsPerBranch[branch1]) continue; // لو ما فيش محطات لهذا الفرع
+
                   htmlContent += `<h3>ملخص محطات الفرع: ${branch1}</h3>`;
                   htmlContent += `
                       <table>
@@ -1206,6 +1209,7 @@
   </body>
 
 </html>
+
 
 
 
