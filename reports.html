@@ -687,7 +687,7 @@
 
        //////////////////////تقرير مجمع للفروع كلها
             
-            document.getElementById("reportall").addEventListener("click", async (station1, stationindex) => {
+            document.getElementById("reportall").addEventListener("click", async () => {
               const branchSelect = document.getElementById("branch_modal1");
               const branchOptions = Array.from(branchSelect.options)
                            .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----" && opt.value !== "Select Branch"); // تجاهل placeholder
@@ -749,7 +749,7 @@
                   // جلب المحطات لكل فرع
                   const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
                   const stationsData = await stationsResponse.json();
-                  const certifiedDates = stationsData.certifiedDates;
+                  
           
                   let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0, branchDonePercent = 0;
                   allDetailsPerBranch[branch1] = {};
@@ -759,10 +759,7 @@
                       const stationPromises = stationsData.stations.map(async (station1) => {
                           const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                           const detailsData = await detailsResponse.json();
-                          const certifiedDate = certifiedDates[stationindex];
-                            if (!certifiedDate || certifiedDate.trim() === "") {
-                                return null; // تجاهل المحطة تمامًا
-                            }
+                          
           
                           let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
           
@@ -1208,6 +1205,7 @@
   </body>
 
 </html>
+
 
 
 
