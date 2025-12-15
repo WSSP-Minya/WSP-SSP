@@ -598,19 +598,20 @@
                     doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                     inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                     notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+                    doneActionsPercent = totalAction === 0 ? 0: ((doneActions/totalActions)*100).tofixed(0);
         
                     // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
                     allDetailsPerStation[station1] = allLocations;
                 }
         
-                return { station1, totalActions, doneActions, inProgressActions, notDoneActions };
+                return { station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent };
             });
         
             // تعديل هنا: استخدام Promise.all لانتظار جميع الوعود (promises) المتعلقة بالمحطات
             const stationSummary = await Promise.all(stationPromises);
         
             // إضافة بيانات المحطات في جدول الملخص
-            stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+            stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent}) => {
                 htmlContent += `
                     <tr>
                         <td>${station1}</td>
@@ -1185,6 +1186,7 @@
   </body>
 
 </html>
+
 
 
 
