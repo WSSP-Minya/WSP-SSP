@@ -590,7 +590,7 @@
                 const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                 const detailsData = await detailsResponse.json();
         
-                let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+                let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
         
                 if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
                     const allLocations = detailsData.details;
@@ -1186,6 +1186,7 @@
   </body>
 
 </html>
+
 
 
 
