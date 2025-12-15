@@ -773,7 +773,7 @@
                               doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                              doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100.toFixed(0);
+                              doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100).toFixed(0);
           
                               allDetailsPerBranch[branch1][station1] = allLocations;
                           }
@@ -839,7 +839,7 @@
                       const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                       const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                       const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                      const doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100.toFixed(0);
+                      const doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100).toFixed(0);
           
                       htmlContent += `
                           <tr>
@@ -1208,6 +1208,7 @@
   </body>
 
 </html>
+
 
 
 
