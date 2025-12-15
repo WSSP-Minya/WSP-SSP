@@ -531,6 +531,7 @@
             // جلب جميع المحطات للفرع من السيرفر
             const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
             const stationsData = await stationsResponse.json();
+            const certifiedDates = stationsData.certifiedDates;
         
             if (stationsData.status !== "success" || !stationsData.stations || stationsData.stations.length === 0) {
                 alert("لا توجد محطات لهذا الفرع للطباعة!");
@@ -1196,6 +1197,7 @@
   </body>
 
 </html>
+
 
 
 
