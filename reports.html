@@ -598,7 +598,7 @@
                     doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                     inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                     notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                    doneActionsPercent = totalAction === 0 ? 0: ((doneActions/totalActions)*100).tofixed(0);
+                    doneActionsPercent = totalActions === 0 ? 0: ((doneActions/totalActions)*100).tofixed(0);
         
                     // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
                     allDetailsPerStation[station1] = allLocations;
@@ -1186,6 +1186,7 @@
   </body>
 
 </html>
+
 
 
 
