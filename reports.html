@@ -749,8 +749,9 @@
                   // جلب المحطات لكل فرع
                   const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
                   const stationsData = await stationsResponse.json();
+                  const certifiedDates = stattionsData.certifiedDates;
           
-                  let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
+                  let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0, branchDonePercent = 0;
                   allDetailsPerBranch[branch1] = {};
           
                   if (stationsData.status === "success" && stationsData.stations?.length) {
@@ -758,8 +759,12 @@
                       const stationPromises = stationsData.stations.map(async (station1) => {
                           const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                           const detailsData = await detailsResponse.json();
+                          const certifiedDate = certifiedDates[index];
+                            if (!certifiedDate || certifiedDate.trim() === "") {
+                                return null; // تجاهل المحطة تمامًا
+                            }
           
-                          let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0;
+                          let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
           
                           if (detailsData.status === "success" && detailsData.details?.length) {
                               const allLocations = detailsData.details;
@@ -768,33 +773,35 @@
                               doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+                              doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100.toFixed(0);
           
                               allDetailsPerBranch[branch1][station1] = allLocations;
                           }
           
-                          return { station1, totalActions, doneActions, inProgressActions, notDoneActions };
+                          return { station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent };
                       });
           
                       // استخدام Promise.all لتحميل تفاصيل كل المحطات بشكل متوازي
                       const stationSummary = await Promise.all(stationPromises);
           
                       // إضافة بيانات المحطات في جدول الملخص
-                      stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions }) => {
+                      stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent }) => {
                           branchTotal += totalActions;
                           branchDone += doneActions;
                           branchInProgress += inProgressActions;
                           branchNotDone += notDoneActions;
+                          branchDonePercent += doneActionsPercent;
                       });
                   }
           
-                  return { branch1, branchTotal, branchDone, branchInProgress, branchNotDone };
+                  return { branch1, branchTotal, branchDone, branchInProgress, branchNotDone, branchDonePercent };
               });
           
               // الانتظار حتى يتم تحميل جميع الفروع والمحطات بالتوازي
               const branchSummary = await Promise.all(branchPromises);
           
               // إضافة بيانات الفروع في جدول الملخص
-              branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone }) => {
+              branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone, branchDonePercent }) => {
                   htmlContent += `
                       <tr>
                           <td>${branch1}</td>
@@ -802,6 +809,7 @@
                           <td>${branchDone}</td>
                           <td>${branchInProgress}</td>
                           <td>${branchNotDone}</td>
+                          <td>${branchDonePercent}%</td>
                       </tr>
                   `;
               });
@@ -819,6 +827,7 @@
                               <th>المنفذ</th>
                               <th>الجارية</th>
                               <th>لم يتم التنفيذ</th>
+                              <td>نسبة التنفيذ</th>
                           </tr>
                   `;
           
@@ -830,6 +839,7 @@
                       const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                       const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                       const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+                      const doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100.toFixed(0);
           
                       htmlContent += `
                           <tr>
@@ -838,6 +848,7 @@
                               <td>${doneActions}</td>
                               <td>${inProgressActions}</td>
                               <td>${notDoneActions}</td>
+                              <td>${doneActionsPercent}%</td>
                           </tr>
                       `;
                   }
@@ -1197,6 +1208,7 @@
   </body>
 
 </html>
+
 
 
 
