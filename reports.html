@@ -798,7 +798,7 @@
               });
           
               // الانتظار حتى يتم تحميل جميع الفروع والمحطات بالتوازي
-              const branchSummary = await Promise.all(branchPromises).filter(item => item !== null);
+              const branchSummary = (await Promise.all(branchPromises)).filter(item => item !== null);
           
               // إضافة بيانات الفروع في جدول الملخص
               branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone, branchDonePercent }) => {
@@ -1208,6 +1208,7 @@
   </body>
 
 </html>
+
 
 
 
