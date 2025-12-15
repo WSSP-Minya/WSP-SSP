@@ -614,7 +614,7 @@
             });
         
             // تعديل هنا: استخدام Promise.all لانتظار جميع الوعود (promises) المتعلقة بالمحطات
-            const stationSummary = await Promise.all(stationPromises).filter(item => item !== null);
+            const stationSummary = (await Promise.all(stationPromises)).filter(item => item !== null);
             if (stationSummary.length === 0) {
               alert("لاتوجد محطة معتمدة")
             }
@@ -1196,6 +1196,7 @@
   </body>
 
 </html>
+
 
 
 
