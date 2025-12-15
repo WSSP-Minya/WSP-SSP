@@ -614,7 +614,11 @@
             });
         
             // تعديل هنا: استخدام Promise.all لانتظار جميع الوعود (promises) المتعلقة بالمحطات
-            const stationSummary = await Promise.all(stationPromises);
+            const stationSummary = await Promise.all(stationPromises).filter(item => item !== null);
+            if stationSummary === 0 {
+              alert("لاتوجد محطة معتمدة")
+            }
+
         
             // إضافة بيانات المحطات في جدول الملخص
             stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent}) => {
@@ -1192,6 +1196,7 @@
   </body>
 
 </html>
+
 
 
 
