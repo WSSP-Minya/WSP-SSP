@@ -486,7 +486,7 @@
                                   <th>عدد الإجراءات المنفذة</th>
                                   <th>عدد الإجراءات الجارية</th>
                                   <th>عدد الإجراءات لم يتم التنفيذ</th>
-                                  <th>انسبة التنفيذ</th>
+                                  <th>نسبة التنفيذ</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -578,6 +578,7 @@
                         <th>المنفذ</th>
                         <th>الجارية</th>
                         <th>لم يتم التنفيذ</th>
+                        <th>نسبة التنفيذ</th>
                     </tr>
             `;
         
@@ -617,6 +618,7 @@
                         <td>${doneActions}</td>
                         <td>${inProgressActions}</td>
                         <td>${notDoneActions}</td>
+                        <td>${doneActionsPercent}%</td>
                     </tr>
                 `;
             });
@@ -1183,6 +1185,7 @@
   </body>
 
 </html>
+
 
 
 
