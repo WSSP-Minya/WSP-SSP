@@ -687,7 +687,7 @@
 
        //////////////////////تقرير مجمع للفروع كلها
             
-            document.getElementById("reportall").addEventListener("click", async (station1, index) => {
+            document.getElementById("reportall").addEventListener("click", async (station1, stationindex) => {
               const branchSelect = document.getElementById("branch_modal1");
               const branchOptions = Array.from(branchSelect.options)
                            .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----" && opt.value !== "Select Branch"); // تجاهل placeholder
@@ -759,7 +759,7 @@
                       const stationPromises = stationsData.stations.map(async (station1) => {
                           const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                           const detailsData = await detailsResponse.json();
-                          const certifiedDate = certifiedDates[index];
+                          const certifiedDate = certifiedDates[stationindex];
                             if (!certifiedDate || certifiedDate.trim() === "") {
                                 return null; // تجاهل المحطة تمامًا
                             }
@@ -1208,6 +1208,7 @@
   </body>
 
 </html>
+
 
 
 
