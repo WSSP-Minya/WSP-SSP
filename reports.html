@@ -590,9 +590,9 @@
                 const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
                 const detailsData = await detailsResponse.json();
             // شرط: المحطة لازم يكون لها تاريخ اعتماد
-                const certifiedDate = detailsData.certifiedDate;
+                const certifieddate = detailsData.certifiedDate;
                 
-                if (!certifiedDate || certifiedDate.trim() === "") {
+                if (!certifieddate || certifieddate.trim() === "") {
                     return null; // تجاهل المحطة تمامًا
                 }
         
@@ -1196,6 +1196,7 @@
   </body>
 
 </html>
+
 
 
 
