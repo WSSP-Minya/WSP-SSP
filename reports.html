@@ -401,6 +401,7 @@
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
             const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
+            const doneActionsPercent = (doneActionsCount/totalActionCount)%
           
             if (allLocations.length === 0) {
               alert("لا توجد بيانات للطباعة!");
@@ -485,6 +486,7 @@
                                   <th>عدد الإجراءات المنفذة</th>
                                   <th>عدد الإجراءات الجارية</th>
                                   <th>عدد الإجراءات لم يتم التنفيذ</th>
+                                  <th>انسبة التنفيذ</th>
                               </tr>
                           </thead>
                           <tbody>
@@ -493,6 +495,7 @@
                                   <td>${doneActionsCount}</td>
                                   <td>${inProgressActionsCount}</td>
                                   <td>${notDoneActionsCount}</td>
+                                  <td>${doneActionsPercent}</td>
                               </tr>
                           </tbody>
                       </table>
@@ -1180,6 +1183,7 @@
   </body>
 
 </html>
+
 
 
 
