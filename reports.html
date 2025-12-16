@@ -394,7 +394,7 @@
               alert("No Data for Print!");
               return;
             }
-            let statusPercentValue = "";
+            let statuspercent = "";
           
             const allLocations = Object.values(detailsMap) || [];
           
@@ -402,7 +402,8 @@
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
             const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statusPercentValue) || 0), 0) / allLocations.length).toFixed(0);
+            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
+            
 
           
             if (allLocations.length === 0) {
@@ -1211,6 +1212,7 @@
   </body>
 
 </html>
+
 
 
 
