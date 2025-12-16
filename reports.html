@@ -780,7 +780,7 @@
                               doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                               inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                               notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                              doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100).toFixed(0);
+                              doneActionsPercent = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
           
                               allDetailsPerBranch[branch1][station1] = allLocations;
                           }
@@ -1100,8 +1100,8 @@
                           width: 80px; /* تغيير الحجم حسب الحاجة */
                           margin-top: 5px;
                       }
-                  .red { background:#7A0000; color:white; }
-                  .lightred { background:#f8d7da; }
+                  .red { background:"red"; color:black; }
+                  .orange { background:"orange"; }
               </style>
           </head>
           <body>
@@ -1178,7 +1178,7 @@
                   `;
       
                   filtered.forEach(detail => {
-                      let rowClass = (detail.monthsLeft <= 0) ? "red" : "lightred";
+                      let rowClass = (detail.monthsLeft <= 0) ? "red" : "orange";
       
                       htmlContent += `
                           <tr class="${rowClass}">
@@ -1218,6 +1218,7 @@
   </body>
 
 </html>
+
 
 
 
