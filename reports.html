@@ -849,7 +849,8 @@
                       const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                       const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                       const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                      const doneActionsPercent = totalActions === 0 ? 0 : ((doneActions/totalActions)*100).toFixed(0);
+                      const doneActionsPercent =  allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length
+                    ).toFixed(0);
           
                       htmlContent += `
                           <tr>
@@ -1218,6 +1219,7 @@
   </body>
 
 </html>
+
 
 
 
