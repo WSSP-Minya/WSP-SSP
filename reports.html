@@ -401,8 +401,8 @@
             const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-            const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-            console.log(allLocations.map(item => item.statuspercent));
+            const totalActionsCount = allLocations.lenght;
+            
             // تحويل كل statuspercent من نص إلى رقم ثم حساب المتوسط
             const averageStatusPercentValue = allLocations.length === 0 ? 0 : (
               allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length
@@ -613,7 +613,8 @@
                     doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                     inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
                     notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                    doneActionsPercent = totalActions === 0 ? 0: ((doneActions/totalActions)*100).toFixed(0);
+                    doneActionsPercent = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length
+                    ).toFixed(0);
         
                     // تخزين التفاصيل لكل محطة لاستخدامها لاحقًا في الجدول التفصيلي
                     allDetailsPerStation[station1] = allLocations;
@@ -1217,6 +1218,7 @@
   </body>
 
 </html>
+
 
 
 
