@@ -402,7 +402,7 @@
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
             const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
-            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / totalActionCount.length).toFixed(0);
+            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / totalActionsCount.length).toFixed(0);
             
 
           
@@ -1212,6 +1212,7 @@
   </body>
 
 </html>
+
 
 
 
