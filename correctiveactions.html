@@ -222,6 +222,33 @@
               durationInput.style.backgroundColor = "#d4edda"; // green
           }
       }
+      //تلوين المخاطر طبقا لدرجة الخطورة
+      function updateRiskBackground(riskdegree) {
+        const riskInput = document.getElementById("risk");
+        if (!riskdegree) {
+            riskInput.style.backgroundColor = "";
+            return;
+        }
+    
+        switch (riskdegree.trim()) {
+            case "خطورة عالية جداً":
+                riskInput.style.backgroundColor = "#7A0000"; // أحمر داكن جداً
+                break;
+            case "خطورة عالية":
+                riskInput.style.backgroundColor = "#ff4d4d"; // أحمر
+                break;
+            case "خطورة متوسطة":
+                riskInput.style.backgroundColor = "#fff3cd"; // أصفر
+                break;
+            case "خطورة منخفضة":
+                riskInput.style.backgroundColor = "#d4edda"; // أخضر
+                break;
+            default:
+                riskInput.style.backgroundColor = ""; // لون افتراضي
+                break;
+        }
+      }
+
 
 
 
@@ -261,6 +288,8 @@
           
           // تحديث لون الـ duration بعد تعبئة البيانات
           updateDurationBackground();
+          // تحديث لون الـ risk بناءً على درجة الخطر
+          updateRiskBackground(detail.risk);
           
 
           let status = (detail.status || "").trim();
@@ -760,6 +789,7 @@
 
 </body>
 </html>
+
 
 
 
