@@ -403,8 +403,12 @@
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
             const totalActionsCount = doneActionsCount + inProgressActionsCount + notDoneActionsCount;
             console.log(allLocations.map(item => item.statuspercent));
-            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
+            // تحويل كل statuspercent من نص إلى رقم ثم حساب المتوسط
+            const averageStatusPercentValue = allLocations.length === 0 ? 0 : (
+              allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length
+            ).toFixed(0);
             
+            console.log("متوسط نسبة التنفيذ:", averageStatusPercentValue);
 
           
             if (allLocations.length === 0) {
@@ -1213,6 +1217,7 @@
   </body>
 
 </html>
+
 
 
 
