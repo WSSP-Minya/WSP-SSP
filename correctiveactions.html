@@ -261,6 +261,7 @@
           
           // تحديث لون الـ duration بعد تعبئة البيانات
           updateDurationBackground();
+          
 
           let status = (detail.status || "").trim();
           switch (true) {
@@ -461,6 +462,56 @@
           if (file.type.startsWith("image/")) file = await compressImage(file);
           base64File = await fileToBase64(file);
       }
+     let statusPercentValue = "";
+
+        // الحالة المختارة
+        const statusValue = document.getElementById("status").value;
+        
+        // النسبة السابقة (إن وجدت)
+        let previousPercent = "";
+        if (detail && detail.statuspercent !== undefined && detail.statuspercent !== null) {
+            previousPercent = detail.statuspercent.toString();
+        }
+        
+        //  المنطق الكامل لمستخدم WSP فقط
+        if (currentDepartment === "WSP") {
+        
+            // ✅ تم → 100%
+            if (statusValue === "تم") {
+                statusPercentValue = 100;
+            }
+        
+            // ❌ لم يتم → 0%
+            else if (statusValue === "لم يتم") {
+                statusPercentValue = 0;
+            }
+        
+            // 🟡 جارى → Prompt
+            else if (statusValue === "جارى") {
+        
+                const wspInput = prompt(
+                    "📊 الحالة: جارى\n" +
+                    "يرجى إدخال نسبة التنفيذ (0 - 100):",
+                    previousPercent
+                );
+        
+                if (wspInput === null || wspInput.trim() === "") {
+                    alert("❌ لا يمكن حفظ الحالة (جارى) بدون إدخال نسبة التنفيذ");
+                    return;
+                }
+        
+                const percent = Number(wspInput);
+        
+                if (isNaN(percent) || percent < 0 || percent > 100) {
+                    alert("❌ نسبة التنفيذ يجب أن تكون رقمًا بين 0 و 100");
+                    return;
+                }
+        
+                statusPercentValue = percent;
+            }
+        }
+
+
   
       // تجهيز البيانات للإرسال
       const formData = new URLSearchParams();
@@ -473,6 +524,7 @@
       formData.append("corraction", corractionInput.value);
       formData.append("duration", durationInput.value);
       formData.append("status", document.getElementById("status").value);
+      formData.append("statuspercent", statusPercentValue);
       formData.append("branchcomment", document.getElementById("branchcomment").value);
       formData.append("wspcomment", document.getElementById("wspcomment").value);
       formData.append("sendEmail", "true");
@@ -708,6 +760,7 @@
 
 </body>
 </html>
+
 
 
 
