@@ -401,7 +401,7 @@
             const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
             const notDoneActionsCount = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-            const totalActionsCount = allLocations.lenght;
+            const totalActionsCount = allLocations.length;
             
             // تحويل كل statuspercent من نص إلى رقم ثم حساب المتوسط
             const averageStatusPercentValue = allLocations.length === 0 ? 0 : (
@@ -1219,6 +1219,7 @@
   </body>
 
 </html>
+
 
 
 
