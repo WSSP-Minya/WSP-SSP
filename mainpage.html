@@ -73,6 +73,75 @@
             waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
             reportsButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
         }
+             // فتح نافذة إضافة مستخدم
+            function openAddUserPopup() {
+                const userRole = sessionStorage.getItem("role");
+                if (userRole !== "admin") {
+                    alert("Only admin can add users.");
+                    return;
+                }
+                document.getElementById("addUserPopup").style.display = "flex";
+            }
+
+            // غلق نافذة إضافة مستخدم
+            function closeAddUserPopup() {
+                document.getElementById("addUserPopup").style.display = "none";
+            }
+
+            // معالجة إرسال نموذج إضافة المستخدم
+            function submitUserForm(event) {
+                event.preventDefault();
+
+                const email = document.getElementById("email").value;
+                const password = document.getElementById("password").value;
+                const role = document.getElementById("role").value;
+
+                // استدعاء Google Apps Script لإضافة المستخدم
+                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${email}&password=${password}&role=${role}&department=${department}`;
+                
+                fetch(url)
+                    .then(response => response.json())
+                    .then(data => {
+                        alert(data.message);  // عرض رسالة نجاح
+                        closeAddUserPopup();
+                    })
+                    .catch(error => {
+                        alert("Error: " + error.message);  // عرض رسالة خطأ
+                    });
+            }
+
+            // فتح نافذة حذف مستخدم
+            function openDeleteUserPopup() {
+                const userRole = sessionStorage.getItem("role");
+                if (userRole !== "admin") {
+                    alert("Only admin can delete users.");
+                    return;
+                }
+                document.getElementById("deleteUserPopup").style.display = "flex";
+            }
+
+            // غلق نافذة حذف مستخدم
+            function closeDeleteUserPopup() {
+                document.getElementById("deleteUserPopup").style.display = "none";
+            }
+
+            // معالجة إرسال نموذج حذف المستخدم
+            function submitDeleteUserForm(event) {
+                event.preventDefault();
+
+                const emailToDelete = document.getElementById("emailToDelete").value;
+                
+                // استدعاء Google Apps Script لحذف المستخدم
+                google.script.run
+                    .withSuccessHandler(function(response) {
+                        alert(response.message);  // عرض رسالة نجاح
+                        closeDeleteUserPopup();
+                    })
+                    .withFailureHandler(function(error) {
+                        alert("Error: " + error.message);  // عرض رسالة خطأ
+                    })
+                    .deleteUser(sessionStorage.getItem("email"), emailToDelete);  // تمرير البريد الإلكتروني للأدمن والمستخدم المراد حذفه
+            }
             //  تسجيل الخروج
             function logout() {
                 sessionStorage.clear(); // مسح بيانات الجلسة
@@ -91,6 +160,7 @@
 
 
 </html>
+
 
 
 
