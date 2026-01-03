@@ -77,6 +77,8 @@
             function openAddUserPopup() {
                 const userRole = sessionStorage.getItem("role");
                 if (userRole !== "Admin") {
+                    console.log("User Role:", userRole)
+
                     alert("Only admin can add users.");
                     return;
                 }
@@ -94,7 +96,8 @@
 
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
-                const role = document.getElementById("role").value;
+                const userRole = document.getElementById("role").value;
+                console.log("User Role:", userRole)
 
                 // استدعاء Google Apps Script لإضافة المستخدم
                 const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${email}&password=${password}&role=${role}&department=${department}`;
@@ -160,6 +163,7 @@
 
 
 </html>
+
 
 
 
