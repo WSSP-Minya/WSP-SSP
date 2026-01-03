@@ -131,7 +131,7 @@
                 console.log("User Role:", userRole)
 
                 // استدعاء Google Apps Script لإضافة المستخدم
-                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${email}&password=${password}&role=${userRole}&department=${branch}`;
+                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&email=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
                 
                 fetch(url)
                     .then(response => response.json())
@@ -195,6 +195,7 @@
 
 
 </html>
+
 
 
 
