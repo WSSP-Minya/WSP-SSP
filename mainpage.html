@@ -123,27 +123,29 @@
             // معالجة إرسال نموذج إضافة المستخدم
             function submitUserForm(event) {
                 event.preventDefault();
-
-                const newEmail = document.getElementById("email").value;
+            
+                const newEmail = document.getElementById("email").value;  // البريد الإلكتروني الجديد
                 const password = document.getElementById("password").value;
                 const department = document.getElementById("branch").value;
                 const userRole = document.getElementById("role").value;
-                console.log("User Role:", userRole)
-
-                // استدعاء Google Apps Script لإضافة المستخدم
-                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&email=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
-                
+                console.log("User Role:", userRole);
+            
+                // بناء رابط الطلب
+                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
+            
+                // استدعاء API عبر fetch
                 fetch(url)
                     .then(response => response.json())
                     .then(data => {
-                         console.log("Response Data:", data);  // طباعة الاستجابة كاملة
+                        console.log("Response Data:", data);  // طباعة الاستجابة كاملة
                         alert(data.message);  // عرض رسالة نجاح
-                        closeAddUserPopup();
+                        closeAddUserPopup();  // غلق نافذة إضافة المستخدم
                     })
                     .catch(error => {
                         alert("Error: " + error.message);  // عرض رسالة خطأ
                     });
             }
+
 
             // فتح نافذة حذف مستخدم
             function openDeleteUserPopup() {
@@ -195,6 +197,7 @@
 
 
 </html>
+
 
 
 
