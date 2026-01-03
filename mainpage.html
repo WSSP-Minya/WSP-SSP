@@ -131,7 +131,7 @@
                 console.log("User Role:", userRole);
             
                 // بناء رابط الطلب
-                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
+                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&adminEmail=${sessionStorage.getItem("email")}&newEmail=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
             
                 // استدعاء API عبر fetch
                 fetch(url)
@@ -197,6 +197,7 @@
 
 
 </html>
+
 
 
 
