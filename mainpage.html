@@ -37,7 +37,18 @@
                 <form id="addUserForm" onsubmit="submitUserForm(event)">
                     <input type="email" id="email" placeholder="User Email" required>
                     <input type="password" id="password" placeholder="Password" required>
-                    <input type=
+                    <select id="branch">
+                        <option value="" selected disabled>Select Branch</option>
+                        <option value="العدوه">العدوه</option>
+                        <option value="مغاغة">مغاغة</option>
+                        <option value="بنى مزار">بنى مزار</option>
+                        <option value="مطاى">مطاى</option>
+                        <option value="سمالوط">سمالوط</option>
+                        <option value="المنيا">المنيا</option>
+                        <option value="ابوقرقاص">ابوقرقاص</option>
+                        <option value="ملوى">ملوى</option>
+                        <option value="ديرمواس">ديرمواس</option>
+                    </select>
                     <select id="role" required>
                         <option value="user">user</option>
                         <option value="admin">admin</option>
@@ -115,11 +126,12 @@
 
                 const email = document.getElementById("email").value;
                 const password = document.getElementById("password").value;
+                const department = document.getElementById("branch").value;
                 const userRole = document.getElementById("role").value;
                 console.log("User Role:", userRole)
 
                 // استدعاء Google Apps Script لإضافة المستخدم
-                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${email}&password=${password}&role=${userRole}&department=${department}`;
+                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&email=${sessionStorage.getItem("email")}&newEmail=${email}&password=${password}&role=${userRole}&department=${branch}`;
                 
                 fetch(url)
                     .then(response => response.json())
@@ -183,6 +195,7 @@
 
 
 </html>
+
 
 
 
