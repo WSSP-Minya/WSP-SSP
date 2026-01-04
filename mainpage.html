@@ -155,8 +155,7 @@
                     console.log(data);
                     alert(data.message);
                     if (data.status === "success") {
-                        document.getElementById("addUserForm").value=""; // ✅ مسح الفورم
-                        closeAddUserPopup(); // لو عايز تقفل النافذة
+                        document.getElementById("addUserForm").reset; // ✅ مسح الفورم
                     }
                 })
                 .catch(err => alert(err.message));
