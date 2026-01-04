@@ -33,7 +33,7 @@
         <div id="addUserPopup" class="popup">
             <div class="popup-content">
                 <span class="close-btn" onclick="closeAddUserPopup()">&times;</span>
-                <h2>Add New User</h2>
+                <h2>Add and Remove User</h2>
                 <form id="addUserForm" onsubmit="submitUserForm(event)">
                     <input type="email" id="email" placeholder="User Email" required>
                     <input type="password" id="password" placeholder="Password" required>
@@ -53,8 +53,10 @@
                         <option value="user">user</option>
                         <option value="admin">admin</option>
                     </select>
-                    <button type="submit">Add</button>
-                    <button type="button" class="delete-btn" onclick="deleteUserFromPopup()">Delete</button>
+                    <div class="btn-row">
+                        <button type="submit">Add</button>
+                        <button type="button" class="delete-btn" onclick="deleteUserFromPopup()">Remove</button>
+                    </div>
 
                 </form>
                 <div id="errorMessage" style="color: red; text-align: center;"></div>
@@ -227,6 +229,7 @@
 
 
 </html>
+
 
 
 
