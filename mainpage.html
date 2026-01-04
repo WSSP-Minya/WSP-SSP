@@ -155,7 +155,7 @@
                     console.log(data);
                     alert(data.message);
                     if (data.status === "success") {
-                        document.getElementById("addUserForm").reset(); // ✅ مسح الفورم
+                        document.getElementById("addUserForm").value=""; // ✅ مسح الفورم
                         closeAddUserPopup(); // لو عايز تقفل النافذة
                     }
                 })
@@ -229,6 +229,7 @@
 
 
 </html>
+
 
 
 
