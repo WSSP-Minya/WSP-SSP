@@ -145,15 +145,19 @@ body {
      font-size: small;
 }
           
-.btn-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px; /* مسافة بين الزرين */
-    margin-top: 10px;
-}
-
-.btn-row button {
-    width: 50%; /* كل زر نص المساحة */
+.popup-content button {
+     display: flex;
+     justify-content: space-between;
+     gap: 10px; /* مسافة بين الزرين */
+     width: 50%;
+     padding: 10px;
+     background: #4CAF50;
+     color: white;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     margin-top: 5px;
+     font-weight: bold;
 }
 
 .popup-content button:hover {
@@ -234,6 +238,7 @@ body {
 
 
            
+
 
 
 
