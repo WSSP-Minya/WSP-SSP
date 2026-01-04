@@ -130,20 +130,27 @@
                 const userRole = document.getElementById("role").value;
                 console.log("User Role:", userRole);
             
-                // بناء رابط الطلب
-                const url = `https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec?action=addUser&adminEmail=${sessionStorage.getItem("email")}&newEmail=${newEmail}&password=${password}&role=${userRole}&department=${department}`;
-            
-                // استدعاء API عبر fetch
-                fetch(url)
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log("Response Data:", data);  // طباعة الاستجابة كاملة
-                        alert(data.message);  // عرض رسالة نجاح
-                        closeAddUserPopup();  // غلق نافذة إضافة المستخدم
+                fetch("https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        action: "addUser",
+                        adminEmail: sessionStorage.getItem("email"),
+                        email: newEmail,          // ✅ الاسم الصحيح
+                        password: password,
+                        role: userRole,
+                        department: department
                     })
-                    .catch(error => {
-                        alert("Error: " + error.message);  // عرض رسالة خطأ
-                    });
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log(data);
+                    alert(data.message);
+                })
+                .catch(err => alert(err.message));
+
             }
 
 
@@ -197,6 +204,7 @@
 
 
 </html>
+
 
 
 
