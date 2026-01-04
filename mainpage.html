@@ -188,7 +188,7 @@
             
                 if (!confirm(`هل أنت متأكد من حذف المستخدم:\n${email} ؟`)) return;
             
-                fetch(API_URL, {
+                fetch(scriptURL, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
@@ -227,6 +227,7 @@
 
 
 </html>
+
 
 
 
