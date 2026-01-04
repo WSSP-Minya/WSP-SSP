@@ -54,6 +54,8 @@
                         <option value="admin">admin</option>
                     </select>
                     <button type="submit">Add</button>
+                    <button type="button" class="delete-btn" onclick="deleteUserFromPopup()">Delete</button>
+
                 </form>
                 <div id="errorMessage" style="color: red; text-align: center;"></div>
             </div>
@@ -85,6 +87,8 @@
           
         </div>
         <script>
+            
+            const scriptURL = "https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec";
             const department = sessionStorage.getItem("department");
             document.getElementById("section").value = department || "";
             function AccessedToPage(pagename){
@@ -130,7 +134,7 @@
                 const userRole = document.getElementById("role").value;
                 console.log("User Role:", userRole);
             
-                fetch("https://script.google.com/macros/s/AKfycbzeIctN1LZN0C90D1cjzdpzoivB6IajhcQyg1pyO_qrLRDg7wYvUYAgvWpiX31CmfIj7w/exec", {
+                fetch(scriptURL, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/x-www-form-urlencoded"
@@ -148,6 +152,10 @@
                 .then(data => {
                     console.log(data);
                     alert(data.message);
+                    if (data.status === "success") {
+                        document.getElementById("addUserForm").reset(); // ✅ مسح الفورم
+                        closeAddUserPopup(); // لو عايز تقفل النافذة
+                    }
                 })
                 .catch(err => alert(err.message));
 
@@ -170,21 +178,36 @@
             }
 
             // معالجة إرسال نموذج حذف المستخدم
-            function submitDeleteUserForm(event) {
-                event.preventDefault();
-
-                const emailToDelete = document.getElementById("emailToDelete").value;
-                
-                // استدعاء Google Apps Script لحذف المستخدم
-                google.script.run
-                    .withSuccessHandler(function(response) {
-                        alert(response.message);  // عرض رسالة نجاح
-                        closeDeleteUserPopup();
+            function deleteUserFromPopup() {
+                const email = document.getElementById("email").value;
+            
+                if (!email) {
+                    alert("من فضلك أدخل البريد الإلكتروني أولاً");
+                    return;
+                }
+            
+                if (!confirm(`هل أنت متأكد من حذف المستخدم:\n${email} ؟`)) return;
+            
+                fetch(API_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+                        action: "deleteUser",
+                        adminEmail: sessionStorage.getItem("email"),
+                        email: email
                     })
-                    .withFailureHandler(function(error) {
-                        alert("Error: " + error.message);  // عرض رسالة خطأ
-                    })
-                    .deleteUser(sessionStorage.getItem("email"), emailToDelete);  // تمرير البريد الإلكتروني للأدمن والمستخدم المراد حذفه
+                })
+                .then(res => res.json())
+                .then(data => {
+                    alert(data.message);
+                    if (data.status === "success") {
+                        document.getElementById("addUserForm").reset();
+                        closeAddUserPopup();
+                    }
+                })
+                .catch(err => alert(err.message));
             }
             //  تسجيل الخروج
             function logout() {
@@ -204,6 +227,7 @@
 
 
 </html>
+
 
 
 
