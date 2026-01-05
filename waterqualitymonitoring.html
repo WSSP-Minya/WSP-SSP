@@ -66,87 +66,76 @@
 
   
        
-        <input id="physical" type="radio" name="para" checked>
-        <label for="physical" class="para-label" >Physical parameters</label>
-
         
+    <div class="parameters-section">
+        <hr>
+    
+        <!-- Radios -->
+        <input id="physical" type="radio" name="para" checked>
+        <label for="physical" class="para-label">Physical parameters</label>
+    
         <input id="chemical" type="radio" name="para">
         <label for="chemical" class="para-label">Chemical parameters</label>
-
+    
         <input id="biological" type="radio" name="para">
         <label for="biological" class="para-label">Biological parameters</label>
     
-               <!--التحاليل الفيزيائية-->
-
-    <div class="contents">
-        <div class="content" id="physical-content">
-
-            <label for="turbidity">Turbidity NTU</label>
-            <input id="turbidity" name="turbidity" type="number">
-            
-            <label for="pH">pH</label>
-            <input id="pH" name="pH" type="number">
-
-            <label for="temp">Temp <sup>o</sup>C</label>
-            <input id="temp" name="temp" type="number">
-       
-                        <!--التحاليل الكيميائية-->
+        <!-- Contents -->
+        <div class="contents">
+    
+            <!-- Physical -->
+            <div class="content card" id="physical-content">
+                <div class="grid physical-grid">
+                    <div>
+                        <label for="turbidity">Turbidity NTU</label>
+                        <input id="turbidity" name="turbidity" type="number">
+                    </div>
+                    <div>
+                        <label for="pH">pH</label>
+                        <input id="pH" name="pH" type="number">
+                    </div>
+                    <div>
+                        <label for="temp">Temp <sup>o</sup>C</label>
+                        <input id="temp" name="temp" type="number">
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Chemical -->
+            <div class="content card" id="chemical-content">
+                <div class="grid chemical-grid">
+                    <div><label for="tds">TDS mg/l</label><input id="tds" name="tds" type="number"></div>
+                    <div><label for="ch">Chlorides mg/l</label><input id="ch" name="ch" type="number"></div>
+                    <div><label for="sulf">Sulfates mg/l</label><input id="sulf" name="sulf" type="number"></div>
+                    <div><label for="fe">Fe mg/l</label><input id="fe" name="fe" type="number"></div>
+                    <div><label for="mn">Mn mg/l</label><input id="mn" name="mn" type="number"></div>
+                    <div><label for="nh3">NH<sub>3</sub> mg/l</label><input id="nh3" name="nh3" type="number"></div>
+    
+                    <div><label for="no2">NO<sub>2</sub> mg/l</label><input id="no2" name="no2" type="number"></div>
+                    <div><label for="no3">NO<sub>3</sub> mg/l</label><input id="no3" name="no3" type="number"></div>
+                    <div><label for="do">DO mg/l</label><input id="do" name="do" type="number"></div>
+                    <div><label for="cod">COD mg/l</label><input id="cod" name="cod" type="number"></div>
+                    <div><label for="bod">BOD mg/l</label><input id="bod" name="bod" type="number"></div>
+                    <div><label for="og">Oil & Grease mg/l</label><input id="og" name="og" type="number"></div>
+                </div>
+            </div>
+    
+            <!-- Biological -->
+            <div class="content card" id="biological-content">
+                <div class="grid bio-grid">
+                    <div>
+                        <label for="tc">Total Coliform C.U.F/100 ml</label>
+                        <input id="tc" name="tc" type="number">
+                    </div>
+                    <div>
+                        <label for="ta">Total Algae Colony/100 ml</label>
+                        <input id="ta" name="ta" type="number">
+                    </div>
+                </div>
+            </div>
+    
         </div>
-        <div class="content" id="chemical-content">
-          
-            <label for="tds">TDS mg/l</label>
-            <input id="tds" name="tds" type="number">
-
-            <label for="ch">Chlorides mg/l</label>
-            <input id="ch" name="ch" type="number">
-
-            <label for="sulf">Sulfates mg/l</label>
-            <input id="sulf" name="sulf" type="number">
-
-            <label for="fe">Fe mg/l</label>
-            <input id="fe" name="fe" type="number">
-
-            <label for="mn">Mn mg/l</label>
-            <input id="mn" name="mn" type="number">
-
-            <label for="nh3">NH<sub>3</sub> mg/l</label>
-            <input id="nh3" name="nh3" type="number">
-
-         
-            
-
    
-            <label for="no2">NO<sub>2</sub> mg/l</label>
-            <input id="no2" name="no2" type="number">
-
-            <label for="no3">NO<sub>3</sub> mg/l</label>
-            <input id="no3" name="no3" type="number">
-                    
-            <label for="do">DO mg/l</label>
-            <input id="do" name="do" type="number">
-
-            <label for="cod">COD mg/l</label>
-            <input id="cod" name="cod" type="number">
-
-            <label for="bod">BOD mg/l</label>
-            <input id="bod" name="bod" type="number">
-
-            <label for="og">Oil & Grease mg/l</label>
-            <input id="og" name="og" type="number">
-
-            
-        </div>
-
-            <!--التحاليل البيولوجية والميكروبيولوجية-->
-        <div class="content" id="biological-content">
-            <label for="tc">Total Coliform C.U.F/100 ml</label>
-            <input id="tc" name="tc" type="number">
-
-            <label for="ta">Total Algae Colony/100 ml</label>
-            <input id="ta" name="ta" type="number">
-
-        </div>
-    </div> 
     <br>
     <br>
     
@@ -489,6 +478,7 @@
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
+
 
 
 
