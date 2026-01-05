@@ -186,13 +186,14 @@ input[type="radio"]:checked + label{
     
 }
 /* تقسيم Chemical parameters إلى صفين */
-#chemical-content{
+#chemical:checked ~ .contents #chemical-content {
     display: grid;
-    grid-template-columns: repeat(6, auto); /* عدد العناصر في الصف */
-    gap: 15px 25px; /* مسافة رأسية وأفقية */
+    grid-template-columns: repeat(6, auto);
+    gap: 15px 25px;
     justify-content: center;
     align-items: center;
 }
+
 
 input[type="number"]{
     color:red;
@@ -311,6 +312,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
