@@ -91,6 +91,7 @@ h1 {
     box-sizing: border-box;
     gap:0.5%;
     padding:10px;
+    border-radius: 6px;
   
 }
 
@@ -111,6 +112,7 @@ h1 {
     align-items: center;
     justify-content: center;
     box-sizing: border-box;
+    border-radius: 6px;
 }
 
 #date[type="date"],
@@ -128,6 +130,7 @@ h1 {
     justify-content: space-around;
     box-sizing: border-box;
     transition: 0.3s;
+    border-radius: 6px;
     
 }
 
@@ -160,6 +163,7 @@ input[type="radio"] { display: none; }
     border-radius:8px;
     cursor:pointer;
     transition:0.3s;
+    border-radius: 6px;
 }
 
 .para-label:hover{
@@ -247,7 +251,7 @@ input[type="radio"]:checked + label{
   display: inline-flex;
   gap: 20px;
   font-size: 50px;
-  
+  border-radius: 6px;
 }
 
 .button-content{
@@ -334,6 +338,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
