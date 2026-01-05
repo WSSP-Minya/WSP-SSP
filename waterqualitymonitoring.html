@@ -14,17 +14,20 @@
 <body>
     <!-- المستخدم وعنوان الصفحة-->
     <div class="topbar">
-           <button class="logout-button" onclick="logout()">Logout</button>
-           <button class="homepage-button" onclick="AccessedToPage('mainpage')">
+            <div class="left">
+                <button class="logout-button" onclick="logout()">Logout</button>
+                <button class="homepage-button" onclick="AccessedToPage('mainpage')">
                     <img src="homepage.webp" alt="Main Page" title="Main Page">
-                    
                 </button>
-           <div class="userinfo"> 
-                <label>Section</label>
-                <input id="section" disabled>
-           </div>
-    
-           <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+            </div>
+        
+            <div class="right">
+                <div class="userinfo">
+                    <label>Section</label>
+                    <input id="section" disabled>
+                </div>
+                <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+            </div>
     </div>
 
 <br>
@@ -485,6 +488,7 @@
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
+
 
 
 
