@@ -32,10 +32,27 @@ body {
     cursor: pointer;
     margin-right: auto; /* ← يدفع العناصر الأخرى لليمين */
 }
-.logout-button:hover {
+
+.logout-button:hover,
+.homepage-button:hover {
     background: #c0392b;
 }
+.homepage-button {
+    background: #3c94e7;
+    color: white;
+    padding: 5px 8px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 15px;  /* المسافة بين الأزرار */
+}
 
+
+.homepage-button img {
+    width: 35px; 
+    height: 35px; 
+    object-fit: cover;
+}
 /* === صندوق الـ Section بجانب الشعار === */
 .userinfo {
     background: rgba(255, 255, 255, 0.733);
@@ -71,28 +88,7 @@ body {
     
     width:4%;
 }
-.homepage-button {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px; /* مسافة بين الزرين */
-}
 
-.homepage-button button {
-     
-     width: 50%;
-     padding: 10px;
-     background: #4CAF50;
-     color: white;
-     border: none;
-     border-radius: 5px;
-     cursor: pointer;
-     margin-top: 5px;
-     font-weight: bold;
-}
-
-.homepage-button button:hover {
-     background: #45a049;
-}
 
 
 /* تنسيق النموذج */
@@ -363,6 +359,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
