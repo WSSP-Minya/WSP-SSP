@@ -23,7 +23,7 @@ body {
     z-index: 999;
 }
 /* ===== الجهة اليسار (Logout + Home) ===== */
-left {
+.left {
     display: flex;
     align-items: center;
     gap: 10px;
@@ -372,6 +372,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
