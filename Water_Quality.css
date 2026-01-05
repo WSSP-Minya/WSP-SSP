@@ -71,6 +71,30 @@ body {
     
     width:4%;
 }
+.homepage-button {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px; /* مسافة بين الزرين */
+}
+
+.homepage-button button {
+     
+     width: 50%;
+     padding: 10px;
+     background: #4CAF50;
+     color: white;
+     border: none;
+     border-radius: 5px;
+     cursor: pointer;
+     margin-top: 5px;
+     font-weight: bold;
+}
+
+.homepage-button button:hover {
+     background: #45a049;
+}
+
+
 /* تنسيق النموذج */
 h1 {
     text-align: center;
@@ -339,6 +363,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
