@@ -37,7 +37,7 @@ left {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-   
+    margin-right: auto;
 }
 
 .logout-button:hover,
@@ -372,6 +372,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
