@@ -312,6 +312,7 @@ tbody td{
   height: 40px;
   object-fit: contain;
   transition: transform 0.2s;
+  border-radius: 6px;
 }
 
 .output:hover img {
@@ -338,6 +339,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
