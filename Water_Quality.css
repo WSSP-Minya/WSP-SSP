@@ -30,7 +30,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    margin-right: auto; /* ← يدفع العناصر الأخرى لليمين */
+    margin-right: 15px; /* ← يدفع العناصر الأخرى لليمين */
 }
 
 .logout-button:hover,
@@ -359,6 +359,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
