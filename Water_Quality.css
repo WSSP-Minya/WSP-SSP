@@ -12,6 +12,7 @@ body {
     height: 65px;
     background: rgba(135, 206, 250, 0.637);
     display: flex;
+    justify-content: space-between;
     align-items: center;
     padding: 0 20px;
     box-sizing: border-box;
@@ -20,6 +21,12 @@ body {
     top: 0;
     left: 0;
     z-index: 999;
+}
+/* ===== الجهة اليسار (Logout + Home) ===== */
+left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 /* زر Logout على اليسار */
@@ -52,6 +59,12 @@ body {
     width: 35px; 
     height: 35px; 
     object-fit: cover;
+}
+/* ===== الجهة اليمين (User Info + Logo) ===== */
+.right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 /* === صندوق الـ Section بجانب الشعار === */
 .userinfo {
@@ -359,6 +372,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
