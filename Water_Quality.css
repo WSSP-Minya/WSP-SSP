@@ -172,7 +172,8 @@ input[type="radio"]:checked + label{
 }
 
 .content {
-    display:none;
+    display:flex;
+    gap: 10px;
     font-size: 20px;
     font-weight: bold;
     margin-top: 10px;
@@ -303,5 +304,6 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
