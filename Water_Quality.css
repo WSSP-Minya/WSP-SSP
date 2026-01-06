@@ -47,7 +47,7 @@ body {
 .homepage-button {
     background: #3c94e7;
     color: white;
-    padding: 5px 8px;
+    padding: 2px 2px 2px 2px;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -376,6 +376,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
