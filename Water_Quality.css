@@ -63,6 +63,7 @@ body {
 /* ===== الجهة اليمين (User Info + Logo) ===== */
 .right {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
     gap: 12px;
 }
@@ -372,5 +373,6 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
