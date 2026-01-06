@@ -330,8 +330,7 @@ tbody td{
   border-bottom-style: solid;
   border-bottom-width: 1px;
   border-bottom-color: black;
-  display: flex;
-  justify-content:center;
+  
     
 }
 .output {
@@ -376,6 +375,7 @@ tbody td{
         height: 230px;
     }
 }
+
 
 
 
