@@ -8,13 +8,13 @@ body {
 
 /* === TOPBAR === */
 .topbar {
-    width: 100vw;
+    width: 100%;
     height: 65px;
     background: rgba(135, 206, 250, 0.637);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
+    padding: 0 20px;
     box-sizing: border-box;
     border-style: groove;
     position: fixed;
@@ -23,12 +23,10 @@ body {
     z-index: 999;
 }
 /* ===== الجهة اليسار (Logout + Home) ===== */
-.left,
-.right {
+.left {
     display: flex;
     align-items: center;
     gap: 10px;
-    flex-shrink: 0;   /* 🔥 يمنع الانكماش */
 }
 
 /* زر Logout على اليسار */
@@ -39,7 +37,7 @@ body {
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    
+    margin-right: auto;
 }
 
 .logout-button:hover,
@@ -63,9 +61,10 @@ body {
     object-fit: cover;
 }
 /* ===== الجهة اليمين (User Info + Logo) ===== */
-
-    
-   
+.right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 /* === صندوق الـ Section بجانب الشعار === */
 .userinfo {
@@ -98,10 +97,11 @@ body {
 }
 
 /* الشعار على أقصى اليمين */
-.logo{
-    height: 45px;     /* ثابت وواضح */
-    width: auto;
+.logo {
+    
+    width:4%;
 }
+
 
 
 /* تنسيق النموذج */
@@ -372,8 +372,6 @@ tbody td{
         height: 230px;
     }
 }
-
-
 
 
 
