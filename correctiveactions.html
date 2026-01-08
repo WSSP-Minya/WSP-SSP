@@ -13,6 +13,10 @@
                 <button class="homepage-button" onclick="AccessedToPage('mainpage')">
                     <img src="myhome.webp" alt="Main Page" title="Main Page">
                 </button>
+                <button class="addstation-button" id="addstation-button">
+                    <img src="https://cdn-icons-png.freepik.com/512/10302/10302325.png" title="Add Certified Station">
+
+                </button>
             </div>
         
             <div class="right">
@@ -125,11 +129,50 @@
         
     </form>
     </div>
+    <div id="stationModal" class="modal">
+    <div class="modal-content">
+      <h3>Certified Station Addition</h3>
+  
+      <label>Branch</label>
+      <select id="branch">
+            <option value="" selected disabled>Select Branch</option>
+            <option value="العدوه">العدوه</option>
+            <option value="مغاغة">مغاغة</option>
+            <option value="بنى مزار">بنى مزار</option>
+            <option value="مطاى">مطاى</option>
+            <option value="سمالوط">سمالوط</option>
+            <option value="المنيا">المنيا</option>
+            <option value="ابوقرقاص">ابوقرقاص</option>
+            <option value="ملوى">ملوى</option>
+            <option value="ديرمواس">ديرمواس</option>
+       </select>
+        
+      <label>Station</label>
+      <select id="station">
+        <option value="" selected disabled>Select Station</option>
+      </select>
+  
+      <label>Certified Date</label>
+      <input type="date" id="certifieddate">
+  
+      <div style="margin-top:10px">
+        <button onclick="submitStation()">Submit</button>
+        <button onclick="closeModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
  
   <script>
     
     const scriptURL = "https://script.google.com/macros/s/AKfycbxHN40-wad6xmuJAabng3YqocVKwFTrj5QLh3W3YMKWPwApnccsxu-phjrEUvl4j3qrQA/exec";
+
+    document.getElementById("addstation-button").onclick = () => {
+      document.getElementById("stationModal").style.display = "flex";
+    };
     
+    function closeModal(){
+      document.getElementById("stationModal").style.display = "none";
+    }
   
     window.onload = () => {
       const email = sessionStorage.getItem("email");
@@ -797,6 +840,7 @@
 
 </body>
 </html>
+
 
 
 
