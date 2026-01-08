@@ -84,11 +84,28 @@ body {
 form h1 {
     text-align: center;
     color: #333;
-    margin-top: 5%;
-    
-    
-  
-    
+    margin-top: 5%;  
+}
+
+#printReport {
+    display: flex;
+    justify-content:flex-start;
+    margin-left:auto;
+    background: #27ae60;
+    color: white;
+    padding: 3px 5px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+}
+#printReport img {
+    width: 40px; 
+    height: 40px; 
+    object-fit: cover;
+}
+
+#printReport:hover {
+    background: #1e8c4c;
 }
 
 /* GRID للمعلومات */
@@ -159,20 +176,7 @@ textarea {
     background: #21bb88;
 }
 
-#printReport {
-    display: block;
-    margin: auto;
-    background: #27ae60;
-    color: white;
-    padding: 10px 20px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-}
 
-#printReport:hover {
-    background: #1e8c4c;
-}
 /* ===== متجاوب للشاشات الصغيرة ===== */
 @media (max-width: 768px) {
     .buttonlabel {
