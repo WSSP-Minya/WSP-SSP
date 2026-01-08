@@ -173,6 +173,10 @@
     function closeModal(){
       document.getElementById("stationModal").style.display = "none";
     }
+    function AccessedToPage(pagename){
+                
+                window.location.href= pagename+".html";
+            }
   
     window.onload = () => {
       const email = sessionStorage.getItem("email");
@@ -840,6 +844,7 @@
 
 </body>
 </html>
+
 
 
 
