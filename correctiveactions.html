@@ -383,10 +383,10 @@
           // إذا المستخدم ليس Admin، إخفاء الأزرار
       if (userRole !== "Admin") {
           console.log("User Role:", userRole);
-          alert("Only admin can add users.");
+         
     
           const addStationBtn = document.getElementById("addstation-button");
-          const addCorrectiveBtn = document.getElementById("addcorrectiveaction-button");
+          const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
     
           if (addStationBtn) addStationBtn.style.display = "none";
           if (addCorrectiveBtn) addCorrectiveBtn.style.display = "none";
@@ -1054,6 +1054,7 @@
 
 </body>
 </html>
+
 
 
 
