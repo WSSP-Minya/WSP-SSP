@@ -30,10 +30,13 @@
     <div class="page-container">
     <form onsubmit="return false;">
         <h1>Corrective Actions</h1>
-         <div>
+         <div class="container">
+          
           <button type="button" id="printReport">
             <img src="checklist_report.webp" alt="Checklist report" title = "Checklist Report">
           </button>
+          <button type="button" onclick="openCorrectiveModal()">add corrective action</button>
+
             
         </div>
        
@@ -129,12 +132,13 @@
         
     </form>
     </div>
+    <!--اضافة محطة معتمدة-->
     <div id="stationModal" class="modal">
     <div class="modal-content">
       <h3>Certified Station Addition</h3>
   
       <label>Branch</label>
-      <select id="branch">
+      <select id="branchmodalselect">
             <option value="" selected disabled>Select Branch</option>
             <option value="العدوه">العدوه</option>
             <option value="مغاغة">مغاغة</option>
@@ -148,12 +152,16 @@
        </select>
         
       <label>Station</label>
-      <select id="station">
+      <select id="stationmodalselect">
         <option value="" selected disabled>Select Station</option>
+        <!-- المحطات الموجودة سيتم تعبئتها من JS -->
+        <option value="__new__">+ Add new station</option>
       </select>
+
+      <input type="text" id="newstationmodal" placeholder="Enter new station name">
   
       <label>Certified Date</label>
-      <input type="date" id="certifieddate">
+      <input type="date" id="certifieddatemodal">
   
       <div style="margin-top:10px">
         <button onclick="submitStation()">Submit</button>
@@ -161,6 +169,117 @@
       </div>
     </div>
   </div>
+  <!--اضافة بيانات لمحطة معتمدة-->
+<div id="stationModal1" class="modal1">
+ <div class="modal-content1">
+
+  <h3>Add Corrective Actions</h3>
+
+  <!-- Row 1 -->
+  <div class="grid-3">
+    <div>
+      <label>Branch</label>
+      <select id="branchmodal1">
+            <option value="" selected disabled>Select Branch</option>
+            <option value="العدوه">العدوه</option>
+            <option value="مغاغة">مغاغة</option>
+            <option value="بنى مزار">بنى مزار</option>
+            <option value="مطاى">مطاى</option>
+            <option value="سمالوط">سمالوط</option>
+            <option value="المنيا">المنيا</option>
+            <option value="ابوقرقاص">ابوقرقاص</option>
+            <option value="ملوى">ملوى</option>
+            <option value="ديرمواس">ديرمواس</option> 
+      </select>     
+    </div>
+    <div>
+      <label>Station</label>
+      <select id="stationmodal1">
+        <option value="" selected disabled>Select Station</option>
+            </select>
+    </div>
+    <div>
+      <label>Certified Date</label>
+      <input type="date" id="certifieddatemodal1">
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Row 2 -->
+  <div class="grid-3">
+    <div>
+      <label>Location</label>
+      <input type="text" id="locationmodal1">
+    </div>
+    <div>
+      <label>Risk</label>
+      <input type="text" id="riskmodal1">
+    </div>
+    <div>
+      <label>Risk Degree</label>
+      <select id="riskdegreemodal1"></select>
+    </div>
+  </div>
+
+  <!-- Row 3 -->
+  <div class="grid-3">
+    <div>
+      <label>Corrective Action</label>
+      <input type="text" id="corractionmodal1">
+    </div>
+    <div>
+      <label>Duration</label>
+      <input type="text" id="durationmodal1">
+    </div>
+    <div>
+      <label>Executor</label>
+      <select id="executormodal1"></select>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Table -->
+  <table class="ca-table">
+    
+    <thead>
+      <tr>
+        <th>الموقع</th>
+        <th>الخطر</th>
+        <th>الاجراء التصحيحي</th>
+        <th>درجة الخطورة</th>
+        <th>المدة الزمنية</th>
+        <th>الجهه المنفذه</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr>
+
+  <!-- Buttons -->
+  <div class="modal-buttons">
+    <button class="btn-submit">Submit</button>
+    <button class="btn-edit">Edit</button>
+    <button class="btn-delete">Delete</button>
+    <button class="btn-close" onclick="closeModal1()">Close</button>
+
+  </div>
+
+</div>
+
+    
+</div>
  
   <script>
     
@@ -173,12 +292,91 @@
     function closeModal(){
       document.getElementById("stationModal").style.display = "none";
     }
+    /* ===== Open / Close Modal ===== */
+    function openCorrectiveModal() {
+        document.getElementById("stationModal1").style.display = "block";
+    }
+
+    function closeModal1() {
+        document.getElementById("stationModal1").style.display = "none";
+        clearForm();
+    }
+    document.addEventListener("DOMContentLoaded", function () {
+      const stationSelect = document.getElementById("stationmodalselect");
+      const newStationInput = document.getElementById("newStationmodal");
+
+      stationSelect.addEventListener("change", function () {
+        if (this.value === "__new__") {
+          newStationInput.style.display = "block";
+          newStationInput.focus();
+        } else {
+          newStationInput.style.display = "none";
+          newStationInput.value = "";
+        }
+      });
+    });
+    
+
+
+    //<!--دالة اضافة محطات معتمدة -->
+    function submitStation() {
+
+      const modal = document.getElementById("stationModal");
+
+      const branch = modal.querySelector("#branch").value;
+      const stationSelect = modal.querySelector("#stationmodalselect");
+      const newStationInput = modal.querySelector("#newStationmodal");
+      const certifiedDate = modal.querySelector("#certifieddate").value;
+
+      let stationName = "";
+
+      // ⭐ تحديد اسم المحطة
+      if (stationSelect.value === "__new__") {
+        stationName = newStationInput.value.trim();
+
+        if (!stationName) {
+          alert("Please enter new station name");
+          return;
+        }
+      } else {
+        stationName = stationSelect.value;
+      }
+
+      if (!branch || !stationName) {
+        alert("Branch and station are required");
+        return;
+      }
+
+      const params = new URLSearchParams({
+        action: "saveCertifiedStation",
+        branch: branch,
+        station: stationName,
+        certifieddate: certifiedDate
+      });
+
+      fetch(scriptURL, {
+        method: "POST",
+        body: params
+      })
+      .then(res => res.json())
+      .then(res => {
+        alert(res.message);
+        closeModal();
+      })
+      .catch(err => {
+        console.error(err);
+        alert("Error saving station");
+      });
+    }
+
+
     function AccessedToPage(pagename){
                 
                 window.location.href= pagename+".html";
             }
   
     window.onload = () => {
+      
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
 
