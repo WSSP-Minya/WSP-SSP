@@ -664,6 +664,7 @@
             const index = data.stations.indexOf(e.target.value);
             if (index !== -1) {
               document.getElementById("certifieddatemodal").value = data.certifiedDates[index];
+              certifiedDateInput.value = formatDateForInput(data.certifiedDates[index]);
             }
           });
       } else {
@@ -1123,6 +1124,7 @@
 
 </body>
 </html>
+
 
 
 
