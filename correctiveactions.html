@@ -391,7 +391,6 @@
       const branchSelectModal = document.getElementById("branchmodalselect"); //خاص باضافة محطة
       const certifiedDateInput = document.getElementById("certifieddate");
       const certifiedDateInputModal = document.getElementById("certifieddatemodal"); //خاص باضافة محطة
-      const newStationInputModal = document.getElementById("newstationmodal"); //خاص باضافة محطة
       const locationSelect = document.getElementById("location");
       const riskInput = document.getElementById("risk");
       const corractionInput = document.getElementById("corraction");
@@ -650,6 +649,7 @@
 
 
 
+    const newStationInputModal = document.getElementById("newstationmodal"); // خاص باضافة محطة
 
     document.getElementById("stationmodalselect").addEventListener("change", (e) => {
       newStationInputModal.style.display = e.target.value === "__new__" ? "block" : "none";
@@ -679,7 +679,7 @@
       fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
         .then(res => res.json())
         .then(data => {
-          stationSelect.innerHTML = `<option value="" disabled selected>Loading Stations..</option>
+          stationSelect.innerHTML = `<option value="" disabled selected>Select Station</option>
                                      <option value="__new__">إضافة محطة جديدة</option>`;
           data.stations.forEach(station => {
             const option = document.createElement("option");
@@ -1123,6 +1123,7 @@
 
 </body>
 </html>
+
 
 
 
