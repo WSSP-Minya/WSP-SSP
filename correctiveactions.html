@@ -592,76 +592,42 @@
       });
 
       // جلب المحطات بناءً على الفرع
-      //function fetchStations(branch) {
-       // if (!branch) return;
+      function fetchStations(branch) {
+        if (!branch) return;
 
-       // stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
+        stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
 
-       // const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+        const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
 
-        //fetch(url)
-        //  .then(res => res.json())
-         // .then(data => {
-         //   if (data.status === "success") {
-         //     stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-         //     branchStations = data.stations;
-         //     branchDates = data.certifiedDates;
-
-         //     data.stations.forEach(station => {
-          //      const option = document.createElement("option");
-          //      option.value = station;
-          //      option.textContent = station;
-          //      stationSelect.appendChild(option);
-         //     });
-        //    } else {
-       //       stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-        //    }
-        //  })
-       //   .catch(err => {
-         //   console.error("Error fetching stations:", err);
-       //     stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-       //   });
-     // }
-      // جلب المحطات بناءً على الفرع
-              function fetchStations(branch, stationSelect) {
-                  if (!branch) {
-                      console.log("Branch is not provided or invalid.");
-                      return;
-                  }
-                  console.log("Fetching stations for branch:", branch);
-                  stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
-          
-                  const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
-          
-                  fetch(url)
-                      .then(res => res.json())
-                      .then(data => {
-                          console.log("datastation:", data);
-                          if (data.status === "success") {
-                              stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              if (stationSelect === document.getElementById("station")) {
+        fetch(url)
+          .then(res => res.json())
+          .then(data => {
+            if (data.status === "success") {
+              stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+              if (stationSelect === stationSelect) {
                                   branchStations = data.stations;
                                   branchDates = data.certifiedDates;
-                              } else if (stationSelect === document.getElementById("stationmodalselect")) {
+                } else if (stationSelect === stationSelectModal) {
                                   modalStations = data.stations;
                                   modalCertifiedDates = data.certifiedDates;
-                              }
-          
-                              data.stations.forEach(station => {
-                                  const option = document.createElement("option");
-                                  option.value = station;
-                                  option.textContent = station;
-                                  stationSelect.appendChild(option);
-                              });
-                          } else {
-                              stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
-                          }
-                      })
-                      .catch(err => {
-                          console.error("Error fetching stations:", err);
-                          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
-                      });
-              }
+              } 
+              
+
+              data.stations.forEach(station => {
+                const option = document.createElement("option");
+                option.value = station;
+                option.textContent = station;
+                stationSelect.appendChild(option);
+              });
+            } else {
+              stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+            }
+          })
+          .catch(err => {
+            console.error("Error fetching stations:", err);
+            stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+          });
+      }
       
       
 
@@ -1114,6 +1080,7 @@
 
 </body>
 </html>
+
 
 
 
