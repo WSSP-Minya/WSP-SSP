@@ -618,15 +618,13 @@
       function fetchStationsForModal(branch) {
           if (!branch) return;
 
-          const stationModalSelect = document.getElementById("stationmodalselect");
-
-          stationModalSelect.innerHTML =
+          stationSelectModal.innerHTML =
               '<option value="" disabled selected>Loading Stations...</option>';
 
           fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
               .then(res => res.json())
               .then(data => {
-                  stationModalSelect.innerHTML =
+                  stationSelectModal.innerHTML =
                       '<option value="" disabled selected>Select Station</option>';
 
                   if (data.status === "success") {
@@ -637,7 +635,7 @@
                           const option = document.createElement("option");
                           option.value = station;
                           option.textContent = station;
-                          stationModalSelect.appendChild(option);
+                          stationSelectModal.appendChild(option);
                       });
                   }
 
@@ -645,11 +643,11 @@
                   const addNewOption = document.createElement("option");
                   addNewOption.value = "__new__";
                   addNewOption.textContent = "+ Add new station";
-                  stationModalSelect.appendChild(addNewOption);
+                  stationSelectModal.appendChild(addNewOption);
               })
               .catch(err => {
                   console.error("Error fetching stations for modal:", err);
-                  stationModalSelect.innerHTML =
+                  stationSelectModal.innerHTML =
                       '<option value="" disabled selected>Connection Error</option>';
               });
       }
@@ -700,18 +698,18 @@
       });
     };
     // التعبئة التلقائية عند اختيار المحطة فى المودل الخاص باضافة محطة جديدة
-    stationModalSelect.addEventListener("change", () => {
+    stationSelectModal.addEventListener("change", () => {
 
         // في حالة إضافة محطة جديدة
-        if (stationModalSelect.value === "__new__") {
-            certifiedDateModalInput.value = "";
-            certifiedDateModalInput.readOnly = false;
+        if (stationSelectModal.value === "__new__") {
+            certifiedDateInputModal.value = "";
+            certifiedDateInputModal.readOnly = false;
             return;
         }
 
-        certifiedDateModalInput.readOnly = true;
+        certifiedDateInputModal.readOnly = true;
 
-        const index = modalStations.indexOf(stationModalSelect.value);
+        const index = modalStations.indexOf(stationSelectModal.value);
 
         if (index !== -1 && modalCertifiedDates[index]) {
             const date = new Date(modalCertifiedDates[index]);
@@ -719,9 +717,9 @@
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
 
-            certifiedDateModalInput.value = `${year}-${month}-${day}`;
+           certifiedDateInputModal.value = `${year}-${month}-${day}`;
         } else {
-            certifiedDateModalInput.value = "";
+            certifiedDateInputModal.value = "";
         }
     });
     // 🔹 عند تغيير الفرع داخل مودال إضافة محطة معتمدة
@@ -1137,6 +1135,7 @@
 
 </body>
 </html>
+
 
 
 
