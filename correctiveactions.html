@@ -301,20 +301,7 @@
         document.getElementById("stationModal1").style.display = "none";
         clearForm();
     }
-    document.addEventListener("DOMContentLoaded", function () {
-      const stationSelect = document.getElementById("stationmodalselect");
-      const newStationInput = document.getElementById("newStationmodal");
-
-      stationSelect.addEventListener("change", function () {
-        if (this.value === "__new__") {
-          newStationInput.style.display = "block";
-          newStationInput.focus();
-        } else {
-          newStationInput.style.display = "none";
-          newStationInput.value = "";
-        }
-      });
-    });
+   
     
 
 
@@ -414,6 +401,18 @@
       const wspcomment = document.getElementById("wspcomment");
       const branchbuttons = document.querySelectorAll('.branchbutton');
       const wspbuttons = document.querySelectorAll('.wspbutton');
+
+      document.addEventListener("DOMContentLoaded", function () {
+          stationSelect.addEventListener("change", function () {
+          if (this.value === "__new__") {
+            newStationInputModal.style.display = "block";
+            newStationInputModal.focus();
+          } else {
+            newStationInputModal.style.display = "none";
+            newStationInputModal.value = "";
+          }
+        });
+      });
 
 
        //مودل اضافة محطات جديدة إضافة مستمع التغيير للفرع
@@ -1080,6 +1079,7 @@
 
 </body>
 </html>
+
 
 
 
