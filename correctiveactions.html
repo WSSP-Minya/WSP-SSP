@@ -664,12 +664,15 @@
             const index = data.stations.indexOf(e.target.value);
             if (index !== -1) {
               certifiedDateInputModal.value = formatDateForInput(data.certifiedDates[index]);
+              console.log("Certified Date set:", data.certifiedDates[index]);
               } else {
                 certifiedDateInputModal.value = "";
+                console.warn("Station not found in data.stations");
               }
             })
             .catch(() => {
-              certifiedDateInputModal.value = "";
+              console.error("Fetch error:", err);
+              certifiedDateInputModal.value = "";               
             });
         } else {
           certifiedDateInputModal.value = "";
@@ -1128,6 +1131,7 @@
 
 </body>
 </html>
+
 
 
 
