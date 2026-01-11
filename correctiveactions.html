@@ -655,7 +655,6 @@
     document.getElementById("stationmodalselect").addEventListener("change", (e) => {
       newStationInputModal.style.display = e.target.value === "__new__" ? "block" : "none";
     
-      // إذا تم اختيار محطة موجودة، إظهار تاريخ اعتمادها
       if (e.target.value !== "__new__") {
         const branch = document.getElementById("branchmodalselect").value;
         fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
@@ -665,18 +664,18 @@
             if (index !== -1) {
               certifiedDateInputModal.value = formatDateForInput(data.certifiedDates[index]);
               console.log("Certified Date set:", data.certifiedDates[index]);
-              } else {
-                certifiedDateInputModal.value = "";
-                console.warn("Station not found in data.stations");
-              }
-            })
-            .catch(() => {
-              console.error("Fetch error:", err);
-              certifiedDateInputModal.value = "";               
-            });
-        } else {
-          certifiedDateInputModal.value = "";
-        }
+            } else {
+              certifiedDateInputModal.value = "";
+              console.warn("Station not found in data.stations");
+            }
+          })
+          .catch(err => {
+            console.error("Fetch error:", err);
+            certifiedDateInputModal.value = "";               
+          });
+      } else {
+        certifiedDateInputModal.value = "";
+      }
     });
     
     // جلب المحطات عند اختيار الفرع
@@ -697,6 +696,7 @@
           });
         });
     });
+    
     
     // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
     function submitStation() {
@@ -1131,6 +1131,7 @@
 
 </body>
 </html>
+
 
 
 
