@@ -572,7 +572,7 @@
       });
 
       // جلب المحطات بناءً على الفرع
-      function fetchStations(branch, stationSelect) {
+      function fetchStations(branch, stationSelect, stationSelectModal) {
         if (!branch) return;
 
         stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
@@ -1060,6 +1060,7 @@
 
 </body>
 </html>
+
 
 
 
