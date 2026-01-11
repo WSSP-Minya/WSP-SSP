@@ -524,6 +524,9 @@
   
       let branchStations = [];
       let branchDates = [];
+
+      let modalStations = [];
+      let modalCertifiedDates = [];
   
         // ملء تفاصيل الموقع
       window.fillStationDetails = function(details) {
@@ -611,6 +614,46 @@
             stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
           });
       }
+       //جلب محطات للمودل اضافة محطات معتمدة
+      function fetchStationsForModal(branch) {
+          if (!branch) return;
+
+          const stationModalSelect = document.getElementById("stationmodalselect");
+
+          stationModalSelect.innerHTML =
+              '<option value="" disabled selected>Loading Stations...</option>';
+
+          fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
+              .then(res => res.json())
+              .then(data => {
+                  stationModalSelect.innerHTML =
+                      '<option value="" disabled selected>Select Station</option>';
+
+                  if (data.status === "success") {
+                      modalStations = data.stations || [];
+                      modalCertifiedDates = data.certifiedDates || [];
+
+                      modalStations.forEach(station => {
+                          const option = document.createElement("option");
+                          option.value = station;
+                          option.textContent = station;
+                          stationModalSelect.appendChild(option);
+                      });
+                  }
+
+                  // + Add new station
+                  const addNewOption = document.createElement("option");
+                  addNewOption.value = "__new__";
+                  addNewOption.textContent = "+ Add new station";
+                  stationModalSelect.appendChild(addNewOption);
+              })
+              .catch(err => {
+                  console.error("Error fetching stations for modal:", err);
+                  stationModalSelect.innerHTML =
+                      '<option value="" disabled selected>Connection Error</option>';
+              });
+      }
+
 
       // إعداد الفرع حسب القسم
       if (department !== "WSP") {
@@ -656,6 +699,42 @@
           .catch(err => console.error("Error fetching station details:", err));
       });
     };
+    // التعبئة التلقائية عند اختيار المحطة فى المودل الخاص باضافة محطة جديدة
+    stationModalSelect.addEventListener("change", () => {
+
+        // في حالة إضافة محطة جديدة
+        if (stationModalSelect.value === "__new__") {
+            certifiedDateModalInput.value = "";
+            certifiedDateModalInput.readOnly = false;
+            return;
+        }
+
+        certifiedDateModalInput.readOnly = true;
+
+        const index = modalStations.indexOf(stationModalSelect.value);
+
+        if (index !== -1 && modalCertifiedDates[index]) {
+            const date = new Date(modalCertifiedDates[index]);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+
+            certifiedDateModalInput.value = `${year}-${month}-${day}`;
+        } else {
+            certifiedDateModalInput.value = "";
+        }
+    });
+    // 🔹 عند تغيير الفرع داخل مودال إضافة محطة معتمدة
+    document.getElementById("branchmodalselect")
+        .addEventListener("change", function () {
+
+            // جلب المحطات الخاصة بالفرع
+            fetchStationsForModal(this.value);
+
+            // تفريغ تاريخ الاعتماد عند تغيير الفرع
+            document.getElementById("certifieddatemodal").value = "";
+        });
+
 
     //ضغط الصور والمرفقات
     function fileToBase64(file) {
@@ -1058,6 +1137,7 @@
 
 </body>
 </html>
+
 
 
 
