@@ -650,7 +650,8 @@
 
 
     const newStationInputModal = document.getElementById("newstationmodal"); // خاص باضافة محطة
-
+    const certifiedDateInputModal = document.getElementById("certifieddatemodal"); // خاص باضافة محطة
+    
     document.getElementById("stationmodalselect").addEventListener("change", (e) => {
       newStationInputModal.style.display = e.target.value === "__new__" ? "block" : "none";
     
@@ -663,7 +664,7 @@
             const index = data.stations.indexOf(e.target.value);
             if (index !== -1) {
               document.getElementById("certifieddatemodal").value = data.certifiedDates[index];
-              certifieddatemodal.value = formatDateForInput(data.certifiedDates[index]);
+              certifiedDateInputModal.value = formatDateForInput(data.certifiedDates[index]);
             }
           });
       } else {
@@ -1123,6 +1124,7 @@
 
 </body>
 </html>
+
 
 
 
