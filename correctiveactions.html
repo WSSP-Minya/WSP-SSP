@@ -402,25 +402,6 @@
       const branchbuttons = document.querySelectorAll('.branchbutton');
       const wspbuttons = document.querySelectorAll('.wspbutton');
 
-      document.addEventListener("DOMContentLoaded", function () {
-          stationSelectModal.addEventListener("change", function () {
-          if (this.value === "__new__") {
-            newStationInputModal.style.display = "block";
-            newStationInputModal.focus();
-          } else {
-            newStationInputModal.style.display = "none";
-            newStationInputModal.value = "";
-          }
-        });
-      });
-
-
-       //مودل اضافة محطات جديدة إضافة مستمع التغيير للفرع
-       branchSelectModal.addEventListener("change", () => {
-         console.log("Branch changed:", branchSelectModal.value);
-         fetchStations(branchSelectModal.value, stationSelectModal);
-       });
-
          // عند اختيار الملف، عرض اسمه
       const attachmentInput = document.getElementById("attachment");
       const filenameDiv = document.getElementById("filename");
@@ -645,6 +626,7 @@
         wspcomment.disabled = false;
         branchbuttons.forEach(btn => btn.disabled = true);
         branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
+        branchSelectModal.addEventListener("change", () => fetchStations(branchSelectModal.value));
       }
 
       // عند تغيير المحطة
@@ -1079,6 +1061,7 @@
 
 </body>
 </html>
+
 
 
 
