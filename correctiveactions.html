@@ -652,8 +652,7 @@
 
 
     document.getElementById("stationmodalselect").addEventListener("change", (e) => {
-      const newStationInput = document.getElementById("newStationmodal");
-      newStationInput.style.display = e.target.value === "__new__" ? "block" : "none";
+      newStationInputModal.style.display = e.target.value === "__new__" ? "block" : "none";
     
       // إذا تم اختيار محطة موجودة، إظهار تاريخ اعتمادها
       if (e.target.value !== "__new__") {
@@ -664,7 +663,7 @@
             const index = data.stations.indexOf(e.target.value);
             if (index !== -1) {
               document.getElementById("certifieddatemodal").value = data.certifiedDates[index];
-              certifiedDateInput.value = formatDateForInput(data.certifiedDates[index]);
+              certifiedDateInputModal.value = formatDateForInput(data.certifiedDates[index]);
             }
           });
       } else {
@@ -680,7 +679,7 @@
       fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
         .then(res => res.json())
         .then(data => {
-          stationSelect.innerHTML = `<option value="" disabled selected>Select Station</option>
+          stationSelect.innerHTML = `<option value="" disabled selected>Loading Stations..</option>
                                      <option value="__new__">إضافة محطة جديدة</option>`;
           data.stations.forEach(station => {
             const option = document.createElement("option");
@@ -1124,6 +1123,7 @@
 
 </body>
 </html>
+
 
 
 
