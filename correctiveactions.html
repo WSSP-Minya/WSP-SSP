@@ -639,10 +639,10 @@
                           console.log("datastation:", data);
                           if (data.status === "success") {
                               stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-                              if (stationSelect === stationSelect) {
+                              if (stationSelect === document.getElementById("station")) {
                                   branchStations = data.stations;
                                   branchDates = data.certifiedDates;
-                              } else if (stationSelect === stationSelectModal) {
+                              } else if (stationSelect === document.getElementById("stationmodalselect")) {
                                   modalStations = data.stations;
                                   modalCertifiedDates = data.certifiedDates;
                               }
@@ -1114,6 +1114,7 @@
 
 </body>
 </html>
+
 
 
 
