@@ -572,7 +572,7 @@
       });
 
       // جلب المحطات بناءً على الفرع
-      function fetchStations(branch, stationSelect, stationSelectModal) {
+      function fetchStations(branch) {
         if (!branch) return;
 
         stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations..</option>';
@@ -584,15 +584,9 @@
           .then(data => {
             if (data.status === "success") {
               stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
-              if (stationSelect === stationSelect) {
-                                  branchStations = data.stations;
-                                  branchDates = data.certifiedDates;
-                } else if (stationSelect === stationSelectModal) {
-                                  modalStations = data.stations;
-                                  modalCertifiedDates = data.certifiedDates;
-              } 
+              branchStations = data.stations;
+              branchDates = data.certifiedDates;
               
-
               data.stations.forEach(station => {
                 const option = document.createElement("option");
                 option.value = station;
@@ -1060,6 +1054,7 @@
 
 </body>
 </html>
+
 
 
 
