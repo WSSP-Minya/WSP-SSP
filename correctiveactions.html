@@ -646,6 +646,79 @@
           .catch(err => console.error("Error fetching station details:", err));
       });
     };
+
+
+
+
+
+    document.getElementById("stationmodalselect").addEventListener("change", (e) => {
+      const newStationInput = document.getElementById("newStationmodal");
+      newStationInput.style.display = e.target.value === "__new__" ? "block" : "none";
+    
+      // إذا تم اختيار محطة موجودة، إظهار تاريخ اعتمادها
+      if (e.target.value !== "__new__") {
+        const branch = document.getElementById("branchmodalselect").value;
+        fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
+          .then(res => res.json())
+          .then(data => {
+            const index = data.stations.indexOf(e.target.value);
+            if (index !== -1) {
+              document.getElementById("certifieddatemodal").value = data.certifiedDates[index];
+            }
+          });
+      } else {
+        document.getElementById("certifieddatemodal").value = "";
+      }
+    });
+    
+    // جلب المحطات عند اختيار الفرع
+    document.getElementById("branchmodalselect").addEventListener("change", (e) => {
+      const branch = e.target.value;
+      const stationSelect = document.getElementById("stationmodalselect");
+    
+      fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
+        .then(res => res.json())
+        .then(data => {
+          stationSelect.innerHTML = `<option value="" disabled selected>Select Station</option>
+                                     <option value="__new__">إضافة محطة جديدة</option>`;
+          data.stations.forEach(station => {
+            const option = document.createElement("option");
+            option.value = station;
+            option.textContent = station;
+            stationSelect.appendChild(option);
+          });
+        });
+    });
+    
+    // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
+    function submitStation() {
+      const branch = document.getElementById("branchmodalselect").value;
+      const stationSelect = document.getElementById("stationmodalselect");
+      let stationName = stationSelect.value === "__new__" ? document.getElementById("newStationmodal").value.trim() : stationSelect.value;
+      const certifiedDate = document.getElementById("certifieddatemodal").value;
+    
+      if (!branch || !stationName || !certifiedDate) {
+        alert("جميع الحقول مطلوبة!");
+        return;
+      }
+    
+      const params = new URLSearchParams({
+        action: "saveCertifiedStation",
+        branch,
+        station: stationName,
+        certifieddate: certifiedDate
+      });
+    
+      fetch(scriptURL, { method: "POST", body: params })
+        .then(res => res.json())
+        .then(res => {
+          alert(res.message);
+          closeModal();
+          fetchStations(branch); // تحديث قائمة المحطات بعد الإضافة/التعديل
+        })
+        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
+    }
+
    
 
 
@@ -1050,6 +1123,7 @@
 
 </body>
 </html>
+
 
 
 
