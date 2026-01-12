@@ -200,7 +200,7 @@
     </div>
     <div>
       <label>Certified Date</label>
-      <input type="date" id="certifieddatemodal1">
+      <input type="date" id="certifieddatemodal1" readonly>
     </div>
   </div>
 
@@ -218,7 +218,13 @@
     </div>
     <div>
       <label>Risk Degree</label>
-      <select id="riskdegreemodal1"></select>
+      <select id="riskdegreemodal1">
+        <option value="" selected disabled>Select Risk Degree</option>
+            <option value="خطورة عالية جداً">خطورة عالية جداً</option>
+            <option value="خطورة عالية">خطورة عالية</option>
+            <option value="خطورة متوسطة">خطورة متوسطة</option>
+            <option value="خطورة منخفضة">خطورة منخفضة</option> 
+      </select>
     </div>
   </div>
 
@@ -234,7 +240,19 @@
     </div>
     <div>
       <label>Executor</label>
-      <select id="executormodal1"></select>
+      <select id="executormodal1">
+         <option value="" selected disabled>Select Executor</option>
+            <option value="WSP">WSP</option>
+            <option value="العدوه">العدوه</option>
+            <option value="مغاغة">مغاغة</option>
+            <option value="بنى مزار">بنى مزار</option>
+            <option value="مطاى">مطاى</option>
+            <option value="سمالوط">سمالوط</option>
+            <option value="المنيا">المنيا</option>
+            <option value="ابوقرقاص">ابوقرقاص</option>
+            <option value="ملوى">ملوى</option>
+            <option value="ديرمواس">ديرمواس</option> 
+      </select>
     </div>
   </div>
 
@@ -1047,6 +1065,150 @@
             alert("حدث خطأ أثناء تحميل البيانات.");
           });
       }
+    // لجلب الاجراءات التصحيحية المراد تعديلها فى المودل
+    let selectedRowIndex = null;
+
+    function loadCorrectiveActions() {
+      const station = document.getElementById("stationmodal1").value;
+    
+      fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "getCorrectiveActions",
+          station
+        })
+      })
+        .then(res => res.json())
+        .then(data => {
+          const tbody = document.querySelector(".ca-table tbody");
+          tbody.innerHTML = "";
+    
+          data.forEach(row => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+              <td>${row.location}</td>
+              <td>${row.risk}</td>
+              <td>${row.corraction}</td>
+              <td>${row.riskdegree}</td>
+              <td>${row.duration}</td>
+              <td>${row.executor}</td>
+            `;
+    
+            tr.onclick = () => fillForm(row);
+            tbody.appendChild(tr);
+          });
+        });
+    }
+    ///لتحميل الصف المختار فى خانات المودل
+    function fillForm(row) {
+      selectedRowIndex = row.rowIndex;
+    
+      document.getElementById("locationmodal1").value = row.location;
+      document.getElementById("riskmodal1").value = row.risk;
+      document.getElementById("corractionmodal1").value = row.corraction;
+      document.getElementById("riskdegreemodal1").value = row.riskdegree;
+      document.getElementById("durationmodal1").value = row.duration;
+      document.getElementById("executormodal1").value = row.executor;
+    }
+    ///لتعديل الاجراءات التصحيحية فى المودل
+    function editCorrectiveAction() {
+      if (!selectedRowIndex) {
+        alert("اختر صفًا للتعديل");
+        return;
+      }
+    
+      fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "editCorrectiveAction",
+          station: document.getElementById("stationmodal1").value,
+          rowIndex: selectedRowIndex,
+          risk: document.getElementById("riskmodal1").value,
+          corraction: document.getElementById("corractionmodal1").value,
+          riskdegree: document.getElementById("riskdegreemodal1").value,
+          duration: document.getElementById("durationmodal1").value,
+          executor: document.getElementById("executormodal1").value
+        })
+      })
+        .then(res => res.json())
+        .then(res => alert(res.message));
+    }
+    ///حذف الاجراءات التصحيحية المراد حذفها فى المودل
+    function deleteCorrectiveAction() {
+      if (!selectedRowIndex) {
+        alert("اختر صفًا للحذف");
+        return;
+      }
+    
+      if (!confirm("هل أنت متأكد من الحذف؟")) return;
+    
+      fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams({
+          action: "deleteCorrectiveAction",
+          station: document.getElementById("stationmodal1").value,
+          rowIndex: selectedRowIndex
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          alert(res.message);
+          loadCorrectiveActions();
+        });
+    }
+    ///اضافة الاجراءات التصحيحية لمحطة معتمدة
+    function addCorrectiveAction() {
+      const station = document.getElementById("stationmodal1").value;
+      if (!station) {
+        alert("اختر المحطة أولاً");
+        return;
+      }
+    
+      const params = {
+        action: "saveCorrectiveAction",
+        station: station,
+        location: document.getElementById("locationmodal1").value,
+        risk: document.getElementById("riskmodal1").value,
+        corraction: document.getElementById("corractionmodal1").value,
+        riskdegree: document.getElementById("riskdegreemodal1").value,
+        duration: document.getElementById("durationmodal1").value,
+        executor: document.getElementById("executormodal1").value
+      };
+    
+      fetch(scriptURL, {
+        method: "POST",
+        body: new URLSearchParams(params)
+      })
+        .then(res => res.json())
+        .then(res => {
+          alert(res.message);
+          loadCorrectiveActions(); // تحديث الجدول مباشرة
+          clearForm(); // مسح الحقول بعد الإضافة
+        })
+        .catch(err => {
+          console.error(err);
+          alert("حدث خطأ أثناء الإضافة");
+        });
+    }
+    
+    function clearForm() {
+      const formIds = [
+        "locationmodal1", "riskmodal1", "corractionmodal1", "riskdegreemodal1",
+        "durationmodal1", "executormodal1"
+      ];
+      formIds.forEach(id => document.getElementById(id).value = "");
+      selectedRowIndex = null;
+    }
+
+
+
+
+
+
+
+
+
+    
       // طباعة الاجراءات التصحيحة 
       document.getElementById("printReport").addEventListener("click", () => {
       const branch = document.getElementById("branch").value || "----";
@@ -1144,6 +1306,7 @@
 
 </body>
 </html>
+
 
 
 
