@@ -1065,6 +1065,29 @@
             alert("حدث خطأ أثناء تحميل البيانات.");
           });
       }
+    // جلب المحطات عند اختيار الفرع في مودال الإجراءات التصحيحية
+      document.getElementById("branchmodal1").addEventListener("change", (e) => {
+        const branch = e.target.value;
+        const stationSelect = document.getElementById("stationmodal1");
+      
+        // إعادة تعيين الجدول والحقول عند تغيير الفرع
+        document.querySelector(".ca-table tbody").innerHTML = "";
+        clearForm();
+      
+        fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
+          .then(res => res.json())
+          .then(data => {
+            stationSelect.innerHTML = `<option value="" disabled selected>Select Station</option>`;
+            data.stations.forEach(station => {
+              const option = document.createElement("option");
+              option.value = station;
+              option.textContent = station;
+              stationSelect.appendChild(option);
+            });
+          });
+      });
+
+
     // لجلب الاجراءات التصحيحية المراد تعديلها فى المودل
     let selectedRowIndex = null;
 
@@ -1306,6 +1329,7 @@
 
 </body>
 </html>
+
 
 
 
