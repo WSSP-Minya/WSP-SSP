@@ -722,9 +722,9 @@
     
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
-        branchSelectModal,
+        branch: branchSelectModal,
         station: stationName,
-        certifiedDateInputModal: certifiedDateInputModal
+        certifiedDate: certifiedDateInputModal
       });
     
       fetch(scriptURL, { method: "POST", body: params })
@@ -732,7 +732,7 @@
         .then(res => {
           alert(res.message);
           closeModal();
-          fetchStations(branch); // تحديث قائمة المحطات بعد الإضافة/التعديل
+          fetchStations(branchSelectModal); // تحديث قائمة المحطات بعد الإضافة/التعديل
         })
         .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
     }
@@ -1141,6 +1141,7 @@
 
 </body>
 </html>
+
 
 
 
