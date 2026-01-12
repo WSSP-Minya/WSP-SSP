@@ -287,9 +287,9 @@
 
   <!-- Buttons -->
   <div class="modal-buttons">
-    <button class="btn-submit">Submit</button>
-    <button class="btn-edit">Edit</button>
-    <button class="btn-delete">Delete</button>
+    <button class="btn-submit" onclick="addCorrectiveAction()">Submit</button>
+    <button class="btn-edit" onclick="editCorrectiveAction()">Edit</button>
+    <button class="btn-delete" onclick="deleteCorrectiveAction()">Delete</button>
     <button class="btn-close" onclick="closeModal1()">Close</button>
 
   </div>
@@ -1065,6 +1065,17 @@
             alert("حدث خطأ أثناء تحميل البيانات.");
           });
       }
+
+     function formatDateForInput(dateStr) {
+      if (!dateStr) return "";
+      const date = new Date(dateStr);
+      if (isNaN(date.getTime())) return "";
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      return `${year}-${month}-${day}`;
+    }
+    
     // جلب المحطات عند اختيار الفرع في مودال الإجراءات التصحيحية
       document.getElementById("branchmodal1").addEventListener("change", (e) => {
         const branch = e.target.value;
@@ -1329,6 +1340,7 @@
 
 </body>
 </html>
+
 
 
 
