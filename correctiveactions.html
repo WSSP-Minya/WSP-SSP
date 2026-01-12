@@ -731,7 +731,10 @@
         .then(res => res.json())
         .then(res => {
           alert(res.message);
-          document.getElementById("stationModal").reset; // ✅ مسح الفورم
+          document.getElementById("branchmodalselect").value = "";
+          document.getElementById("stationmodalselect").value = "";
+          document.getElementById("newstationmodal").value = "";
+          document.getElementById("certifieddatemodal").value = "";
           closeModal();
         })
         .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
@@ -1141,6 +1144,7 @@
 
 </body>
 </html>
+
 
 
 
