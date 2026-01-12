@@ -710,21 +710,21 @@
     
     // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
     function submitStation() {
-      const branch = document.getElementById("branchmodalselect").value;
-      const stationSelect = document.getElementById("stationmodalselect");
-      let stationName = stationSelect.value === "__new__" ? document.getElementById("newStationmodal").value.trim() : stationSelect.value;
-      const certifiedDate = document.getElementById("certifieddatemodal").value;
+      const branchSelectModal = document.getElementById("branchmodalselect").value;
+      const stationSelectModal = document.getElementById("stationmodalselect");
+      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newStationmodal").value.trim() : stationSelectModal.value;
+      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
     
-      if (!branch || !stationName || !certifiedDate) {
+      if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
     
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
-        branch,
+        branchSelectModal,
         station: stationName,
-        certifieddate: certifiedDate
+        certifiedDateInputModal: certifiedDate
       });
     
       fetch(scriptURL, { method: "POST", body: params })
@@ -1141,6 +1141,7 @@
 
 </body>
 </html>
+
 
 
 
