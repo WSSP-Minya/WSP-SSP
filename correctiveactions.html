@@ -712,7 +712,7 @@
     function submitStation() {
       const branchSelectModal = document.getElementById("branchmodalselect").value;
       const stationSelectModal = document.getElementById("stationmodalselect");
-      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newStationmodal").value.trim() : stationSelectModal.value;
+      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
       const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
     
       if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
@@ -1141,6 +1141,7 @@
 
 </body>
 </html>
+
 
 
 
