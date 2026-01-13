@@ -176,7 +176,7 @@ body {
 /* ===== Table ===== */
 
 /* الحاوية المسؤولة عن الـ Scroll */
-.table-wrapper {
+.table-correctiveactions {
   max-height: 300px;      /* الطول اللي تحبه */
   overflow-y: auto;
   margin-top: 10px;
