@@ -322,61 +322,6 @@
         clearForm();
     }
    
-    
-
-
-    //<!--دالة اضافة محطات معتمدة -->
-    function submitStation() {
-
-      const modal = document.getElementById("stationModal");
-
-      const branch = modal.querySelector("#branch").value;
-      const stationSelect = modal.querySelector("#stationmodalselect");
-      const newStationInput = modal.querySelector("#newStationmodal");
-      const certifiedDate = modal.querySelector("#certifieddate").value;
-
-      let stationName = "";
-
-      // ⭐ تحديد اسم المحطة
-      if (stationSelect.value === "__new__") {
-        stationName = newStationInput.value.trim();
-
-        if (!stationName) {
-          alert("Please enter new station name");
-          return;
-        }
-      } else {
-        stationName = stationSelect.value;
-      }
-
-      if (!branch || !stationName) {
-        alert("Branch and station are required");
-        return;
-      }
-
-      const params = new URLSearchParams({
-        action: "saveCertifiedStation",
-        branch: branch,
-        station: stationName,
-        certifieddate: certifiedDate
-      });
-
-      fetch(scriptURL, {
-        method: "POST",
-        body: params
-      })
-      .then(res => res.json())
-      .then(res => {
-        alert(res.message);
-        closeModal();
-      })
-      .catch(err => {
-        console.error(err);
-        alert("Error saving station");
-      });
-    }
-
-
     function AccessedToPage(pagename){
                 
                 window.location.href= pagename+".html";
@@ -756,14 +701,18 @@
         .then(res => res.json())
         .then(res => {
           alert(res.message);
-          document.getElementById("branchmodalselect").value = "";
-          document.getElementById("stationmodalselect").value = "";
-          document.getElementById("newstationmodal").value = "";
-          document.getElementById("certifieddatemodal").value = "";
+          clearCertifiedStationAdditionModal();
           closeModal();
         })
         .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
     }
+    
+    function clearCertifiedStationAdditionModal() {
+        document.getElementById("branchmodalselect").value = "";
+        document.getElementById("stationmodalselect").value = "";
+        document.getElementById("newstationmodal").value = "";
+        document.getElementById("certifieddatemodal").value = "";  
+     }
 
    
 
@@ -1040,12 +989,12 @@
     }
 
   
-      clearForm();
+      clearMainForm();
       fetchData(email, department);
   }
   
 
-      function clearForm() {
+      function clearMainForm() {
         document.getElementById("location").value = "";
         document.getElementById("risk").value = "";
         document.getElementById("corraction").value = "";
@@ -1073,15 +1022,7 @@
           });
       }
 
-     function formatDateForInput(dateStr) {
-      if (!dateStr) return "";
-      const date = new Date(dateStr);
-      if (isNaN(date.getTime())) return "";
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, "0");
-      const day = String(date.getDate()).padStart(2, "0");
-      return `${year}-${month}-${day}`;
-    }
+     
     
     // جلب المحطات عند اختيار الفرع في مودال الإجراءات التصحيحية
       document.getElementById("branchmodal1").addEventListener("change", (e) => {
@@ -1224,7 +1165,7 @@
         .then(res => {
           alert(res.message);
           loadCorrectiveActions(); // تحديث الجدول مباشرة
-          clearForm(); // مسح الحقول بعد الإضافة
+          clearclearCorrectiveActionsModal(); // مسح الحقول بعد الإضافة
         })
         .catch(err => {
           console.error(err);
@@ -1232,7 +1173,7 @@
         });
     }
     
-    function clearForm() {
+    function clearCorrectiveActionsModal() {
       const formIds = [
         "locationmodal1", "riskmodal1", "corractionmodal1", "riskdegreemodal1",
         "durationmodal1", "executormodal1"
@@ -1347,6 +1288,7 @@
 
 </body>
 </html>
+
 
 
 
