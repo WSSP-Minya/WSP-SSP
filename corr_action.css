@@ -281,7 +281,7 @@ form h1 {
 #addcorrectiveactions-button{
     display: flex;
     justify-content:flex-start;
-    margin-left:auto;
+    margin-left:5px;
     background: #27ae60;
     color: white;
     padding: 3px 5px;
