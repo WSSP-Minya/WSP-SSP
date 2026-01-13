@@ -663,6 +663,11 @@
           .catch(err => console.error("Error fetching station details:", err));
       });
     };
+    // جلب البيانات الاجراءات التصحيحية المراد تعديلها
+    document.getElementById("stationmodal1").addEventListener("change", () => {
+      loadCorrectiveActions();
+    });
+
 
 
 
@@ -1340,6 +1345,7 @@
 
 </body>
 </html>
+
 
 
 
