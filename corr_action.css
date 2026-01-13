@@ -174,11 +174,6 @@ body {
 }
 
 /* ===== Table ===== */
-table-wrapper {
-  max-height: 300px;       /* ارتفاع الجدول */
-  overflow-y: auto;        /* Scroll رأسي */
-  border: 1px solid #ddd;
-}
 
 /* تثبيت رأس الجدول */
 .ca-table thead th {
@@ -193,6 +188,9 @@ table-wrapper {
     border-collapse: collapse;
     margin-top: 10px;
     direction: rtl;
+    max-height: 300px;
+    overflow-y: auto;
+  
 }
 
 .ca-table th,
