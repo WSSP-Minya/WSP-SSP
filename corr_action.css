@@ -277,7 +277,8 @@ form h1 {
     margin-top: 5%;  
 }
 
-#printReport {
+#printReport,
+#addcorrectiveactions-button{
     display: flex;
     justify-content:flex-start;
     margin-left:auto;
@@ -288,13 +289,15 @@ form h1 {
     border: none;
     cursor: pointer;
 }
-#printReport img {
+#printReport img,
+#addcorrectiveactions-button img{
     width: 40px; 
     height: 40px; 
     object-fit: cover;
 }
 
-#printReport:hover {
+#printReport:hover,
+#addcorrectiveactions-button:hover{
     background: #1e8c4c;
 }
 
