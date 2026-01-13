@@ -1105,6 +1105,7 @@
           action: "editCorrectiveAction",
           station: document.getElementById("stationmodal1").value,
           rowIndex: selectedRowIndex,
+          location: document.getElementById("locationmodal1").value,
           risk: document.getElementById("riskmodal1").value,
           corraction: document.getElementById("corractionmodal1").value,
           riskdegree: document.getElementById("riskdegreemodal1").value,
@@ -1114,6 +1115,7 @@
       })
         .then(res => res.json())
         .then(res => alert(res.message));
+        clearCorrectiveActionsModal();
     }
     ///حذف الاجراءات التصحيحية المراد حذفها فى المودل
     function deleteCorrectiveAction() {
@@ -1288,6 +1290,7 @@
 
 </body>
 </html>
+
 
 
 
