@@ -1031,7 +1031,7 @@
       
         // إعادة تعيين الجدول والحقول عند تغيير الفرع
         document.querySelector(".ca-table tbody").innerHTML = "";
-        clearForm();
+        clearCorrectiveActionsModal();
       
         fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
           .then(res => res.json())
@@ -1288,6 +1288,7 @@
 
 </body>
 </html>
+
 
 
 
