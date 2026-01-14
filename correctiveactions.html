@@ -963,56 +963,64 @@
 
      
     
-    // جلب المحطات عند اختيار الفرع في مودال الإجراءات التصحيحية
-      document.getElementById("branchmodal1").addEventListener("change", (e) => {
-        const branch = e.target.value;
-        const stationSelect = document.getElementById("stationmodal1");
-        const certifiedDateInputModal1 = document.getElementById("certifieddatemodal1").value;
-      
-        // إعادة تعيين الجدول والحقول عند تغيير الفرع
-        document.querySelector(".ca-table tbody").innerHTML = "";
-        clearCorrectiveActionsModal();
-      
-        fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
-          .then(res => res.json())
-          .then(data => {
-            stationSelect.innerHTML = `<option value="" disabled selected>Select Station</option>`;
-            data.stations.forEach(station => {
-              const option = document.createElement("option");
-              option.value = station;
-              option.textContent = station;
-              stationSelect.appendChild(option);
-            });
+    // جلب المحطات عند اختيار الفرع
+    document.getElementById("branchmodal1").addEventListener("change", (e) => {
+      const branch = e.target.value;
+      const stationSelect = document.getElementById("stationmodal1");
+      const certifiedDateInputModal1 =
+        document.getElementById("certifieddatemodal1");
+    
+      // إعادة تعيين
+      document.querySelector(".ca-table tbody").innerHTML = "";
+      clearCorrectiveActionsModal();
+      certifiedDateInputModal1.value = "";
+    
+      fetch(scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch))
+        .then(res => res.json())
+        .then(data => {
+          stationSelect.innerHTML =
+            `<option value="" disabled selected>Select Station</option>`;
+          data.stations.forEach(station => {
+            const option = document.createElement("option");
+            option.value = station;
+            option.textContent = station;
+            stationSelect.appendChild(option);
           });
-      });
-      // جلب تاريخ الاعتماد عند اختيار المحطة
-      document.getElementById("stationmodal1").addEventListener("change", (e) => {
-         
-        function formatDateToMMDDYYYY(dateString) {
-          if (!dateString) return "";
-          const [year, month, day] = dateString.split("-");
-          return `${month}/${day}/${year}`;
-        }
-        const station = e.target.value;
-        const branch = document.getElementById("branchmodal1").value;
-        const certifiedDateInputModal1 = document.getElementById("certifieddatemodal1");
-      
-        certifiedDateInputModal1.value = "";
-      
-        fetch(
-          scriptURL +
-            "?action=getCertifiedDate" +
-            "&branch=" + encodeURIComponent(branch) +
-            "&station=" + encodeURIComponent(station)
-        )
-          .then(res => res.json())
-          .then(data => {
-            if (data.certifiedDate) {
-              certifiedDateInputModal1.value =formatDateToMMDDYYYY(data.certifiedDate); // mm-dd-yyyy
-            }
-          });
-        loadCorrectiveActions();
-      });
+        });
+    });
+    
+    // جلب تاريخ الاعتماد + الإجراءات عند اختيار المحطة
+    document.getElementById("stationmodal1").addEventListener("change", (e) => {
+    
+      function formatDateToMMDDYYYY(dateString) {
+        if (!dateString) return "";
+        const [year, month, day] = dateString.split("-");
+        return `${month}/${day}/${year}`;
+      }
+    
+      const station = e.target.value;
+      const branch = document.getElementById("branchmodal1").value;
+      const certifiedDateInputModal1 = document.getElementById("certifieddatemodal1");
+    
+      certifiedDateInputModal1.value = "";
+    
+      fetch(
+        scriptURL +
+          "?action=getCertifiedDate" +
+          "&branch=" + encodeURIComponent(branch) +
+          "&station=" + encodeURIComponent(station)
+      )
+        .then(res => res.json())
+        .then(data => {
+          if (data.certifiedDate) {
+            certifiedDateInputModal1.value =
+              formatDateToMMDDYYYY(data.certifiedDate);
+          }
+        });
+    
+      loadCorrectiveActions();
+    });
+
 
 
     // لجلب الاجراءات التصحيحية المراد تعديلها فى المودل
@@ -1258,6 +1266,7 @@
 
 </body>
 </html>
+
 
 
 
