@@ -1006,9 +1006,8 @@
     
       fetch(
         scriptURL +
-          "?action=getCertifiedDate" +
-          "&branch=" + encodeURIComponent(branch) +
-          "&station=" + encodeURIComponent(station)
+          "?action=getStations&branch=" + encodeURIComponent(branch) 
+         
       )
         .then(res => res.json())
         .then(data => {
@@ -1266,6 +1265,7 @@
 
 </body>
 </html>
+
 
 
 
