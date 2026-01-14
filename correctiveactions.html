@@ -926,16 +926,6 @@
       }
 
     
-    function clearCertifiedStationAdditionModal() {
-        document.getElementById("branchmodalselect").value = "";
-        document.getElementById("stationmodalselect").value = "";
-        document.getElementById("newstationmodal").value = "";
-        document.getElementById("certifieddatemodal").value = "";  
-     }
-
-
-     
-    
     /// العناصر المستخدمة
     const branchSelectModal1 = document.getElementById("branchmodal1");
     const stationSelectModal1 = document.getElementById("stationmodal1");
@@ -1234,20 +1224,25 @@
     // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
     function submitStation() {
       const branchSelectModal = document.getElementById("branchmodalselect").value;
-      const stationSelectModal = document.getElementById("stationmodalselect");
-      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
-      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
+      const stationSelect = document.getElementById("stationmodalselect");
+      let stationName = stationSelect.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelect.value;
+      
+      let certifiedDateInputModal = document.getElementById("certifieddatemodal").value; // yyyy-MM-dd
     
       if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
     
+      // تحويل التاريخ من yyyy-MM-dd إلى dd/mm/yyyy
+      const [year, month, day] = certifiedDateInputModal.split("-");
+      certifiedDateInputModal = `${day}/${month}/${year}`;
+    
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
-        branch: branchSelectModal,
+        branch, branchSelectModal,
         station: stationName,
-        certifieddate: certifiedDateInputModal
+        certifieddate: certifiedDateInputModal // الآن بصيغة dd/mm/yyyy
       });
     
       fetch(scriptURL, { method: "POST", body: params })
@@ -1255,10 +1250,21 @@
         .then(res => {
           alert(res.message);
           clearCertifiedStationAdditionModal();
-       })
-        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
+        })
+        .catch(err => { 
+          console.error(err); 
+          alert("حدث خطأ أثناء الحفظ"); 
+        });
     }
-   
+    
+    function clearCertifiedStationAdditionModal() {
+        document.getElementById("branchmodalselect").value = "";
+        document.getElementById("stationmodalselect").value = "";
+        document.getElementById("newstationmodal").value = "";
+        document.getElementById("certifieddatemodal").value = "";  
+     }
+
+
 
 
 
@@ -1367,6 +1373,7 @@
 
 </body>
 </html>
+
 
 
 
