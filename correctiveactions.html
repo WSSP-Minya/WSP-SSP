@@ -1206,8 +1206,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.status === "success") {
-            stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>
-                                            <option value="Add New Station">اضافة محطة</option>';
+            stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option> <option value="Add New Station">اضافة محطة</option>';
     
             modalStations = data.stations;      // حفظ أسماء المحطات
             modalDates = data.certifiedDates;   // حفظ التواريخ
@@ -1234,8 +1233,7 @@
       certifiedDateModal.value = ""; // تفريغ التاريخ
       modalStations = [];
       modalDates = [];
-      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>
-                                      <option value="Add New Station">اضافة محطة</option>';
+      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option> <option value="Add New Station">اضافة محطة</option>';
     
       fetchStationsModal(selectedBranch);
     });
@@ -1375,6 +1373,7 @@
 
 </body>
 </html>
+
 
 
 
