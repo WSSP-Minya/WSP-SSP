@@ -1234,7 +1234,8 @@
       certifiedDateModal.value = ""; // تفريغ التاريخ
       modalStations = [];
       modalDates = [];
-      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>';
+      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>
+                                      <option value="Add New Station">اضافة محطة</option>';
     
       fetchStationsModal(selectedBranch);
     });
@@ -1374,6 +1375,7 @@
 
 </body>
 </html>
+
 
 
 
