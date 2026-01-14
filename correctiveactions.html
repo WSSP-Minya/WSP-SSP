@@ -1223,43 +1223,53 @@
     
     // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
     function submitStation() {
-      const branchSelectModal = document.getElementById("branchmodalselect").value;
-      const stationSelectModal = document.getElementById("stationmodalselect");
-      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
-      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
+      // جلب القيم من النموذج
+      const branchSelect = document.getElementById("branchmodalselect");
+      const stationSelect = document.getElementById("stationmodalselect");
+      const newStationInput = document.getElementById("newstationmodal");
+      const certifiedDateInput = document.getElementById("certifieddatemodal").value;
     
-      if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
+      const branch = branchSelect.value;
+      const station = stationSelect.value === "__new__" ? newStationInput.value.trim() : stationSelect.value;
+    
+      // التحقق من اكتمال الحقول
+      if (!branch || !station || !certifiedDateInput) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
-      
-      const [year, month, day] = certifiedDateInputModal.split("-");
-      const certifieddate = `${day}/${month}/${year}`;
-
     
+      // تحويل التاريخ إذا أردنا صيغة DD/MM/YYYY (اختياري حسب السيرفر)
+      const [year, month, day] = certifiedDateInput.split("-");
+      const certifiedDate = `${day}/${month}/${year}`;
+    
+      // تجهيز البيانات للإرسال
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
-        branch: branchSelectModal,
-        station: stationName,
-        certifieddate: certifiedDateInputModal
+        branch: branch,
+        station: station,
+        certifieddate: certifiedDateInput // أو certifiedDate إذا السيرفر يريد DD/MM/YYYY
       });
     
+      // إرسال البيانات إلى السيرفر
       fetch(scriptURL, { method: "POST", body: params })
         .then(res => res.json())
         .then(res => {
           alert(res.message);
           clearCertifiedStationAdditionModal();
-       })
-        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
+        })
+        .catch(err => {
+          console.error(err);
+          alert("حدث خطأ أثناء الحفظ");
+        });
     }
     
-    
+    // مسح الحقول بعد الحفظ
     function clearCertifiedStationAdditionModal() {
-        document.getElementById("branchmodalselect").value = "";
-        document.getElementById("stationmodalselect").value = "";
-        document.getElementById("newstationmodal").value = "";
-        document.getElementById("certifieddatemodal").value = "";  
-     }
+      document.getElementById("branchmodalselect").selectedIndex = 0;
+      document.getElementById("stationmodalselect").selectedIndex = 0;
+      document.getElementById("newstationmodal").value = "";
+      document.getElementById("certifieddatemodal").value = "";  
+    }
 
 
 
@@ -1370,6 +1380,7 @@
 
 </body>
 </html>
+
 
 
 
