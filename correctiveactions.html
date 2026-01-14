@@ -1244,14 +1244,30 @@
       });
     
       fetch(scriptURL, { method: "POST", body: params })
-        .then(res => res.json())
+        .then(async (res) => {
+          console.log("Status:", res.status);         // رقم الحالة HTTP
+          console.log("Status Text:", res.statusText);
+          console.log("Headers:", [...res.headers]); // كل الهيدرز
+      
+          // محاولة قراءة JSON
+          try {
+            const data = await res.json();
+            console.log("Response JSON:", data);
+            return data;
+          } catch (err) {
+            console.error("Error parsing JSON:", err);
+            const text = await res.text();  // طباعة النص الخام للرد
+            console.log("Response Text:", text);
+            throw err;
+          }
+        })
         .then(res => {
           alert(res.message);
           clearCertifiedStationAdditionModal();
         })
         .catch(err => { 
-          console.error(err); 
-          alert("حدث خطأ أثناء الحفظ"); 
+          console.error("Fetch failed:", err);
+          alert("حدث خطأ أثناء الحفظ (راجع console للمزيد)");
         });
     }
     
@@ -1371,6 +1387,7 @@
 
 </body>
 </html>
+
 
 
 
