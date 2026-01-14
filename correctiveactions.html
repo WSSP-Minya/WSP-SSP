@@ -987,6 +987,12 @@
       });
       // جلب تاريخ الاعتماد عند اختيار المحطة
       document.getElementById("stationmodal1").addEventListener("change", (e) => {
+         
+        function formatDateToMMDDYYYY(dateString) {
+          if (!dateString) return "";
+          const [month, day, year] = dateString.split("-");
+          return `${month}/${day}/${year}`;
+        }
         const station = e.target.value;
         const branch = document.getElementById("branchmodal1").value;
         const certifiedDateInputModal1 = document.getElementById("certifieddatemodal1");
@@ -1002,7 +1008,7 @@
           .then(res => res.json())
           .then(data => {
             if (data.certifiedDate) {
-              certifiedDateInputModal1.value = formatDateToDDMMYYYY(data.certifiedDate); // yyyy-mm-dd
+              certifiedDateInputModal1.value =formatDateToMMDDYYYY(data.certifiedDate); // mm-dd-yyyy
             }
           });
         loadCorrectiveActions();
@@ -1252,6 +1258,7 @@
 
 </body>
 </html>
+
 
 
 
