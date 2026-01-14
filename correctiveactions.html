@@ -1001,8 +1001,8 @@
         )
           .then(res => res.json())
           .then(data => {
-            if (data.certifieddate) {
-              certifiedDateInputModal1.value = formatDateToDDMMYYYY(data.certifieddate); // yyyy-mm-dd
+            if (data.certifiedDate) {
+              certifiedDateInputModal1.value = formatDateToDDMMYYYY(data.certifiedDate); // yyyy-mm-dd
             }
           });
         loadCorrectiveActions();
@@ -1252,6 +1252,7 @@
 
 </body>
 </html>
+
 
 
 
