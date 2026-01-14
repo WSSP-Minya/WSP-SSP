@@ -1185,6 +1185,88 @@
       formIds.forEach(id => document.getElementById(id).value = "");
       selectedRowIndex = null;
     }
+    // --- عناصر المودال ---
+    const branchSelectModal = document.getElementById("branchmodalselect");
+    const stationSelectModal = document.getElementById("stationmodalselect");
+    const certifiedDateModal = document.getElementById("certifieddatemodal");
+    
+    // مصفوفات لحفظ بيانات الفرع
+    let modalStations = [];
+    let modalDates = [];
+    
+    // --- جلب المحطات عند اختيار الفرع ---
+    function fetchStationsModal(branch) {
+      if (!branch) return;
+    
+      stationSelectModal.innerHTML = '<option value="" disabled selected>Loading Stations...</option>';
+    
+      const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+    
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>
+                                            <option value="Add New Station">اضافة محطة</option>';
+    
+            modalStations = data.stations;      // حفظ أسماء المحطات
+            modalDates = data.certifiedDates;   // حفظ التواريخ
+    
+            data.stations.forEach(station => {
+              const option = document.createElement("option");
+              option.value = station;
+              option.textContent = station;
+              stationSelectModal.appendChild(option);
+            });
+          } else {
+            stationSelectModal.innerHTML = '<option value="" disabled selected>Not found</option>';
+          }
+        })
+        .catch(err => {
+          console.error("Error fetching stations:", err);
+          stationSelectModal.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+        });
+    }
+    
+    // --- عند تغيير الفرع ---
+    branchSelectModal.addEventListener("change", () => {
+      const selectedBranch = branchSelectModal.value;
+      certifiedDateModal.value = ""; // تفريغ التاريخ
+      modalStations = [];
+      modalDates = [];
+      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>';
+    
+      fetchStationsModal(selectedBranch);
+    });
+    
+    // --- عند تغيير المحطة ---
+    stationSelectModal.addEventListener("change", () => {
+      const selectedStation = stationSelectModal.value;
+      const index = modalStations.indexOf(selectedStation);
+    
+      // --- تحديث تاريخ الاعتماد بصيغة YYYY-MM-DD لـ input type=date ---
+      if (index !== -1 && modalDates[index]) {
+        const date = new Date(modalDates[index]);
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+    
+        certifiedDateModal.value = `${year}-${month}-${day}`; // YYYY-MM-DD
+      } else {
+        certifiedDateModal.value = "";
+      }
+      // --- إظهار أو إخفاء حقل إضافة محطة جديدة ---
+      const newStationInput = document.getElementById("newstationmodal");
+      if (selectedStation === "Add New Station") { 
+        newStationInput.style.display = "block"; // إظهار الحقل
+        newStationInput.value = "";              // تفريغ أي قيمة سابقة
+      } else {
+        newStationInput.style.display = "none"; // إخفاء الحقل
+        newStationInput.value = "";              // تفريغ القيمة
+      }
+    });
+   
+
 
 
 
@@ -1292,6 +1374,7 @@
 
 </body>
 </html>
+
 
 
 
