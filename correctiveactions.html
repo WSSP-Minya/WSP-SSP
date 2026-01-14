@@ -1224,52 +1224,35 @@
     // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
     function submitStation() {
       const branchSelectModal = document.getElementById("branchmodalselect").value;
-      const stationSelect = document.getElementById("stationmodalselect");
-      let stationName = stationSelect.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelect.value;
-      
-      let certifiedDateInputModal = document.getElementById("certifieddatemodal").value; // yyyy-MM-dd
+      const stationSelectModal = document.getElementById("stationmodalselect");
+      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
+      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
     
       if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
-    
       
+      const [year, month, day] = certifiedDateInputModal.split("-");
+      const certifieddate = `${day}/${month}/${year}`;
+
     
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
         branch: branchSelectModal,
         station: stationName,
-        certifieddate: certifiedDateInputModal // الآن بصيغة dd/mm/yyyy
+        certifieddate: certifiedDateInputModal
       });
     
       fetch(scriptURL, { method: "POST", body: params })
-        .then(async (res) => {
-          console.log("Status:", res.status);         // رقم الحالة HTTP
-          console.log("Status Text:", res.statusText);
-          console.log("Headers:", [...res.headers]); // كل الهيدرز
-      
-          // محاولة قراءة JSON
-          try {
-            const data = await res.json();
-            console.log("Response JSON:", data);
-            return data;
-          } catch (err) {
-            console.error("Error parsing JSON:", err);
-            const text = await res.text();  // طباعة النص الخام للرد
-            console.log("Response Text:", text);
-            throw err;
-          }
-        })
+        .then(res => res.json())
         .then(res => {
           alert(res.message);
           clearCertifiedStationAdditionModal();
-        })
-        .catch(err => { 
-          console.error("Fetch failed:", err);
-          alert("حدث خطأ أثناء الحفظ (راجع console للمزيد)");
-        });
+       })
+        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
     }
+    
     
     function clearCertifiedStationAdditionModal() {
         document.getElementById("branchmodalselect").value = "";
@@ -1387,6 +1370,7 @@
 
 </body>
 </html>
+
 
 
 
