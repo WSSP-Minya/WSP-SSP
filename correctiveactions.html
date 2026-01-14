@@ -1234,9 +1234,7 @@
         return;
       }
     
-      // تحويل التاريخ من yyyy-MM-dd إلى dd/mm/yyyy
-      const [year, month, day] = certifiedDateInputModal.split("-");
-      certifiedDateInputModal = `${day}/${month}/${year}`;
+      
     
       const params = new URLSearchParams({
         action: "saveCertifiedStation",
@@ -1373,6 +1371,7 @@
 
 </body>
 </html>
+
 
 
 
