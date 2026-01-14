@@ -1024,10 +1024,11 @@
         const day = String(date.getDate()).padStart(2, '0');
     
         // MM/DD/YYYY
-        certifiedDateInput.value = `${month}/${day}/${year}`;
+        certifiedDateInput.value = `${year}-${month}-${day}`; // YYYY-MM-DD
       } else {
         certifiedDateInput.value = "";
       }
+      loadCorrectiveActions();
     
       // --- جلب تفاصيل المحطة إذا لزم الأمر ---
       fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
@@ -1291,6 +1292,7 @@
 
 </body>
 </html>
+
 
 
 
