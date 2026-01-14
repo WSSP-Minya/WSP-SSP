@@ -925,33 +925,6 @@
           });
       }
 
-    // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
-    function submitStation() {
-      const branchSelectModal = document.getElementById("branchmodalselect").value;
-      const stationSelectModal = document.getElementById("stationmodalselect");
-      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
-      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
-    
-      if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
-        alert("جميع الحقول مطلوبة!");
-        return;
-      }
-    
-      const params = new URLSearchParams({
-        action: "saveCertifiedStation",
-        branch: branchSelectModal,
-        station: stationName,
-        certifieddate: certifiedDateInputModal
-      });
-    
-      fetch(scriptURL, { method: "POST", body: params })
-        .then(res => res.json())
-        .then(res => {
-          alert(res.message);
-          clearCertifiedStationAdditionModal();
-       })
-        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
-    }
     
     function clearCertifiedStationAdditionModal() {
         document.getElementById("branchmodalselect").value = "";
@@ -964,9 +937,9 @@
      
     
     /// العناصر المستخدمة
-    const branchSelect = document.getElementById("branchmodal1");
-    const stationSelect = document.getElementById("stationmodal1");
-    const certifiedDateInput = document.getElementById("certifieddatemodal1");
+    const branchSelectModal1 = document.getElementById("branchmodal1");
+    const stationSelectModal1 = document.getElementById("stationmodal1");
+    const certifiedDateInputModal1 = document.getElementById("certifieddatemodal1");
     
     // مصفوفات لحفظ بيانات الفرع
     let branchStations = [];
@@ -976,7 +949,7 @@
     function fetchStations(branch) {
       if (!branch) return;
     
-      stationSelect.innerHTML = '<option value="" disabled selected>Loading Stations...</option>';
+      stationSelectModal1.innerHTML = '<option value="" disabled selected>Loading Stations...</option>';
     
       const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
     
@@ -984,7 +957,7 @@
         .then(res => res.json())
         .then(data => {
           if (data.status === "success") {
-            stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+            stationSelectModal1.innerHTML = '<option value="" disabled selected>Select Station</option>';
             branchStations = data.stations;      // حفظ أسماء المحطات
             branchDates = data.certifiedDates;   // حفظ التواريخ
     
@@ -992,28 +965,28 @@
               const option = document.createElement("option");
               option.value = station;
               option.textContent = station;
-              stationSelect.appendChild(option);
+              stationSelectModal1.appendChild(option);
             });
           } else {
-            stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+            stationSelectModal1.innerHTML = '<option value="" disabled selected>Not found</option>';
           }
         })
         .catch(err => {
           console.error("Error fetching stations:", err);
-          stationSelect.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+          stationSelectModal1.innerHTML = '<option value="" disabled selected>Connection Error</option>';
         });
     }
     
     // --- عند تغيير الفرع ---
-    branchSelect.addEventListener("change", () => {
-      const selectedBranch = branchSelect.value;
-      certifiedDateInput.value = ""; // تفريغ التاريخ عند تغيير الفرع
+    branchSelectModal1.addEventListener("change", () => {
+      const selectedBranch = branchSelectModal1.value;
+      certifiedDateInputModal1.value = ""; // تفريغ التاريخ عند تغيير الفرع
       fetchStations(selectedBranch);
     });
     
     // --- عند تغيير المحطة ---
     stationSelect.addEventListener("change", () => {
-      const selectedStation = stationSelect.value;
+      const selectedStation = stationSelectModal1.value;
       const index = branchStations.indexOf(selectedStation);
     
       // --- تحديث تاريخ الاعتماد ---
@@ -1024,26 +997,11 @@
         const day = String(date.getDate()).padStart(2, '0');
     
         // MM/DD/YYYY
-        certifiedDateInput.value = `${year}-${month}-${day}`; // YYYY-MM-DD
+        certifiedDateInputModal1.value = `${year}-${month}-${day}`; // YYYY-MM-DD
       } else {
-        certifiedDateInput.value = "";
+        certifiedDateInputModal1.value = "";
       }
-      loadCorrectiveActions();
-    
-      // --- جلب تفاصيل المحطة إذا لزم الأمر ---
-      fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success" && data.details.length > 0) {
-            fillStationDetails(data.details);
-          } else {
-            locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
-            riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
-            branchcomment.value = wspcomment.value = "";
-            document.getElementById("filename").textContent = "";
-          }
-        })
-        .catch(err => console.error("Error fetching station details:", err));
+      loadCorrectiveActions();      
     });
 
 
@@ -1185,7 +1143,7 @@
       formIds.forEach(id => document.getElementById(id).value = "");
       selectedRowIndex = null;
     }
-    // --- عناصر المودال ---
+    // --- عناصر المودال اضافة المحطات ---
     const branchSelectModal = document.getElementById("branchmodalselect");
     const stationSelectModal = document.getElementById("stationmodalselect");
     const certifiedDateModal = document.getElementById("certifieddatemodal");
@@ -1206,7 +1164,11 @@
         .then(res => res.json())
         .then(data => {
           if (data.status === "success") {
-            stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option> <option value="Add New Station">اضافة محطة</option>';
+            stationSelectModal.innerHTML = `
+            <option value="" disabled selected>Select Station</option>
+            <option value="__new__">إضافة محطة جديدة</option>
+          `;
+              
     
             modalStations = data.stations;      // حفظ أسماء المحطات
             modalDates = data.certifiedDates;   // حفظ التواريخ
@@ -1233,7 +1195,10 @@
       certifiedDateModal.value = ""; // تفريغ التاريخ
       modalStations = [];
       modalDates = [];
-      stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option> <option value="Add New Station">اضافة محطة</option>';
+      stationSelectModal.innerHTML = `
+            <option value="" disabled selected>Select Station</option>
+            <option value="__new__">إضافة محطة جديدة</option>
+          `;
     
       fetchStationsModal(selectedBranch);
     });
@@ -1256,14 +1221,43 @@
       }
       // --- إظهار أو إخفاء حقل إضافة محطة جديدة ---
       const newStationInput = document.getElementById("newstationmodal");
-      if (selectedStation === "Add New Station") { 
+      if (selectedStation === "__new__") { 
         newStationInput.style.display = "block"; // إظهار الحقل
         newStationInput.value = "";              // تفريغ أي قيمة سابقة
       } else {
         newStationInput.style.display = "none"; // إخفاء الحقل
         newStationInput.value = "";              // تفريغ القيمة
       }
+      
     });
+    
+    // حفظ المحطة الجديدة أو تحديث تاريخ الاعتماد
+    function submitStation() {
+      const branchSelectModal = document.getElementById("branchmodalselect").value;
+      const stationSelectModal = document.getElementById("stationmodalselect");
+      let stationName = stationSelectModal.value === "__new__" ? document.getElementById("newstationmodal").value.trim() : stationSelectModal.value;
+      const certifiedDateInputModal = document.getElementById("certifieddatemodal").value;
+    
+      if (!branchSelectModal || !stationName || !certifiedDateInputModal) {
+        alert("جميع الحقول مطلوبة!");
+        return;
+      }
+    
+      const params = new URLSearchParams({
+        action: "saveCertifiedStation",
+        branch: branchSelectModal,
+        station: stationName,
+        certifieddate: certifiedDateInputModal
+      });
+    
+      fetch(scriptURL, { method: "POST", body: params })
+        .then(res => res.json())
+        .then(res => {
+          alert(res.message);
+          clearCertifiedStationAdditionModal();
+       })
+        .catch(err => { console.error(err); alert("حدث خطأ أثناء الحفظ"); });
+    }
    
 
 
@@ -1373,6 +1367,7 @@
 
 </body>
 </html>
+
 
 
 
