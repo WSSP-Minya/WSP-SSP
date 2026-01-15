@@ -120,12 +120,12 @@
 
         <div class="branchremark">
         <label>Branch Comment</label>
-        <textarea id="branchcomment" name="Remarks" maxlength="150"></textarea>
+        <textarea id="branchcomment" name="Remarks" maxlength="800"></textarea>
         </div>
 
         <div class="wspcomment">
         <label>WSP Comment</label>
-        <textarea id="wspcomment" name="WSP Comments" maxlength="150"></textarea>
+        <textarea id="wspcomment" name="WSP Comments" maxlength="800"></textarea>
         </div>
 
         <hr>
@@ -1396,7 +1396,6 @@
                 <td>${detail.corraction || ""}</td>
                 <td>${detail.status || ""}</td>
                 <td>${detail.wspcomment || ""}</td>
-                <td>${detail.statuspercent || 0}%</td>
             </tr>
         `).join("");
     
@@ -1410,10 +1409,11 @@
                     th, td { border: 1px solid #000; padding: 6px; }
                     th { background-color: #f0f0f0; }
                     h2, p { text-align: center; }
-                    th:nth-child(1), td:nth-child(1) { width: 25%; }
-                    th:nth-child(2), td:nth-child(2) { width: 35%; }
+                    th:nth-child(1), td:nth-child(1) { width: 15%; }
+                    th:nth-child(2), td:nth-child(2) { width: 25%; }
                     th:nth-child(3), td:nth-child(3) { width: 25%; }
-                    th:nth-child(4), td:nth-child(4) { width: 15%; }
+                    th:nth-child(4), td:nth-child(4) { width: 10%; }
+                    th:nth-child(5), td:nth-child(4) { width: 35%; }
                 </style>
             </head>
             <body>
@@ -1434,7 +1434,6 @@
                             <th>الإجراء التصحيحي</th>
                              <th>الموقف التنفيذى</th>
                             <th>ملاحظات WSP</th>
-                            <th>نسبة التنفيذ</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1470,4 +1469,5 @@
 
 </body>
 </html>
+
 
