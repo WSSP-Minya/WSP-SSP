@@ -278,7 +278,8 @@ form h1 {
 }
 
 #printReport,
-#addcorrectiveactions-button{
+#addcorrectiveactions-button,
+#printCommentsReport{
     display: flex;
     justify-content:flex-start;
     margin-left:5px;
@@ -290,14 +291,16 @@ form h1 {
     cursor: pointer;
 }
 #printReport img,
-#addcorrectiveactions-button img{
+#addcorrectiveactions-button img,
+#printCommentsReport{
     width: 40px; 
     height: 40px; 
     object-fit: cover;
 }
 
 #printReport:hover,
-#addcorrectiveactions-button:hover{
+#addcorrectiveactions-button:hover,
+#printCommentsReport:hover{
     background: #1e8c4c;
 }
 
