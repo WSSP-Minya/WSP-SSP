@@ -333,7 +333,7 @@
       const department = sessionStorage.getItem("department");
       const userRole = sessionStorage.getItem("role");
           // إذا المستخدم ليس Admin، إخفاء الأزرار
-      if (userRole !== "Admin") {
+      if (userRole !== "Admin"|| department !== "WSP") {
           console.log("User Role:", userRole);
          
     
@@ -1380,6 +1380,7 @@
 
 </body>
 </html>
+
 
 
 
