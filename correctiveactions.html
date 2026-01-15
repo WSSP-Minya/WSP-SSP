@@ -38,6 +38,9 @@
           <button type="button" onclick="openCorrectiveModal()" id="addcorrectiveactions-button">
             <img src="Risk management.png" alt="Add Corrective Actions" title = "Add Corrective Actions">
           </button>
+            <button type="button" id="printCommentsReport">print comments Report
+            
+          </button>
 
             
         </div>
@@ -332,6 +335,12 @@
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
       const userRole = sessionStorage.getItem("role");
+
+      if (userRole !== "Admin") {
+          const btn = document.getElementById("printCommentReport");
+          if (btn) btn.style.display = "none";
+      }
+
           
       document.getElementById("section").value = department || "";
 
@@ -1355,6 +1364,96 @@
       printWindow.print();
   });
     
+       // طباعة الاجراءات التصحيحية وملاحظات WSP طبقاً لنسبة تنفيذ اقل من (100%)
+       document.getElementById("printCommentsReport").addEventListener("click", () => {
+    
+        const branch = document.getElementById("branch").value || "----";
+        const station = document.getElementById("station").value || "----";
+        const certifiedDate = document.getElementById("certifieddate").value || "----";
+    
+        const locationSelect = document.getElementById("location");
+        const detailsMap = locationSelect.detailsMap;
+    
+        if (!detailsMap || Object.keys(detailsMap).length === 0) {
+            alert("لا توجد بيانات للطباعة!");
+            return;
+        }
+    
+        // فلترة البيانات حسب statuspercent < 100
+        const filteredData = Object.values(detailsMap).filter(detail => {
+            return Number(detail.statuspercent) < 100;
+        });
+    
+        if (filteredData.length === 0) {
+            alert("جميع الإجراءات مكتملة 100%");
+            return;
+        }
+    
+        let rowsHtml = filteredData.map(detail => `
+            <tr>
+                <td>${detail.location || ""}</td>
+                <td>${detail.risk || ""}</td>
+                <td>${detail.corraction || ""}</td>
+                <td>${detail.wspcomment || ""}</td>
+                <td>${detail.statuspercent || 0}%</td>
+            </tr>
+        `).join("");
+    
+        const htmlContent = `
+            <html>
+            <head>
+                <title>تقرير الإجراءات غير المكتملة</title>
+                <style>
+                    body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                    th, td { border: 1px solid #000; padding: 6px; }
+                    th { background-color: #f0f0f0; }
+                    h2, p { text-align: center; }
+                    th:nth-child(1), td:nth-child(1) { width: 25%; }
+                    th:nth-child(2), td:nth-child(2) { width: 35%; }
+                    th:nth-child(3), td:nth-child(3) { width: 25%; }
+                    th:nth-child(4), td:nth-child(4) { width: 15%; }
+                </style>
+            </head>
+            <body>
+                <h2>تقرير بالإجراءات التصحيحية الغير مكتملة</h2>
+                <p>
+                    <strong>الفرع:</strong> ${branch}
+                    &nbsp;&nbsp;
+                    <strong>النظام:</strong> ${station}
+                    &nbsp;&nbsp;
+                    <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
+                </p>
+    
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الموقع</th>
+                            <th>االخطر</th>
+                            <th>الإجراء التصحيحي</th>
+                            <th>ملاحظات WSP</th>
+                            <th>نسبة التنفيذ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rowsHtml}
+                    </tbody>
+                </table>
+            </body>
+            </html>
+        `;
+    
+        const printWindow = window.open('', '', 'height=600,width=900');
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+        printWindow.focus();
+        printWindow.print();
+});
+
+
+
+    
+    
     //  تسجيل الخروج
     function logout() {
         sessionStorage.clear(); // مسح بيانات الجلسة
@@ -1369,6 +1468,7 @@
 
 </body>
 </html>
+
 
 
 
