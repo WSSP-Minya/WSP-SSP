@@ -332,21 +332,7 @@
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
       const userRole = sessionStorage.getItem("role");
-          // إذا المستخدم ليس Admin، إخفاء الأزرار
-      if (userRole !== "Admin") {
-          console.log("User Role:", userRole);
-         
-    
-          const addStationBtn = document.getElementById("addstation-button");
-          const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
-    
-          if (addStationBtn) addStationBtn.style.display = "none";
-          if (addCorrectiveBtn) addCorrectiveBtn.style.display = "none";
-    
-      }
-
-  
-     
+          
       document.getElementById("section").value = department || "";
 
          
@@ -1383,6 +1369,7 @@
 
 </body>
 </html>
+
 
 
 
