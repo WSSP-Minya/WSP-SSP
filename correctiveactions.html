@@ -333,7 +333,7 @@
       const department = sessionStorage.getItem("department");
       const userRole = sessionStorage.getItem("role");
           // إذا المستخدم ليس Admin، إخفاء الأزرار
-      if (userRole !== "Admin"|| department !== "WSP") {
+      if (userRole !== "Admin") {
           console.log("User Role:", userRole);
          
     
@@ -565,7 +565,8 @@
       
       
 
-
+      const addStationBtn = document.getElementById("addstation-button");
+      const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
       // إعداد الفرع حسب القسم
       if (department !== "WSP") {
         branchSelect.value = department;
@@ -573,6 +574,8 @@
         branchcomment.disabled = false;
         wspcomment.disabled = true;
         wspbuttons.forEach(btn => btn.disabled = true);
+        addStationBtn.style.display = "none";
+        addCorrectiveBtn.style.display = "none";
         fetchStations(department);
       } else {
         branchSelect.disabled = false;
