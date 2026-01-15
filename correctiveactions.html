@@ -336,11 +336,7 @@
       const department = sessionStorage.getItem("department");
       const userRole = sessionStorage.getItem("role");
 
-      if (userRole !== "Admin") {
-          const btn = document.getElementById("printCommentReport");
-          if (btn) btn.style.display = "none";
-      }
-
+      
           
       document.getElementById("section").value = department || "";
 
@@ -1469,6 +1465,7 @@
 
 </body>
 </html>
+
 
 
 
