@@ -351,7 +351,7 @@
     
       const stationSelect = document.getElementById("station");
     
-      // تحميل المحطات للجميع (WSP وغير WSP)
+      // تحميل المحطات للجميع 
       fetchStations(row[2], (data) => {
         stationSelect.innerHTML = '<option value="" disabled>Select Station</option>';
     
@@ -491,6 +491,7 @@
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
+
 
 
 
