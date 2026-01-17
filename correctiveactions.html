@@ -717,9 +717,7 @@
           if (file.type.startsWith("image/")) file = await compressImage(file);
           base64File = await fileToBase64(file);
       }
-      // 🔗 التعامل مع رابط فقط (بدون ملف)
-      const attachmentLink = document.getElementById("attachmentLink").value.trim();
-
+     
      let statusPercentValue = "";
 
         // الحالة المختارة
@@ -1468,6 +1466,7 @@
 
 </body>
 </html>
+
 
 
 
