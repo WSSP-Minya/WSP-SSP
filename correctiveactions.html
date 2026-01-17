@@ -115,9 +115,6 @@
             <label>Attachment</label>
             <input type="file" id="attachment" name="attachment" accept="image/*,.pdf,.doc,.docx">
             <div id="filename">No File</div>
-            <label>(Optional) Link</label>
-            <input type="url" id="attachmentLink" placeholder="https://example.com">
-
         </div>
         </div>
 
@@ -309,7 +306,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbykQ62c7XhVg2BAoe09faoHEbW5j7QIHd7unCNR_L8uMhowV_oNitGTNtntjHsfEyau6A/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbx5t0ko6PjaVsSJ0LTKXU8WDo_moLUwRpec91DHuhyGlBjX_6oQeuJOM3XqsBnbF6ZSiw/exec";
 
     document.getElementById("addstation-button").onclick = () => {
       document.getElementById("stationModal").style.display = "flex";
@@ -517,24 +514,11 @@
           branchcomment.value = detail.branchcomment || "";
           wspcomment.value = detail.wspcomment || "";
 
-          const attachmentContainer = document.getElementById("filename");
-          attachmentContainer.innerHTML = ""; // تفريغ الحاوية
-          
-          if (detail.attachment && Array.isArray(detail.attachment)) {
-            detail.attachment.forEach((link, idx) => {
-              if (link) {
-                const a = document.createElement("a");
-                a.href = link;
-                a.target = "_blank";
-                a.textContent = `Attachment ${idx + 1}`;
-                a.style.display = "block";
-                attachmentContainer.appendChild(a);
-              }
-            });
+          if (detail.attachment) {
+            document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
           } else {
-            attachmentContainer.textContent = "No File";
+            document.getElementById("filename").textContent = "No File";
           }
-
         }
       });
 
@@ -804,11 +788,7 @@
       formData.append("sendEmail", "true");
       formData.append("fileBase64", base64File);
       formData.append("fileName", fileName);
-      if (attachmentLink) {
-        formData.append("attachmentLink", attachmentLink);
-      }
-
-  
+        
       console.log("📤 Sending form data:", formData.toString());
   
       let result; // تعريف متغير result قبل try/catch
@@ -1488,6 +1468,7 @@
 
 </body>
 </html>
+
 
 
 
