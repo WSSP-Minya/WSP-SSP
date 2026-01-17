@@ -407,9 +407,22 @@
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
     
+    
       if ((action==="update" || action==="delete") && !document.getElementById("entry-id").value) {
         alert("يرجى اختيار صف من الجدول قبل التحديث أو الحذف.");
         return;
+      }
+        // 🔴 شرط اختيار التاريخ والفرع والمحطة ونوع العينة قبل الاضافة او التعديل
+      if (action === "add" || action === "update") {
+        const date = document.getElementById("date").value;
+        const branch = document.getElementById("branch").value;
+        const station = document.getElementById("station").value;
+        const sample = document.getElementById("sample").value;
+    
+        if (!date || !branch || !station || !sample) {
+          alert("يرجى اختيار التاريخ والفرع والمحطة ومكان العينة قبل الحفظ.");
+          return;
+        }
       }
     
       const formData = new URLSearchParams();
@@ -491,6 +504,7 @@
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
+
 
 
 
