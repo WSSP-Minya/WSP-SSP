@@ -115,6 +115,9 @@
             <label>Attachment</label>
             <input type="file" id="attachment" name="attachment" accept="image/*,.pdf,.doc,.docx">
             <div id="filename">No File</div>
+            <label>رابط مرفق (اختياري)</label>
+            <input type="url" id="attachmentLink" placeholder="https://example.com">
+
         </div>
         </div>
 
@@ -306,7 +309,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbxRWjAEwonIeuxGVCo6c6cLjmN-3EAEnvgROBueGb-SozGAmuiXRCv1g3fO8DZ1kkzHzQ/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbw7fPBEoChLiD1FWuLFRlMPhCMyF_TttGileWaw4_OvbeIzIG-w7e0zk2qg-hKS56PKKw/exec";
 
     document.getElementById("addstation-button").onclick = () => {
       document.getElementById("stationModal").style.display = "flex";
@@ -717,6 +720,9 @@
           if (file.type.startsWith("image/")) file = await compressImage(file);
           base64File = await fileToBase64(file);
       }
+      // 🔗 التعامل مع رابط فقط (بدون ملف)
+      const attachmentLink = document.getElementById("attachmentLink").value.trim();
+
      let statusPercentValue = "";
 
         // الحالة المختارة
@@ -785,6 +791,10 @@
       formData.append("sendEmail", "true");
       formData.append("fileBase64", base64File);
       formData.append("fileName", fileName);
+      if (attachmentLink) {
+        formData.append("attachmentLink", attachmentLink);
+      }
+
   
       console.log("📤 Sending form data:", formData.toString());
   
@@ -1465,6 +1475,7 @@
 
 </body>
 </html>
+
 
 
 
