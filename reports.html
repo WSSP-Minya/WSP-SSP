@@ -142,7 +142,25 @@
               </form>
           </div>
       </div>
-      <div id="modal4" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('modal4')">&times;</span><h3 class="modal-title">Performance Index</h3></div></div>
+      <div id="modal4" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('modal4')">&times;</span><h3 class="modal-title">Performance Index</h3>
+       <form onsubmit="return false;">
+                  <div class="generalinfo">
+                      <label>Branch</label>
+                      <select id="branch_modal4">
+                          <option selected disabled>Select Branch</option>
+                          <option>العدوه</option><option>مغاغة</option><option>بنى مزار</option>
+                          <option>مطاى</option><option>سمالوط</option><option>المنيا</option>
+                          <option>ابوقرقاص</option><option>ملوى</option><option>ديرمواس</option>
+                      </select>      
+                  </div>
+                  <div class="form-buttons">
+                      <button type="button" id="no._of_plans">Safety Plan Numbers</button>
+                      <button type="button" id="piority">Piority</button>
+                      <button type="button" id="statuspercent">Status Percent</button>
+                      <button type="button" id="KPI">KPI</button>
+                  </div>
+              </form>
+      </div></div>
 
 
 
@@ -1224,6 +1242,7 @@
   </body>
 
 </html>
+
 
 
 
