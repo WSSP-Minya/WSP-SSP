@@ -227,6 +227,25 @@ select, input[type="date"] {
     background-color: #388e3c;
 }
 
+.modal-content.dashboard {
+  width: 90%;
+  max-width: 1200px;
+  height: 85vh;
+  overflow-y: auto;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 20px;
+}
+
+.dashboard-grid canvas {
+  background: #fff;
+  padding: 15px;
+  border-radius: 10px;
+}
+
 /* --------------------------- */
 /*      Responsive Design       */
 /* --------------------------- */
