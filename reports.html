@@ -142,25 +142,21 @@
               </form>
           </div>
       </div>
-      <div id="modal4" class="modal"><div class="modal-content"><span class="close" onclick="closeModal('modal4')">&times;</span><h3 class="modal-title">Performance Index</h3>
-       <form onsubmit="return false;">
-                  <div class="generalinfo">
-                      <label>Branch</label>
-                      <select id="branch_modal4">
-                          <option selected disabled>Select Branch</option>
-                          <option>العدوه</option><option>مغاغة</option><option>بنى مزار</option>
-                          <option>مطاى</option><option>سمالوط</option><option>المنيا</option>
-                          <option>ابوقرقاص</option><option>ملوى</option><option>ديرمواس</option>
-                      </select>      
-                  </div>
-                  <div class="form-buttons">
-                      <button type="button" id="no._of_plans">Safety Plan Numbers</button>
-                      <button type="button" id="piority">Piority</button>
-                      <button type="button" id="statuspercent">Status Percent</button>
-                      <button type="button" id="KPI">KPI</button>
-                  </div>
-              </form>
-      </div></div>
+      <div id="modal4" class="modal">
+        <div class="modal-content dashboard">
+          <span class="close" onclick="closeModal('modal4')">&times;</span>
+          <h3 class="modal-title">Performance Dashboard</h3>
+      
+          <div class="dashboard-grid">
+            <canvas id="histogramChart"></canvas>
+            <canvas id="pieChart"></canvas>
+            <canvas id="radarChart"></canvas>
+            <canvas id="radarDegreeChart"></canvas>
+            <canvas id="lineChart"></canvas>
+          </div>
+        </div>
+      </div>
+
 
 
 
@@ -384,8 +380,20 @@
             // دالة لفتح المودال
             function openModal(id) {
               // أغلق كل المودالات أولاً
-              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
-              document.getElementById(id).style.display = "block";
+              document.querySelectorAll('.modal').forEach(m => {m.style.display = "none";});
+
+              const modal = document.getElementById(id);
+              const userRole = sessionStorage.getItem("role");
+          
+              // لو المودال محتاج Admin
+              if (modal.dataset.role === "admin" && userRole !== "Admin") {
+                  alert("Only admin can access this modal.");
+                  return;
+              }
+          
+              // افتح المودال
+              modal.style.display = "block";
+              
             }
           
             // دالة لإغلاق المودال
@@ -896,6 +904,331 @@
               printWindow.focus();
               printWindow.print();
           });
+           /////////////////////////
+          // عرض بيانات الأداء لمودال 4
+          /////////////////////////
+          async function loadDashboardData() {
+              const histogramCtx = document.getElementById("histogramChart").getContext("2d");
+              const pieCtx = document.getElementById("pieChart").getContext("2d");
+              const radarCtx = document.getElementById("radarChart").getContext("2d");
+              const radarDegreeCtx = document.getElementById("radarDegreeChart").getContext("2d");
+              const lineCtx = document.getElementById("lineChart").getContext("2d");
+          
+              // أوزان درجات الخطورة
+              const riskWeights = {
+                      "خطورة منخفضة": 0.25,
+                      "خطورة متوسطة": 0.5,
+                      "خطورة عالية": 0.75,
+                      "خطورة عالية جداً": 1
+              };          
+              // قائمة الفروع
+              const branchSelect = document.getElementById("branch_modal1");
+              const branches = Array.from(branchSelect.options)
+                                    .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "Select Branch")
+                                    .map(opt => opt.value.trim());
+          
+              const branchData = {}; // لتخزين بيانات كل فرع
+          
+              // جلب بيانات كل فرع
+              const fetchPromises = branches.map(async branch => {
+                  const res = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const data = await res.json();
+                  branchData[branch] = {
+                      stations: data.stations || [],
+                      certifiedDates: data.certifiedDates || [],
+                      details: {} // لتخزين تفاصيل كل محطة
+                  };
+          
+                  // جلب تفاصيل كل محطة
+                  const detailPromises = (data.stations || []).map(async station => {
+                      const stationRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                      const stationData = await stationRes.json();
+                      branchData[branch].details[station] = stationData.details || [];
+                  });
+          
+                  await Promise.all(detailPromises);
+              });
+          
+              await Promise.all(fetchPromises);
+              // بعد جمع كل بيانات الفروع والمحطات في branchData
+              const branchSummary = branches.map(branch => {
+                  const stations = branchData[branch].stations;
+                  let branchDonePercent = 0;
+                  let stationsWithActionsCount = 0;
+              
+                  stations.forEach(station => {
+                      const details = branchData[branch].details[station] || [];
+                      if (details.length > 0) {
+                          const donePercent = details.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / details.length;
+                          branchDonePercent += donePercent;
+                          stationsWithActionsCount++;
+                      }
+                  });
+              
+                  const averageDonePercent = stationsWithActionsCount === 0 ? 0 : Math.round(branchDonePercent / stationsWithActionsCount);
+              
+                  return {
+                      branch1: branch,
+                      averageDonePercent
+                  };
+             
+              });
+                   
+
+          
+              // ----------- Histogram Chart: عدد المحطات التي لها تاريخ اعتماد لكل فرع ----------
+              // الترتيب المخصص الذي تريده
+              
+              const histogramLabels = branches;  // أو array من الفروع
+              const histogramCounts = histogramLabels.map(branch => {
+                const dates = branchData[branch].certifiedDates;
+                // نفلتر التواريخ الفارغة (null, "", undefined)
+                const countCertified = dates.filter(date => date && date.toString().trim() !== "").length;
+                return countCertified;
+              });
+
+
+             new Chart(histogramCtx, {
+                type: "bar",
+                data: {
+                  labels: histogramLabels,
+                  datasets: [{
+                    label: "عدد المحطات المعتمدة",
+                    data: histogramCounts,
+                    backgroundColor: "rgba(54, 162, 235, 1.6)"
+                  }]
+                },
+                options: {
+                  responsive: true,
+                  plugins: {
+                    legend: {
+                      display: false,
+                      labels: {
+                        font: {
+                          size: 14  // حجم خط التسمية في الأسطورة لو ظهرت
+                        }
+                      }
+                    }
+                  },
+                  scales: {
+                    x: {  // محور السينات (التسميات)
+                      ticks: {
+                        font: {
+                          size: 20  // حجم خط محور X
+                        }
+                      },
+                      title: {
+                        display: true,
+                        text: '',
+                        font: {
+                          size: 20,
+                          weight: 'bold'
+                        }
+                      }
+                    },
+                     y: { 
+                          beginAtZero: true,
+                          ticks: { 
+                            font: { size: 16 },
+                            stepSize: 1, // ← هنا نضمن أن كل خطوة عدد صحيح
+                            callback: function(value) { return Number(value); } // عرض الأعداد بدون كسور
+                          },
+                          title: { display: true, text: 'عدد المحطات المعتمدة', font: { size: 18, weight: 'bold' } }
+                        }
+                      }
+                    }
+                  });
+
+          
+              // ----------- Pie Chart: نسبة تنفيذ الإجراءات التصحيحية ----------
+              
+              const pieLabels = branchSummary.map(branch => branch.branch1); // ترتيب الفروع
+              const pieData = branchSummary.map(branch => branch.averageDonePercent); // المتوسط لكل فرع
+              
+              const pieColors = [
+                  "#4dc9f6","#f67019","#f53794","#537bc4","#acc236",
+                  "#166a8f","#00a950","#58595b","#8549ba"
+              ];
+              
+              new Chart(pieCtx, {
+                  type: "doughnut",
+                  data: {
+                      labels: pieLabels,
+                      datasets: [{
+                          label: "نسبة التنفيذ %",
+                          data: pieData,
+                          backgroundColor: pieColors
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      plugins: {
+                          legend: { display: true, position: 'right' },
+                          tooltip: {
+                              callbacks: {
+                                  label: function(context) {
+                                      return context.label + ": " + context.raw + "%";
+                                  }
+                              }
+                          }
+                      }
+                  }
+              });
+
+
+
+              // ----------- Radar Chart: الإجراءات التصحيحية حسب درجة الخطورة ----------
+
+              
+              // افترض أن branchData موجود ويحتوي على كل التفاصيل لكل فرع
+              // branchData = { "فرع 1": { details: { "محطة A": [ {riskdegree, statuspercent}, ...] }, ... } }
+              
+                const radarLabels = Object.keys(branchData); // أسماء الفروع
+                const radarValues = radarLabels.map(branch => {
+                    let executedWeightedSum_branch = 0;
+                    let totalWeightedSum_branch = 0;
+                    let executedActionsCount_branch = 0;
+                    let totalActions_branch = 0;
+                
+                    Object.entries(branchData[branch].details).forEach(([station, stationActions]) => {
+                        let executedWeightedSum_station = 0;
+                        let executedActionsCount_station = 0;
+                        let totalWeightedSum_station = 0;
+                        let totalActions_station = 0;
+                
+                        stationActions.forEach(action => {
+                            const weight = riskWeights[action.riskdegree] || 0;
+                            const percent = Number(action.statuspercent) || 0;
+                
+                            totalWeightedSum_station += weight;
+                            totalActions_station++;
+                
+                            if (percent === 100) {
+                                executedWeightedSum_station += weight;
+                                executedActionsCount_station++;
+                            }
+                        });
+                
+                        console.log(
+                            "Branch:", branch,
+                            "| Station:", station,
+                            "| executedWeightedSum:", executedWeightedSum_station,
+                            "| executedActionsCount:", executedActionsCount_station,
+                            "| totalWeightedSum:", totalWeightedSum_station,
+                            "| totalActions:", totalActions_station
+                        );
+                
+                        // جمع القيم لكل فرع
+                        executedWeightedSum_branch += executedWeightedSum_station;
+                        totalWeightedSum_branch += totalWeightedSum_station;
+                        executedActionsCount_branch += executedActionsCount_station;
+                        totalActions_branch += totalActions_station;
+                    });
+                
+                    const radarScore_branch =
+                        totalWeightedSum_branch === 0
+                            ? 0
+                            : ((executedWeightedSum_branch * executedActionsCount_branch) / (totalActions_branch * totalWeightedSum_branch)) * 100;
+                
+                    console.log("Radar % for branch", branch, ":", radarScore_branch.toFixed(2));
+                    return parseFloat(radarScore_branch.toFixed(2));
+                });
+
+              
+              // رسم المخطط الشبكي
+              new Chart(document.getElementById("radarChart").getContext("2d"), {
+                  type: "radar",
+                  data: {
+                      labels: radarLabels,
+                      datasets: [{
+                          label: "نسبة اولية التنفيذ%",
+                          data: radarValues,
+                          backgroundColor: "rgba(54,162,235,0.2)",
+                          borderColor: "rgba(54,162,235,1)",
+                          borderWidth: 2,
+                          pointBackgroundColor: "rgba(54,162,235,1)"
+                      }]
+                  },
+                  options: {
+                      responsive: true,
+                      scales: {
+                          r: { beginAtZero: true,
+                                       min: 0,    // ← أقل قيمة للمحور
+                                       max: 100   // ← أعلى قيمة للمحور
+                          }
+                      },
+                      plugins: {
+                          legend: { display: true, position: "right" }
+                      }
+                  }
+              });
+               // ---------------- Radar حسب درجات الخطورة ----------------
+              const riskCategories = ["خطورة منخفضة", "خطورة متوسطة", "خطورة عالية", "خطورة عالية جداً"];
+              const radarDegreeBranches = branches;
+              
+              const riskColors = {
+                "خطورة عالية جداً": "rgba(255, 0, 0, 0.6)",    // أحمر
+                "خطورة عالية": "rgba(255, 140, 0, 0.6)",      // برتقالي
+                "خطورة متوسطة": "rgba(255, 215, 0, 0.6)",     // أصفر
+                "خطورة منخفضة": "rgba(0, 200, 0, 0.6)"        // أخضر
+              };
+              
+              const radarDegreeData = riskCategories.map(risk => {
+                return radarDegreeBranches.map(branch => {
+                    let executedWeightedSum_branch = 0;
+                    let totalWeightedSum_branch = 0;
+              
+                    Object.entries(branchData[branch].details).forEach(([station, stationActions]) => {
+                        let executedWeightedSum_station = 0;
+                        let totalWeightedSum_station = 0;
+              
+                        stationActions.forEach(action => {
+                            if (action.riskdegree === risk) {
+                                const weight = riskWeights[risk] || 0;
+                                const percent = Number(action.statuspercent) || 0;
+              
+                                totalWeightedSum_station += weight;
+                                executedWeightedSum_station += weight * (percent / 100);
+                            }
+                        });
+              
+                        console.log(
+                            `Branch: ${branch} | Station: ${station} | Risk: ${risk} | executedWeightedSum: ${executedWeightedSum_station.toFixed(2)} | totalWeightedSum: ${totalWeightedSum_station.toFixed(2)}`
+                        );
+              
+                        executedWeightedSum_branch += executedWeightedSum_station;
+                        totalWeightedSum_branch += totalWeightedSum_station;
+                    });
+              
+                    console.log(
+                        `Branch TOTAL: ${branch} | Risk: ${risk} | executedWeightedSum: ${executedWeightedSum_branch.toFixed(2)} | totalWeightedSum: ${totalWeightedSum_branch.toFixed(2)}`
+                    );
+              
+                    return totalWeightedSum_branch === 0 ? 0 : parseFloat(((executedWeightedSum_branch / totalWeightedSum_branch) * 100).toFixed(2));
+                });
+              });
+              
+              new Chart(radarDegreeCtx, {
+                  type: "radar",
+                  data: {
+                      labels: radarDegreeBranches,
+                      datasets: riskCategories.map(risk => ({
+                          label: risk,
+                          data: radarDegreeData[riskCategories.indexOf(risk)],
+                          fill: true,
+                          backgroundColor: riskColors[risk],
+                          borderColor: riskColors[risk].replace("0.6", "1"),
+                          pointBackgroundColor: riskColors[risk].replace("0.6", "1")
+                      }))
+                  },
+                  options: {
+                      responsive: true,
+                      scales: { r: { min: 0, max: 100 } },
+                      plugins: { legend: { position: "right" } }
+                  }
+              });
+              
+       
 
 
 
@@ -1242,6 +1575,7 @@
   </body>
 
 </html>
+
 
 
 
