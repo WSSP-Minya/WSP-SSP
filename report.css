@@ -235,15 +235,19 @@ select, input[type="date"] {
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
+  display: flex;
+  flex-wrap: wrap; /* يسمح بالتفاف العناصر للصف التالي */
+  gap: 20px;       /* مسافة بين الشارتات */
+  justify-content: center; /* توسيط الشارتات أفقياً */
 }
 
-.dashboard-grid canvas {
+.chart-container {
+  flex: 1 1 45%; /* كل شارت ياخد تقريباً 45% من عرض الصف مع إمكانية التقلص والتمدد */
+  min-width: 300px; /* الحد الأدنى للعرض عشان ما يصغرش جدا */
   background: #fff;
   padding: 15px;
   border-radius: 10px;
+  box-sizing: border-box;
 }
 
 /* --------------------------- */
