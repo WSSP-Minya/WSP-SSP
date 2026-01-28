@@ -160,6 +160,9 @@
       </div>
 
 
+      
+
+
 
       
      <script>
@@ -378,20 +381,16 @@
             };
 
           
-            /// دالة لفتح المودال
+            // دالة لفتح المودال
             function openModal(id) {
-              // إغلاق كل المودالات أولاً
-              document.querySelectorAll('.modal').forEach(m => {
-                m.style.display = "none";
-              });
+              // أغلق كل المودالات أولاً
+              document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
+              document.getElementById(id).style.display = "block";
             
-              // فتح المودال المطلوب
-              const modal = document.getElementById(id);
-              if (modal) {
-                modal.style.display = "block";
+              if (id === "modal4") {
+                loadDashboardData();
               }
             }
-
           
             // دالة لإغلاق المودال
             function closeModal(id) {
@@ -720,187 +719,181 @@
        //////////////////////تقرير مجمع للفروع كلها
             
             document.getElementById("reportall").addEventListener("click", async () => {
-              const branchSelect = document.getElementById("branch_modal1");
-              const branchOptions = Array.from(branchSelect.options)
-                           .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----" && opt.value !== "Select Branch"); // تجاهل placeholder
-          
-              if (branchOptions.length === 0) {
-                  alert("لا توجد فروع للطباعة!");
-                  return;
-              }
-          
-              let htmlContent = `
-                  <html>
-                  <head>
-                      <title>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</title>
-                      <style>
-                          body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
-                          table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                          th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
-                          th { background-color: #f0f0f0; }
-                          h2, h3 { text-align: center; }
-                           .logo-container {
-                            text-align: center;
-                            margin-bottom: 20px;
-                            margin-left:100%;
-                            display: flex;
-                            gap: 5px;
+            const branchSelect = document.getElementById("branch_modal1");
+            const branchOptions = Array.from(branchSelect.options)
+                .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "----" && opt.value !== "Select Branch"); // تجاهل placeholder
+        
+            if (branchOptions.length === 0) {
+                alert("لا توجد فروع للطباعة!");
+                return;
+            }
+        
+            let htmlContent = `
+                <html>
+                <head>
+                    <title>تقرير الموقف من تنفيذ الإجراءات التصحيحية لكل الفروع</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
+                        th { background-color: #f0f0f0; }
+                        h2, h3 { text-align: center; }
+                        .logo-container { text-align: center; margin-bottom: 20px; display: flex; gap: 5px; }
+                        .logo-container img { width: 60px; }
+                    </style>
+                </head>
+                <body>
+                    <div class="logo-container">
+                        <img src="menia logo.png" alt="logo">
+                        <img src="wsp.22cd4e849308ae80b006.png" alt="logo">
+                    </div>
+                    <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لجميع فروع الشركة</h2>
+                    <h3>ملخص لكل الفروع</h3>
+                    <table>
+                        <tr>
+                            <th>الفرع</th>
+                            <th>إجمالي الإجراءات</th>
+                            <th>المنفذ</th>
+                            <th>الجارية</th>
+                            <th>لم يتم التنفيذ</th>
+                            <th>متوسط نسبة التنفيذ</th> <!-- تم تعديل العنوان -->
+                        </tr>
+            `;
+        
+            const allDetailsPerBranch = {}; // لتخزين التفاصيل لكل فرع
+        
+            const branchPromises = branchOptions.map(async (opt) => {
+                const branch1 = opt.value.trim();
+                if (!branch1 || branch1 === "----") return;
+        
+                const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
+                const stationsData = await stationsResponse.json();
+        
+                let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0;
+                let branchDonePercent = 0; // مجموع doneActionsPercent
+                let stationsWithActionsCount = 0; // ← **إضافة جديدة: عدد المحطات التي لها إجراءات تصحيحية**
+        
+                allDetailsPerBranch[branch1] = {};
+        
+                if (stationsData.status === "success" && stationsData.stations?.length) {
+                    const stationPromises = stationsData.stations.map(async (station1) => {
+                        const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
+                        const detailsData = await detailsResponse.json();
+        
+                        let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
+        
+                        if (detailsData.status === "success" && detailsData.details?.length) {
+                            const allLocations = detailsData.details;
+        
+                            totalActions = allLocations.length;
+                            doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                            inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                            notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+                            doneActionsPercent = allLocations.length === 0 ? 0 : 
+                                (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
+        
+                            allDetailsPerBranch[branch1][station1] = allLocations;
+        
+                            // ← **تعديل هنا**: زيادة عدد المحطات التي لها إجراءات فقط
+                            if (allLocations.length > 0) {
+                                branchDonePercent += Number(doneActionsPercent); // نجمع النسب
+                                stationsWithActionsCount += 1; // نعد المحطات التي لها إجراءات
+                            }
                         }
-          
-                        .logo-container img {
-                            width: 60px; /* ← يمكنك تغيير الحجم */
-                        }
-                      </style>
-                  </head>
-                  <body>
-                      <div class="logo-container">
-                          <img src="menia logo.png" alt="logo">
-                          <img src="wsp.22cd4e849308ae80b006.png" alt="logo">
-                      </div>
-                      <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية لجميع فروع الشركة</h2>
-                      <h3>ملخص لكل الفروع</h3>
-                      <table>
-                          <tr>
-                              <th>الفرع</th>
-                              <th>إجمالي الإجراءات</th>
-                              <th>المنفذ</th>
-                              <th>الجارية</th>
-                              <th>لم يتم التنفيذ</th>
-                              <th>نسبة التنفيذ</th>
-                          </tr>
-              `;
-          
-              const allDetailsPerBranch = {}; // لتخزين التفاصيل لكل فرع
-          
-              // تعديل هنا: استخدام Promise.all لتحميل المحطات بشكل متوازي (Parallel Fetching)
-              // تم تعديل الكود لاستخدام Promise.all لتحميل بيانات المحطات وتفاصيل المحطات بشكل متوازي
-              const branchPromises = branchOptions.map(async (opt) => {
-                  const branch1 = opt.value.trim();
-                  if (!branch1 || branch1 === "----") return; // تجاهل placeholder
-                 
-          
-                  // جلب المحطات لكل فرع
-                  const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
-                  const stationsData = await stationsResponse.json();
-                  
-          
-                  let branchTotal = 0, branchDone = 0, branchInProgress = 0, branchNotDone = 0, branchDonePercent = 0;
-                  allDetailsPerBranch[branch1] = {};
-          
-                  if (stationsData.status === "success" && stationsData.stations?.length) {
-                      // استخدام Promise.all لتحميل تفاصيل المحطات بشكل متوازي
-                      const stationPromises = stationsData.stations.map(async (station1) => {
-                          const detailsResponse = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station1)}`);
-                          const detailsData = await detailsResponse.json();
-                          
-          
-                          let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
-          
-                          if (detailsData.status === "success" && detailsData.details?.length) {
-                              const allLocations = detailsData.details;
-          
-                              totalActions = allLocations.length;
-                              doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
-                              inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
-                              notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                              doneActionsPercent = allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
-          
-                              allDetailsPerBranch[branch1][station1] = allLocations;
-                          }
-          
-                          return { station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent };
-                      });
-          
-                      // استخدام Promise.all لتحميل تفاصيل كل المحطات بشكل متوازي
-                      const stationSummary = (await Promise.all(stationPromises)).filter(item => item !== null);;
-          
-                      // إضافة بيانات المحطات في جدول الملخص
-                      stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent }) => {
-                          branchTotal += totalActions;
-                          branchDone += doneActions;
-                          branchInProgress += inProgressActions;
-                          branchNotDone += notDoneActions;
-                          branchDonePercent += Number(doneActionsPercent);
-                      });
-                  }
-          
-                  return { branch1, branchTotal, branchDone, branchInProgress, branchNotDone, branchDonePercent };
-              });
-          
-              // الانتظار حتى يتم تحميل جميع الفروع والمحطات بالتوازي
-              const branchSummary = (await Promise.all(branchPromises)).filter(item => item !== null);
-          
-              // إضافة بيانات الفروع في جدول الملخص
-              branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone, branchDonePercent }) => {
-                  htmlContent += `
-                      <tr>
-                          <td>${branch1}</td>
-                          <td>${branchTotal}</td>
-                          <td>${branchDone}</td>
-                          <td>${branchInProgress}</td>
-                          <td>${branchNotDone}</td>
-                          <td>${branchDonePercent}%</td>
-                      </tr>
-                  `;
-              });
-          
-              htmlContent += `</table>`;
-          
-              // --------- جدول لكل فرع (ملخص لكل محطة) ---------
-              for (const branchSummaryItem of branchSummary) {
+        
+                        return { station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent };
+                    });
+        
+                    const stationSummary = (await Promise.all(stationPromises)).filter(item => item !== null);
+        
+                    stationSummary.forEach(({ station1, totalActions, doneActions, inProgressActions, notDoneActions, doneActionsPercent }) => {
+                        branchTotal += totalActions;
+                        branchDone += doneActions;
+                        branchInProgress += inProgressActions;
+                        branchNotDone += notDoneActions;
+                        // branchDonePercent تم التعامل معها أعلاه
+                    });
+                }
+        
+                // ← **تعديل هنا**: حساب المتوسط بناء على عدد المحطات التي لها إجراءات
+                const averageDonePercent = stationsWithActionsCount === 0 ? 0 : Math.round(branchDonePercent / stationsWithActionsCount);
+        
+                return { branch1, branchTotal, branchDone, branchInProgress, branchNotDone, averageDonePercent };
+            });
+        
+            const branchSummary = (await Promise.all(branchPromises)).filter(item => item !== null);
+        
+            branchSummary.forEach(({ branch1, branchTotal, branchDone, branchInProgress, branchNotDone, averageDonePercent }) => {
+                htmlContent += `
+                    <tr>
+                        <td>${branch1}</td>
+                        <td>${branchTotal}</td>
+                        <td>${branchDone}</td>
+                        <td>${branchInProgress}</td>
+                        <td>${branchNotDone}</td>
+                        <td>${averageDonePercent}%</td> <!-- تم التعديل لعرض المتوسط -->
+                    </tr>
+                `;
+            });
+        
+            htmlContent += `</table>`;
+        
+            // --------- جدول لكل فرع (ملخص لكل محطة) ---------
+            for (const branchSummaryItem of branchSummary) {
                 const branch1 = branchSummaryItem.branch1;
-                if (!allDetailsPerBranch[branch1]) continue; // لو ما فيش محطات لهذا الفرع
+                if (!allDetailsPerBranch[branch1]) continue;
+        
+                htmlContent += `<h3>ملخص محطات الفرع: ${branch1}</h3>`;
+                htmlContent += `
+                    <table>
+                        <tr>
+                            <th>المحطة</th>
+                            <th>إجمالي الإجراءات</th>
+                            <th>المنفذ</th>
+                            <th>الجارية</th>
+                            <th>لم يتم التنفيذ</th>
+                            <th>نسبة التنفيذ</th>
+                        </tr>
+                `;
+        
+                const stations = Object.keys(allDetailsPerBranch[branch1]);
+                for (const station1 of stations) {
+                    const allLocations = allDetailsPerBranch[branch1][station1];
+        
+                    const totalActions = allLocations.length;
+                    const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
+                    const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
+                    const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
+                    const doneActionsPercent =  allLocations.length === 0 ? 0 :
+                        (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length).toFixed(0);
+        
+                    htmlContent += `
+                        <tr>
+                            <td>${station1}</td>
+                            <td>${totalActions}</td>
+                            <td>${doneActions}</td>
+                            <td>${inProgressActions}</td>
+                            <td>${notDoneActions}</td>
+                            <td>${doneActionsPercent}%</td>
+                        </tr>
+                    `;
+                }
+        
+                htmlContent += `</table>`;
+            }
+        
+            const printWindow = window.open('', '', 'height=800,width=1200');
+            if (!printWindow) {
+                alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
+                return;
+            }
+        
+            printWindow.document.write(htmlContent);
+            printWindow.document.close();
+            printWindow.focus();
+            printWindow.print();
+        });
 
-                  htmlContent += `<h3>ملخص محطات الفرع: ${branch1}</h3>`;
-                  htmlContent += `
-                      <table>
-                          <tr>
-                              <th>المحطة</th>
-                              <th>إجمالي الإجراءات</th>
-                              <th>المنفذ</th>
-                              <th>الجارية</th>
-                              <th>لم يتم التنفيذ</th>
-                              <th>نسبة التنفيذ</th>
-                          </tr>
-                  `;
-          
-                  const stations = Object.keys(allDetailsPerBranch[branch1]);
-                  for (const station1 of stations) {
-                      const allLocations = allDetailsPerBranch[branch1][station1];
-          
-                      const totalActions = allLocations.length;
-                      const doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
-                      const inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
-                      const notDoneActions = allLocations.filter(item => item.status?.trim() === "لم يتم").length;
-                      const doneActionsPercent =  allLocations.length === 0 ? 0 : (allLocations.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / allLocations.length
-                    ).toFixed(0);
-          
-                      htmlContent += `
-                          <tr>
-                              <td>${station1}</td>
-                              <td>${totalActions}</td>
-                              <td>${doneActions}</td>
-                              <td>${inProgressActions}</td>
-                              <td>${notDoneActions}</td>
-                              <td>${doneActionsPercent}%</td>
-                          </tr>
-                      `;
-                  }
-          
-                  htmlContent += `</table>`;
-              }
-          
-              const printWindow = window.open('', '', 'height=800,width=1200');
-              if (!printWindow) {
-                  alert("تعذر فتح نافذة الطباعة. يرجى السماح بالبوب‌آب في المتصفح.");
-                  return;
-              }
-          
-              printWindow.document.write(htmlContent);
-              printWindow.document.close();
-              printWindow.focus();
-              printWindow.print();
-          });
           /////////////////////////
           // تحميل بيانات لوحة الأداء لمودال 4
           /////////////////////////
@@ -1343,15 +1336,29 @@
               }
             });
 
+
+              
+              
+            
+
+         
+
+
+
+             
+
+              
+              
+
+          
+             
+              
+
           }
           
-              
-       
-
-
-
- 
-           
+          
+          
+     
            
     
          
@@ -1687,158 +1694,11 @@
               printWindow.print();
           }, 300);
       });
+      
+     
 
   
      </script>
   </body>
 
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
