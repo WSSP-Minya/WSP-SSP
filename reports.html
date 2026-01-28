@@ -3,6 +3,8 @@
   <head>
     <title>Reports</title>
     <link rel="stylesheet" href="report.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
    
   </head>
   <body>
@@ -41,9 +43,9 @@
           </div>
            <div class="card" onclick="openModal('modal4')"> 
               <div class="icon">
-                  <img src="PI.png" alt="performancedashboard">
+                  <img src="PI.png" alt="performanceindex">
               </div> 
-              Performance Dashboard
+              Performance Index
           </div>
       </div>
       
@@ -159,10 +161,9 @@
 
 
 
-
       
      <script>
-            const scriptURL = "https://script.google.com/macros/s/AKfycby2T9nZoy91PzgYr3o53FmYKGtFb5H9x-fjCOvrbZXMYCrE3gQwwTVTvMADEVQQ1dxD3Q/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbylyqdVtMQvaa2zOJH7m-1Y-UPBg5uX-w4nXY8lYZVVf2P42LbDTK3kJqSRbpfOwPbS4A/exec";
   
             window.onload = () => {
               // الحصول على البيانات من الجلسة
@@ -904,8 +905,8 @@
               printWindow.focus();
               printWindow.print();
           });
-           /////////////////////////
-          // عرض بيانات الأداء لمودال 4
+          /////////////////////////
+          // تحميل بيانات لوحة الأداء لمودال 4
           /////////////////////////
           async function loadDashboardData() {
               const histogramCtx = document.getElementById("histogramChart").getContext("2d");
@@ -1082,7 +1083,7 @@
               
               // افترض أن branchData موجود ويحتوي على كل التفاصيل لكل فرع
               // branchData = { "فرع 1": { details: { "محطة A": [ {riskdegree, statuspercent}, ...] }, ... } }
-              
+                const piority = {}; //تخزين قيمة piority لكل فرع لاستخدامه فى KPI
                 const radarLabels = Object.keys(branchData); // أسماء الفروع
                 const radarValues = radarLabels.map(branch => {
                     let executedWeightedSum_branch = 0;
@@ -1129,9 +1130,10 @@
                         totalWeightedSum_branch === 0
                             ? 0
                             : ((executedWeightedSum_branch * executedActionsCount_branch) / (totalActions_branch * totalWeightedSum_branch)) * 100;
-                
+                    piority[branch] = parseFloat(radarScore_branch.toFixed(2));
+                    
                     console.log("Radar % for branch", branch, ":", radarScore_branch.toFixed(2));
-                    return parseFloat(radarScore_branch.toFixed(2));
+                    
                 });
 
               
@@ -1142,7 +1144,7 @@
                       labels: radarLabels,
                       datasets: [{
                           label: "نسبة اولية التنفيذ%",
-                          data: radarValues,
+                          data: radarLabels.map(branch => piority[branch] || 0),
                           backgroundColor: "rgba(54,162,235,0.2)",
                           borderColor: "rgba(54,162,235,1)",
                           borderWidth: 2,
@@ -1227,7 +1229,126 @@
                       plugins: { legend: { position: "right" } }
                   }
               });
+              /***********************
+               * KPI Quarterly Calculation
+               * Based on Device Date
+               ***********************/
+              
+              // -------- تعريف الشهور مرة واحدة --------
+              const KPI_MONTHS = ["يناير", "فبراير", "مارس", "ابريل"];
+              
+              // -------- حساب إجمالي المحطات المعتمدة --------
+              const totalCertifiedStationsAllBranches = branches.reduce((sum, branch) => {
+                const countCertified = branchData[branch].certifiedDates
+                  .filter(d => d && d.toString().trim() !== "").length;
+                return sum + countCertified;
+              }, 0);
+              
+              // -------- حساب KPI لكل فرع --------
+              const kpiPerBranch = branches.map(branch => {
+              
+                const P = piority[branch]; // P%
+                const A = branchSummary.find(b => b.branch1 === branch).averageDonePercent; // A%
+                const countCertified = branchData[branch].certifiedDates
+                  .filter(d => d && d.toString().trim() !== "").length;
+              
+                console.log(
+                  "Branch:", branch,
+                  "| countCertified:", countCertified,
+                  "| totalCertifiedStationsAllBranches:", totalCertifiedStationsAllBranches,
+                  "| P%:", P.toFixed(2),
+                  "| A%:", A.toFixed(2)
+                );
+              
+                const kpiPerMonth = {};
+              
+                KPI_MONTHS.forEach(month => {
+                  kpiPerMonth[month] =
+                    ((P * 0.6) + (A * 0.4)) *
+                    (countCertified / totalCertifiedStationsAllBranches);
+                });
+              
+                return { branch, kpiPerMonth };
+              });
+              
+              console.log("KPI per branch:", kpiPerBranch);
+              
+              // -------- تحديد الشهر الحالي --------
+              const monthIndex = new Date().getMonth() % KPI_MONTHS.length;
+              const currentMonthName = KPI_MONTHS[monthIndex];
+              
+              // -------- تجهيز بيانات الإرسال إلى Google Sheet --------
+              const kpiSheetData = kpiPerBranch.map(item => {
+                const row = { branch: item.branch };
+              
+                KPI_MONTHS.forEach(m => row[m] = 0);
+              
+                row[currentMonthName] = item.kpiPerMonth[currentMonthName] || 0;
+              
+                return row;
+              });
+              
+              console.log("KPI per branch for current month:", kpiSheetData);
+              
+              // -------- حفظ البيانات --------
+              const params = new URLSearchParams();
+              params.append("action", "saveKPI");
+              params.append("data", JSON.stringify(kpiSheetData));
+              
+              await fetch(scriptURL, { method: "POST", body: params });
+              console.log("KPI per month calculated & saved");
+              
+            
+             // -------- Line Chart KPI (Branches on X, Month as Line) --------
+            const res = await fetch(`${scriptURL}?action=getKPI`);
+            const sheetData = await res.json();
+            
+            const months = sheetData.header.slice(1); // ["يناير","فبراير","مارس","ابريل"]
+            const rows = sheetData.rows;
+            
+            // محور X = الفروع
+            const branchLabels = rows.map(row => row[0]);
+            
+            // ألوان ثابتة لكل شهر
+            const monthColors = {
+              "يناير": "rgba(75,192,192,1)",
+              "فبراير": "rgba(153,102,255,1)",
+              "مارس": "rgba(255,159,64,1)",
+              "ابريل": "rgba(54,162,235,1)"
+            };
+            
+            // كل خط = شهر
+            const datasets = months.map((month, monthIndex) => ({
+              label: month,
+              data: rows.map(row => Number(row[monthIndex + 1]) || 0),
+              borderColor: monthColors[month] || `hsl(${monthIndex * 60},70%,50%)`,
+              backgroundColor: (monthColors[month] || `hsl(${monthIndex * 60},70%,50%)`).replace("1)", "0.2)"),
+              tension: 0.3,
+              fill: false
+            }));
+            
+            new Chart(lineCtx, {
+              type: "line",
+              data: {
+                labels: branchLabels, // الفروع
+                datasets
+              },
+              options: {
+                responsive: true,
+                scales: {
+                  y: { min: 0, max: 100 }
+                },
+                plugins: {
+                  legend: {
+                    display: true,
+                    position: "top"
+                  }
+                }
+              }
+            });
+
           }
+          
               
        
 
@@ -1576,6 +1697,7 @@
   </body>
 
 </html>
+
 
 
 
