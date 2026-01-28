@@ -382,17 +382,7 @@
             function openModal(id) {
               // أغلق كل المودالات أولاً
               document.querySelectorAll('.modal').forEach(m => {m.style.display = "none";});
-
-              const modal = document.getElementById(id);
-              const userRole = sessionStorage.getItem("role");
-          
-              // لو المودال محتاج Admin
-              if (modal.dataset.role === "admin" && userRole !== "Admin") {
-                  alert("Only admin can access this modal.");
-                  return;
-              }
-          
-              // افتح المودال
+                     // افتح المودال
               modal.style.display = "block";
               
             }
@@ -1697,6 +1687,7 @@
   </body>
 
 </html>
+
 
 
 
