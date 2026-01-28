@@ -378,14 +378,20 @@
             };
 
           
-            // دالة لفتح المودال
+            /// دالة لفتح المودال
             function openModal(id) {
-              // أغلق كل المودالات أولاً
-              document.querySelectorAll('.modal').forEach(m => {m.style.display = "none";});
-                     // افتح المودال
-              modal.style.display = "block";
-              
+              // إغلاق كل المودالات أولاً
+              document.querySelectorAll('.modal').forEach(m => {
+                m.style.display = "none";
+              });
+            
+              // فتح المودال المطلوب
+              const modal = document.getElementById(id);
+              if (modal) {
+                modal.style.display = "block";
+              }
             }
+
           
             // دالة لإغلاق المودال
             function closeModal(id) {
@@ -1687,6 +1693,7 @@
   </body>
 
 </html>
+
 
 
 
