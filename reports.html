@@ -9,13 +9,20 @@
   </head>
   <body>
       <div class="topbar">
-           <button class="logout-button" onclick="logout()">Logout</button>
-           <div class="userinfo"> 
-                <label>Section</label>
-                <input id="section" disabled>
+            <div class="left">
+                <button class="logout-button" onclick="logout()">Logout</button>
+                <button class="homepage-button" onclick="AccessedToPage('mainpage')">
+                    <img src="myhome.webp" alt="Main Page" title="Main Page">
+                </button>
             </div>
-          
-            <img src="wsp.22cd4e849308ae80b006.png" class="logo">
+        
+            <div class="right">
+                <div class="userinfo">
+                    <label>Section</label>
+                    <input id="section" disabled>
+                </div>
+                <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png" class="logo">
+            </div>
       </div>
       
       <h1 style="text-align:center;">Reports</h1>
@@ -1754,5 +1761,6 @@
   </body>
 
 </html>
+
 
 
