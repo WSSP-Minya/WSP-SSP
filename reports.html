@@ -183,6 +183,11 @@
       
      <script>
             const scriptURL = "https://script.google.com/macros/s/AKfycbylyqdVtMQvaa2zOJH7m-1Y-UPBg5uX-w4nXY8lYZVVf2P42LbDTK3kJqSRbpfOwPbS4A/exec";
+            
+            function AccessedToPage(pagename){
+                    
+                    window.location.href= pagename+".html";
+            }
   
             window.onload = () => {
               // الحصول على البيانات من الجلسة
@@ -1761,6 +1766,7 @@
   </body>
 
 </html>
+
 
 
 
