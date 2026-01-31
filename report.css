@@ -1,8 +1,12 @@
-/* ===== الصفحة بالكامل ===== */
+* --------------------------- */
+/*          Body Style         */
+/* --------------------------- */
 body {
-    margin: 0;
-    background: #f4f6fa;
-    font-family: "Segoe UI", sans-serif;
+    font-family: Tahoma, sans-serif;
+    background: #f5f7fa;
+    padding: 20px;
+    display: grid;
+    justify-content: center;
 }
 
 
