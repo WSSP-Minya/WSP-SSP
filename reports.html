@@ -1130,10 +1130,10 @@
                             totalWeightedSum_station += weight;
                             totalActions_station++;
                 
-                            if (percent === 100) {
-                                executedWeightedSum_station += weight;
-                                executedActionsCount_station++;
-                            }
+                            
+                            executedWeightedSum_station += weight * (percent / 100);
+                            executedActionsCount_station += percent / 100; // فى حالة تنفيذ جزء من الاجراء يتم حسابه ك 1/2 اجراء او 1/4 على حسب نسبة التنفيذ
+                            
                         });
                 
                         console.log(
@@ -1766,6 +1766,7 @@
   </body>
 
 </html>
+
 
 
 
