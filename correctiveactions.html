@@ -1026,7 +1026,7 @@
           });
         });
     }
-    ///لتحميل الصف المختار فى خانات المودل
+     ///لتحميل الصف المختار فى خانات المودل
     function fillForm(row) {
       selectedRowIndex = row.rowIndex;
     
@@ -1035,8 +1035,25 @@
       document.getElementById("corractionmodal1").value = row.corraction;
       document.getElementById("riskdegreemodal1").value = row.riskdegree;
       document.getElementById("durationmodal1").value = row.duration;
-      document.getElementById("executormodal1").value = row.executor;
+    
+      const select = document.getElementById("executormodal1");
+    
+      // أولاً امسح أي اختيار سابق
+      Array.from(select.options).forEach(option => option.selected = false);
+    
+      // لو فيه قيمة محفوظة
+      if (row.executor) {
+        const values = row.executor.split(",").map(v => v.trim());
+    
+        Array.from(select.options).forEach(option => {
+          if (values.includes(option.value)) {
+            option.selected = true;
+          }
+        });
+      }
     }
+
+
     ///لتعديل الاجراءات التصحيحية فى المودل
     function editCorrectiveAction() {
       if (!selectedRowIndex) {
@@ -1055,7 +1072,10 @@
           corraction: document.getElementById("corractionmodal1").value,
           riskdegree: document.getElementById("riskdegreemodal1").value,
           duration: document.getElementById("durationmodal1").value,
-          executor: document.getElementById("executormodal1").value
+          executor: Array.from(document.getElementById("executormodal1").selectedOptions)
+                  .map(o => o.value)
+                  .filter(v => v !== "")   // 🔥 يمنع القيمة الفارغة
+                  .join(",")
         })
       })
         .then(res => res.json())
@@ -1102,7 +1122,11 @@
         corraction: document.getElementById("corractionmodal1").value,
         riskdegree: document.getElementById("riskdegreemodal1").value,
         duration: document.getElementById("durationmodal1").value,
-        executor: document.getElementById("executormodal1").value
+        executor: Array.from(document.getElementById("executormodal1").selectedOptions)
+                  .map(o => o.value)
+                  .filter(v => v !== "")   // يمنع القيمة الفارغة
+                  .join(",")
+
       };
     
       fetch(scriptURL, {
@@ -1467,6 +1491,7 @@
 
 </body>
 </html>
+
 
 
 
