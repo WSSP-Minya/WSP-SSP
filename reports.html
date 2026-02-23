@@ -48,7 +48,13 @@
               </div> 
               Deadline Time Action
           </div>
-           <div class="card" onclick="openModal('modal4')"> 
+          <div class="card" onclick="openModal('modal4')"> 
+                <div class="icon">
+                    <img src="" alt="Incomplete Corrective Actions">
+                </div> 
+                Incomplete Corrective Actions
+            </div>
+           <div class="card" onclick="openModal('modal5')"> 
               <div class="icon">
                   <img src="PI.png" alt="performanceindex">
               </div> 
@@ -151,9 +157,9 @@
               </form>
           </div>
       </div>
-      <div id="modal4" class="modal">
+      <div id="modal5" class="modal">
         <div class="modal-content dashboard">
-          <span class="close" onclick="closeModal('modal4')">&times;</span>
+          <span class="close" onclick="closeModal('modal5')">&times;</span>
           <h3 class="modal-title">Performance Dashboard</h3>
       
           <div class="dashboard-grid">
@@ -174,6 +180,46 @@
             </div>
           </div>
         </div>
+      </div>
+      <div id="modal4" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closeModal('modal4')">&times;</span>
+                <h3 class="modal-title">Executors Reports</h3>
+                <form onsubmit="return false;">
+                    <div class="generalinfo">
+                        <label>Executor</label>
+                        <select id="executors_modal4">
+                            <option selected disabled>Select Executor</option>
+                             <option value="WSP">WSP</option>
+                             <option value="الصحة">الصحة</option>
+                             <option value="حماية النيل">حماية النيل</option>
+                             <option value="الرى">الرى</option>
+                             <option value="الصرف">الصرف</option>
+                             <option value="جهاز شئون البيئة">جهاز شئون البيئة</option>
+                             <option value="المحافظة">المحافظة</option>
+                             <option value="الهيئة القومية">الهيئة القومية</option>
+                             <option value="شركة المنيا">شركة المنيا</option>
+  
+                            <option>العدوه</option>
+                            <option>مغاغة</option>
+                            <option>بنى مزار</option>
+                            <option>مطاى</option>
+                            <option>سمالوط</option>
+                            <option>المنيا</option>
+                            <option>ابوقرقاص</option>
+                            <option>ملوى</option>
+                            <option>ديرمواس</option>
+                        </select>
+        
+                       
+                    </div>
+                    <div class="form-buttons">
+                        <button type="button" id="reportExecutor">Report</button>
+                        
+                        
+                    </div>
+                </form>
+            </div>
       </div>
 
       
@@ -408,7 +454,7 @@
               document.querySelectorAll('.modal').forEach(m => m.style.display = "none");
               document.getElementById(id).style.display = "block";
             
-              if (id === "modal4") {
+              if (id === "modal5") {
                 loadDashboardData();
               }
             }
@@ -914,6 +960,199 @@
             printWindow.focus();
             printWindow.print();
         });
+            /////////////////////////
+            // تقرير حسب الجهة المنفذه (modal4)
+            /////////////////////////
+            document.getElementById("reportExecutor").addEventListener("click", async () => {
+            
+              const selectedExecutor = document.getElementById("executors_modal4").value;
+          
+              if (!selectedExecutor || selectedExecutor === "Select Branch") {
+                  alert("اختر الجهة أولاً");
+                  return;
+              }
+          
+              const branchSelect = document.getElementById("branch_modal1");
+              const branches = Array.from(branchSelect.options)
+                  .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "Select Branch")
+                  .map(opt => opt.value.trim());
+          
+              let htmlContent = `
+              <html>
+              <head>
+                  <title>تقرير الجهة ${selectedExecutor}</title>
+                  <style>
+                      body { font-family: Arial; direction: rtl; text-align: right; }
+                      table { width:100%; border-collapse: collapse; margin-top:20px; }
+                      th,td { border:1px solid #000; padding:5px; }
+                      th { background:#f0f0f0; }
+                      h2,h3 { text-align:center; }
+                  </style>
+              </head>
+              <body>
+          
+              <h2>تقرير موقف تنفيذ الإجراءات التصحيحية</h2>
+              <h3>الجهة: ${selectedExecutor}</h3>
+          
+              <h3>ملخص الفروع</h3>
+              <table>
+                  <tr>
+                      <th>الفرع</th>
+                      <th>إجمالي الإجراءات</th>
+                      <th>المنفذ</th>
+                      <th>جارى</th>
+                      <th>لم يتم</th>
+                  </tr>
+              `;
+          
+              const allDetails = [];
+          
+              const branchPromises = branches.map(async (branch) => {
+          
+                  const stationsRes = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const stationsData = await stationsRes.json();
+          
+                  if (stationsData.status !== "success" || !stationsData.stations) return null;
+          
+                  const stationPromises = stationsData.stations.map(async (station) => {
+          
+                      const detailsRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                      const detailsData = await detailsRes.json();
+          
+                      if (detailsData.status !== "success" || !detailsData.details) return [];
+          
+                      return detailsData.details
+                          .filter(item => {
+    
+                            if (!item.executor) return false;
+                        
+                            const executors = item.executor.split(",").map(e => e.trim());
+                        
+                            // ⭐ إضافة: لو تم اختيار "شركة المنيا"
+                            // يتم تنفيذ التقرير على جميع فروع الشركة
+                            const minyaBranches = [
+                                "العدوه",
+                                "مغاغة",
+                                "بنى مزار",
+                                "مطاى",
+                                "سمالوط",
+                                "المنيا",
+                                "ابوقرقاص",
+                                "ملوى",
+                                "ديرمواس"
+                            ];
+                        
+                            const executorMatch =
+                                selectedExecutor === "شركة المنيا"
+                                    ? executors.some(e => minyaBranches.includes(e))
+                                    : executors.includes(selectedExecutor);
+                        
+                            return executorMatch;
+                        })
+                              
+                              // ⭐ تعديل: حذف شرط الحالة (تم / جارى / لم يتم)
+                              // حتى يتم حساب كل الحالات فى الملخص
+                              
+                             
+                          
+                          .map(item => ({
+                              branch,
+                              station,
+                              risk: item.risk,
+                              corraction: item.corraction,
+                              status: item.status,
+                              wspcomment: item.wspcomment
+                          }));
+                  });
+          
+                  const stationResults = await Promise.all(stationPromises);
+                  const flattened = stationResults.flat();
+          
+                  return { branch, data: flattened };
+              });
+          
+              const results = (await Promise.all(branchPromises)).filter(r => r);
+          
+              results.forEach(result => {
+          
+                  const branch = result.branch;
+                  const data = result.data;
+          
+                  // ⭐ تعديل: الحساب الآن يتم على كل الحالات بعد الفلترة بالجهة فقط
+                  const total = data.length;
+                  const Done = data.filter(d => d.status?.trim() === "تم").length;
+                  const inProgress = data.filter(d => d.status?.trim() === "جارى").length;
+                  const notDone = data.filter(d => d.status?.trim() === "لم يتم").length;
+          
+                  if (total > 0) {
+                      htmlContent += `
+                          <tr>
+                              <td>${branch}</td>
+                              <td>${total}</td>
+                              <td>${Done}</td>
+                              <td>${inProgress}</td>
+                              <td>${notDone}</td>
+                          </tr>
+                      `;
+                  }
+          
+                  allDetails.push(...data);
+              });
+          
+              htmlContent += `</table>`;
+          
+              // ========================
+              // جدول التفاصيل
+              // ========================
+          
+              htmlContent += `
+                  <h3>التفاصيل</h3>
+                  <table>
+                      <tr>
+                          <th>الفرع</th>
+                          <th>المحطة</th>
+                          <th>الخطر</th>
+                          <th>الإجراء التصحيحي</th>
+                          <th>الموقف التنفيذي</th>
+                          <th>ملاحظات WSP</th>
+                      </tr>
+              `;
+          
+              // ⭐ إضافة: فلترة جدول التفاصيل لعرض الحالات المفتوحة فقط
+              const openDetails = allDetails.filter(d =>
+                  d.status?.trim() === "جارى" ||
+                  d.status?.trim() === "لم يتم"
+              );
+          
+              // ⭐ تعديل: استخدام openDetails بدلاً من allDetails
+              openDetails.forEach(row => {
+                  htmlContent += `
+                      <tr>
+                          <td>${row.branch}</td>
+                          <td>${row.station}</td>
+                          <td>${row.risk || ""}</td>
+                          <td>${row.corraction || ""}</td>
+                          <td>${row.status}</td>
+                          <td>${row.wspcomment || ""}</td>
+                      </tr>
+                  `;
+              });
+          
+              htmlContent += `</table></body></html>`;
+          
+              const printWindow = window.open('', '', 'height=800,width=1200');
+          
+              if (!printWindow) {
+                  alert("يرجى السماح بالبوب أب");
+                  return;
+              }
+          
+              printWindow.document.write(htmlContent);
+              printWindow.document.close();
+              printWindow.focus();
+              printWindow.print();
+          });
+
 
            /////////////////////////
           // تحميل بيانات لوحة الأداء لمودال 4
@@ -1766,6 +2005,7 @@
   </body>
 
 </html>
+
 
 
 
