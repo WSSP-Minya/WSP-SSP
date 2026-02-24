@@ -967,7 +967,7 @@
             
               const selectedExecutor = document.getElementById("executors_modal4").value;
           
-              if (!selectedExecutor || selectedExecutor === "Select Branch") {
+              if (!selectedExecutor || selectedExecutor === "Select Executor") {
                   alert("اختر الجهة أولاً");
                   return;
               }
@@ -991,8 +991,8 @@
               </head>
               <body>
           
-              <h2>تقرير موقف تنفيذ الإجراءات التصحيحية</h2>
-              <h3>الجهة: ${selectedExecutor}</h3>
+              <h2>تقرير الاجراءات التصحيحية الغير منتهية</h2>
+              <h3>الجهة المنفذه: ${selectedExecutor}</h3>
           
               <h3>ملخص الفروع</h3>
               <table>
@@ -1058,6 +1058,7 @@
                           .map(item => ({
                               branch,
                               station,
+                              location: item.location,
                               risk: item.risk,
                               corraction: item.corraction,
                               status: item.status,
@@ -1110,7 +1111,8 @@
                   <table>
                       <tr>
                           <th>الفرع</th>
-                          <th>المحطة</th>
+                          <th>النظام</th>
+                          <th>الموقع</th>
                           <th>الخطر</th>
                           <th>الإجراء التصحيحي</th>
                           <th>الموقف التنفيذي</th>
@@ -1130,6 +1132,7 @@
                       <tr>
                           <td>${row.branch}</td>
                           <td>${row.station}</td>
+                          <td>${row.location}</td>
                           <td>${row.risk || ""}</td>
                           <td>${row.corraction || ""}</td>
                           <td>${row.status}</td>
@@ -2005,6 +2008,7 @@
   </body>
 
 </html>
+
 
 
 
