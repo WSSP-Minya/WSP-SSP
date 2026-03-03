@@ -1083,7 +1083,7 @@
                   const total = data.length;
                   const Done = data.filter(d => d.status?.trim() === "تم").length;
                   const inProgress = data.filter(d => d.status?.trim() === "جارى").length;
-                  const notDone = data.filter(d => d.status?.trim() === "لم يتم").length;
+                  const notDone = data.filter(d => d.status?.trim() === "لم يتم" || d.status?.trim() === "" ).length;
           
                   if (total > 0) {
                       htmlContent += `
@@ -1123,7 +1123,8 @@
               // ⭐ إضافة: فلترة جدول التفاصيل لعرض الحالات المفتوحة فقط
               const openDetails = allDetails.filter(d =>
                   d.status?.trim() === "جارى" ||
-                  d.status?.trim() === "لم يتم"
+                  d.status?.trim() === "لم يتم" ||
+                  d.status?.trim() === ""                
               );
           
               // ⭐ تعديل: استخدام openDetails بدلاً من allDetails
@@ -2008,6 +2009,7 @@
   </body>
 
 </html>
+
 
 
 
