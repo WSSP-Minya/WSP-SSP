@@ -298,36 +298,7 @@
                 stationSelect.appendChild(option);
               });
 
-                stationSelect.addEventListener("change", () => {
-                    const selectedStation = stationSelect.value;
-                    if (!selectedStation) return;
-        
-                    const pipeInput = document.getElementById("pipe_length");
-        
-                    function getPipeLengthForStation(stationName) {
-                      if (window.fetchedRows) {
-                        const foundRow = window.fetchedRows.find(r => r[3] === stationName);
-                        return foundRow ? foundRow[5] : null; // pipe_length في العمود 5
-                      }
-                      return null;
-                    }
-        
-                    const existingPipeLength = getPipeLengthForStation(selectedStation);
-        
-                    if (department === "WSP") {
-                      pipeInput.disabled = false; // أدمن يمكنه التعديل دائمًا
-                      if (existingPipeLength) pipeInput.value = existingPipeLength;
-                      else pipeInput.value = "";
-                    } else {
-                      if (existingPipeLength) {
-                        pipeInput.value = existingPipeLength; // نعرض القيمة الموجودة
-                        pipeInput.disabled = true;            // مقفل للمستخدم العادي
-                      } else {
-                        pipeInput.value = "";                 // يسمح بالإدخال لأول مرة
-                        pipeInput.disabled = false;
-                      }
-                    }
-                  });
+               
             } else {
               stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
             }
@@ -336,7 +307,28 @@
       }
     
       fetchData(email, department);
-    
+      stationSelect.addEventListener("change", () => {
+        const selectedStation = stationSelect.value;
+        if (!selectedStation) return;
+
+        const pipeInput = document.getElementById("pipe_length");
+
+        // الحصول على pipe_length الحالية للمحطة إذا موجودة
+        const existingPipeLength = window.fetchedRows?.find(r => r[3] === selectedStation)?.[5] || null;
+
+        if (department === "WSP") {
+            pipeInput.disabled = false;               // أدمن يمكنه التعديل دائمًا
+            pipeInput.value = existingPipeLength || "";
+        } else {
+            if (existingPipeLength) {
+                pipeInput.value = existingPipeLength;  // نعرض القيمة الموجودة
+                pipeInput.disabled = true;             // مقفل للمستخدم العادي
+            } else {
+                pipeInput.value = "";                  // يسمح بالإدخال لأول مرة
+                pipeInput.disabled = false;
+            }
+        }
+    });
       
     
       // ربط الأزرار
@@ -355,6 +347,7 @@
     
         const rows = data.water_data;
         const tbody = document.querySelector("table.table-data tbody");
+        window.fetchedRows = data.water_data.slice(1); // حفظ كل الصفوف لاستخدامها لاحقاً
         tbody.innerHTML = "";
     
         const desiredColumnIndexes = [1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
