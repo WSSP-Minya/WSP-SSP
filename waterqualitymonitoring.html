@@ -396,12 +396,25 @@
     }
     
     function fetchStations(branch, callback) {
-      window.handleStations = function(data) {
-        callback(data);
-      };
-      const script = document.createElement("script");
-      script.src = `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}&callback=handleStations`;
-      document.body.appendChild(script);
+         window.handleStations = function(data) {
+            const stationSelect = document.getElementById("station");
+            stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+    
+            if (data.status === "success") {
+                data.stations.forEach(station => {
+                    const option = document.createElement("option");
+                    option.value = station;
+                    option.textContent = station;
+                    stationSelect.appendChild(option);
+                });
+            } else {
+                stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
+            }
+            callback?.(data); // الاحتفاظ بالcallback إن احتجنا
+        };
+        const script = document.createElement("script");
+        script.src = `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}&callback=handleStations`;
+        document.body.appendChild(script);
     }
     
     // ================= وظائف النموذج =================
