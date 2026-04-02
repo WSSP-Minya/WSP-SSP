@@ -400,9 +400,18 @@
       }
     
       document.getElementById("sample").value = row[4];
-      document.getElementById("distance_sw").value = row[5];
-      document.getElementById("screen_bottom").value = row[6];  
-      document.getElementById("pipe_length").value = row[7];
+     
+      document.getElementById("pipe_length").value = row[5];
+      document.getElementById("screen_bottom").value = row[6];
+    
+        // حساب distance_sw من water_level
+        const pipeLength = parseFloat(row[5]) || 0;
+        const waterLevel = parseFloat(row[7]) || 0;
+        const distanceSW = pipeLength - waterLevel;
+        
+        document.getElementById("distance_sw").value = distanceSW;
+            
+     
       document.getElementById("turbidity").value = row[8];
       document.getElementById("pH").value = row[9];
       document.getElementById("temp").value = row[10];
