@@ -401,7 +401,17 @@
     
       document.getElementById("sample").value = row[4];
      
-      document.getElementById("pipe_length").value = row[5];
+      
+        const pipeInput = document.getElementById("pipe_length");
+
+        pipeInput.value = row[5];
+        
+        // لو المستخدم مش أدمن ➜ اقفل التعديل
+        if (department !== "WSP") {
+          pipeInput.readOnly = true;
+        } else {
+          pipeInput.readOnly = false;
+        }
       document.getElementById("screen_bottom").value = row[6];
     
         // حساب distance_sw من water_level
