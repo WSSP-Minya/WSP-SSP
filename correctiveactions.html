@@ -1415,7 +1415,7 @@
     
         // فلترة البيانات حسب statuspercent < 100
         const filteredData = Object.values(detailsMap).filter(detail => {
-            return Number(detail.statuspercent) < 100 && detail.checkbox === false;
+            return Number(detail.statuspercent) < 100 || detail.checkbox === false;
         });
     
         if (filteredData.length === 0) {
