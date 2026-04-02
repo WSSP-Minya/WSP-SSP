@@ -273,6 +273,39 @@
               option.textContent = station;
               stationSelect.appendChild(option);
             });
+
+              stationSelect.addEventListener("change", () => {
+                  const selectedStation = stationSelect.value;
+                  if (!selectedStation) return;
+        
+                  const pipeInput = document.getElementById("pipe_length");
+        
+                  function getPipeLengthForStation(stationName) {
+                    if (window.fetchedRows) {
+                      const foundRow = window.fetchedRows.find(r => r[3] === stationName);
+                      return foundRow ? foundRow[5] : null; // pipe_length في العمود 5
+                    }
+                    return null;
+                  }
+        
+                  const existingPipeLength = getPipeLengthForStation(selectedStation);
+        
+                  if (department === "WSP") {
+                    pipeInput.disabled = false; // أدمن يمكنه التعديل دائمًا
+                    if (existingPipeLength) pipeInput.value = existingPipeLength;
+                    else pipeInput.value = "";
+                  } else {
+                    if (existingPipeLength) {
+                      pipeInput.value = existingPipeLength; // نعرض القيمة الموجودة
+                      pipeInput.disabled = true;            // مقفل للمستخدم العادي
+                    } else {
+                      pipeInput.value = "";                 // يسمح بالإدخال لأول مرة
+                      pipeInput.disabled = false;
+                    }
+                  }
+                });
+
+              
           } else {
             stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
           }
@@ -293,6 +326,37 @@
                 option.textContent = station;
                 stationSelect.appendChild(option);
               });
+
+                stationSelect.addEventListener("change", () => {
+                    const selectedStation = stationSelect.value;
+                    if (!selectedStation) return;
+        
+                    const pipeInput = document.getElementById("pipe_length");
+        
+                    function getPipeLengthForStation(stationName) {
+                      if (window.fetchedRows) {
+                        const foundRow = window.fetchedRows.find(r => r[3] === stationName);
+                        return foundRow ? foundRow[5] : null; // pipe_length في العمود 5
+                      }
+                      return null;
+                    }
+        
+                    const existingPipeLength = getPipeLengthForStation(selectedStation);
+        
+                    if (department === "WSP") {
+                      pipeInput.disabled = false; // أدمن يمكنه التعديل دائمًا
+                      if (existingPipeLength) pipeInput.value = existingPipeLength;
+                      else pipeInput.value = "";
+                    } else {
+                      if (existingPipeLength) {
+                        pipeInput.value = existingPipeLength; // نعرض القيمة الموجودة
+                        pipeInput.disabled = true;            // مقفل للمستخدم العادي
+                      } else {
+                        pipeInput.value = "";                 // يسمح بالإدخال لأول مرة
+                        pipeInput.disabled = false;
+                      }
+                    }
+                  });
             } else {
               stationSelect.innerHTML = '<option value="" disabled selected>Not found</option>';
             }
@@ -301,6 +365,15 @@
       }
     
       fetchData(email, department);
+    
+      window.handleWaterData = function(data) {
+        if (data.status === "unauthorized") {
+          alert("غير مصرح لك بالوصول");
+          return;
+        }
+        const rows = data.water_data;
+        window.fetchedRows = rows.slice(1); // حفظ كل الصفوف لاستخدامها لاحقاً
+      };
     
       // ربط الأزرار
       document.querySelectorAll(".button-content")[0].addEventListener("click", e => { e.preventDefault(); sendData("add"); });
