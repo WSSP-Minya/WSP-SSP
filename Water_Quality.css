@@ -182,6 +182,27 @@ h1 {
   border-width: 2px;
   background-color: lightblue;
 }
+/* بيانات إضافية أسفل البيانات الأساسية */
+.extra-data{
+    margin-top: 10px;
+   
+    padding-top: 10px;
+}
+
+/* توحيد شكل الـ inputs */
+.extra-data input{
+    font-size: 15px;
+    font-weight: bold;
+    text-align: center;
+    width: 100px;
+    height: 30px;
+    border-radius: 6px;
+    border: 1px solid #777;
+}
+.extra-data label{
+    width:fit-content;
+}
+
 
 /* Radios */
 input[type="radio"] { display: none; }
@@ -376,8 +397,6 @@ tbody td{
         height: 230px;
     }
 }
-
-
 
 
 
