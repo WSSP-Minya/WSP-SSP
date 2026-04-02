@@ -5,7 +5,6 @@
 <!--العنوان الرئيسى للصفحة-->
 <head>
     <title >RWater Quality Monitoring</title>
-   
     <link rel="stylesheet" href="Water_Quality.css">
 
 </head>
@@ -18,7 +17,7 @@
             <div class="left">
                 <button class="logout-button" onclick="logout()">Logout</button>
                 <button class="homepage-button" onclick="AccessedToPage('mainpage')">
-                    <img src="myhome.webp" alt="Main Page" title="Main Page">
+                    <img src="homepage.webp" alt="Main Page" title="Main Page">
                 </button>
             </div>
         
@@ -63,13 +62,35 @@
     <select id="station" value="" type="select"><option>Select Staion</option></select> 
 
     <label class="dat" for="sample">Location</label>
-    <input id="sample" value="المأخذ" type="location" readonly>
+    <select id="sample" type="location">
+            <!--<option value="" disabled selected>Select location</option>-->
+            <option value="اعلى التيار 3000 م">اعلى التيار 3000 م</option>
+            <option value="اعلى التيار 2500 م">اعلى التيار 2500 م</option>
+            <option value="اعلى التيار 2000 م">اعلى التيار 2000 م</option>
+            <option value="اعلى التيار 1500 م">اعلى التيار 1500 م</option>
+            <option value="اعلى التيار 1000 م">اعلى التيار 1000 م</option>
+            <option value="اعلى التيار 500 م">اعلى التيار 500 م</option>
+            <option value="المأخذ" selected>المأخذ</option>
+            <option value="اسفل التيار 500 م">اسفل التيار 500 م</option>
+            <option value="اسفل التيار 1000 م">اسفل التيار 1000 م</option>
+            
     
     <input type="hidden" id="entry-id">
-
-
     
     </div>
+    <div class="essdata extra-data">
+
+        <label class="dat" for="distance_sw">S.W. distance (m)</label>
+        <input id="distance_sw" type="number" required>
+
+        <label class="dat" for="screen_bottom">Screen Height (m)</label>
+        <input id="screen_bottom" type="number" required>
+
+        <label class="dat" for="pipe_length">Pipe Length (m)</label>
+        <input id="pipe_length" type="number" required>
+
+    </div>
+        
     <hr>
 
   
@@ -136,7 +157,7 @@
                         <input id="tc" name="tc" type="number">
                     </div>
                     <div>
-                        <label for="ta">Total Algae Count/ml</label>
+                        <label for="ta">Total Algae Colony/100 ml</label>
                         <input id="ta" name="ta" type="number">
                     </div>
                 </div>
@@ -175,6 +196,9 @@
               <th>Branch</th> <!--تعديل السطر-->
               <th>Station</th> <!--اضافة سطر-->
               <th>location</th>
+             
+              <th>Screen height</th>
+              <th>Water level</th>
               <th>Turbidity</th>
               <th>pH</th>
               <th>Temp</th>
@@ -213,6 +237,14 @@
                 
                 window.location.href= pagename+".html";
             }
+            document.getElementById('sample').addEventListener('change', function() {
+                if (this.value === 'المأخذ') {
+                    document.querySelector('.extra-data').style.display = 'flex';  // إظهار الـ extra-data
+                } else {
+                    document.querySelector('.extra-data').style.display = 'none';   // إخفاء الـ extra-data
+                }
+            });
+
     // متغير عام لتخزين القسم
     let department = "";
     
@@ -349,24 +381,23 @@
       document.getElementById("entry-id").value = row[0];
       document.getElementById("branch").value = row[2];
     
-      const stationSelect = document.getElementById("station");
-    
-      // تحميل المحطات للجميع 
-      fetchStations(row[2], (data) => {
-        stationSelect.innerHTML = '<option value="" disabled>Select Station</option>';
-    
-        if (data.status === "success") {
-          data.stations.forEach(station => {
-            const option = document.createElement("option");
-            option.value = station;
-            option.textContent = station;
-            stationSelect.appendChild(option);
-          });
-    
-          // تعيين المحطة بعد التحميل
-          stationSelect.value = row[3];
-        }
-      });
+      if (department === "WSP") {
+        fetchStations(row[2], (data) => {
+          const stationSelect = document.getElementById("station");
+          stationSelect.innerHTML = '<option value="" disabled selected>Select Station</option>';
+          if (data.status === "success") {
+            data.stations.forEach(station => {
+              const option = document.createElement("option");
+              option.value = station;
+              option.textContent = station;
+              stationSelect.appendChild(option);
+            });
+            stationSelect.value = row[3];
+          }
+        });
+      } else {
+        document.getElementById("station").value = row[3];
+      }
     
       document.getElementById("sample").value = row[4];
       document.getElementById("turbidity").value = row[5];
@@ -388,7 +419,6 @@
       document.getElementById("ta").value = row[21];
     }
     
-        
     function formatDateForInput(dateValue) {
       try {
         const d = new Date(dateValue);
@@ -407,22 +437,9 @@
       const email = sessionStorage.getItem("email");
       const department = sessionStorage.getItem("department");
     
-    
       if ((action==="update" || action==="delete") && !document.getElementById("entry-id").value) {
         alert("يرجى اختيار صف من الجدول قبل التحديث أو الحذف.");
         return;
-      }
-        // 🔴 شرط اختيار التاريخ والفرع والمحطة ونوع العينة قبل الاضافة او التعديل
-      if (action === "add" || action === "update") {
-        const date = document.getElementById("date").value;
-        const branch = document.getElementById("branch").value;
-        const station = document.getElementById("station").value;
-        const sample = document.getElementById("sample").value;
-    
-        if (!date || !branch || !station || !sample) {
-          alert("يرجى اختيار التاريخ والفرع والمحطة ومكان العينة قبل الحفظ.");
-          return;
-        }
       }
     
       const formData = new URLSearchParams();
@@ -504,33 +521,4 @@
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
