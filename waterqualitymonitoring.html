@@ -408,9 +408,9 @@
         
         // لو المستخدم مش أدمن ➜ اقفل التعديل
         if (department !== "WSP") {
-          pipeInput.readOnly = true;
+          pipeInput.disabled = true;
         } else {
-          pipeInput.readOnly = false;
+          pipeInput.disabled = false;
         }
       document.getElementById("screen_bottom").value = row[6];
     
