@@ -277,7 +277,7 @@
       const branchSelect = document.getElementById("branch");
              stationSelect.addEventListener("change", () => {
                     const selectedStation = stationSelect.value;
-                    if (!selectedStation) return;
+                    if (!selectedStation || !window.fetchedRows) return;
             
                     const pipeInput = document.getElementById("pipe_length");
             
@@ -466,8 +466,7 @@
      
       
         const pipeInput = document.getElementById("pipe_length");
-
-        pipeInput.value = row[5];
+        pipeInput.value = row[5] ?? "";
         
         // لو المستخدم مش أدمن ➜ اقفل التعديل
         if (department !== "WSP") {
@@ -478,8 +477,8 @@
       
     
         // حساب distance_sw من water_level
-        const pipeLength = parseFloat(row[5]) || 0;
-        const waterLevel = parseFloat(row[7]) || 0;
+        const pipeLength = parseFloat(row[5]);
+        const waterLevel = parseFloat(row[7]);
        
 
        if (isNaN(pipeLength) || isNaN(waterLevel)) {
