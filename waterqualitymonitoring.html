@@ -275,7 +275,7 @@
     
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
-             stationSelect.disabled = true;
+            
              stationSelect.addEventListener("change", () => {
                     const selectedStation = stationSelect.value;
                     if (!selectedStation || !window.fetchedRows) return;
@@ -367,7 +367,7 @@
         window.fetchedRows = data.water_data.slice(1); // حفظ كل الصفوف لاستخدامها لاحقاً
         tbody.innerHTML = "";
 
-        document.getElementById("station").disabled = false;
+       
     
         const desiredColumnIndexes = [1,2,3,4,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24];
     
