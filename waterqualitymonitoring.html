@@ -518,7 +518,13 @@
       formData.append("location", document.getElementById("sample").value);
         
         formData.append("screen_bottom", document.getElementById("screen_bottom").value);
-        formData.append("pipe_length", document.getElementById("pipe_length").value);
+       const sampleValue = document.getElementById("sample").value;
+
+        if (sampleValue === "المأخذ") {
+            formData.append("pipe_length", document.getElementById("pipe_length").value);
+        } else {
+            formData.append("pipe_length", "");
+        }
         // حساب Water Level
         const pipeLength = parseFloat(document.getElementById("pipe_length").value) || 0;
         const distanceSW = parseFloat(document.getElementById("distance_sw").value) || 0;
