@@ -474,7 +474,7 @@
         } else {
           pipeInput.disabled = false;
         }
-      document.getElementById("screen_bottom").value = row[6];
+      
     
         // حساب distance_sw من water_level
         const pipeLength = parseFloat(row[5]) || 0;
@@ -483,7 +483,9 @@
 
        if (isNaN(pipeLength) || isNaN(waterLevel)) {
             document.getElementById("distance_sw").value = "";
+            document.getElementById("screen_bottom").value = "";
         } else {
+            document.getElementById("screen_bottom").value = row[6];
             document.getElementById("distance_sw").value = pipeLength - waterLevel;
         }
         
@@ -539,7 +541,7 @@
       formData.append("station", document.getElementById("station").value);
       formData.append("location", document.getElementById("sample").value);
         
-        formData.append("screen_bottom", document.getElementById("screen_bottom").value);
+        
         // حساب Water Level
         const pipeLength = parseFloat(document.getElementById("pipe_length").value) || 0;
         const distanceSW = parseFloat(document.getElementById("distance_sw").value) || 0;
@@ -550,10 +552,13 @@
 
         if (sampleValue === "المأخذ") {
             formData.append("pipe_length", document.getElementById("pipe_length").value);
+            formData.append("screen_bottom", document.getElementById("screen_bottom").value);
             formData.append("water_level", waterLevel);
         } else {
             formData.append("pipe_length", "");
             formData.append("water_level", "");
+            formData.append("screen_bottom", "");
+            
         }
        
       formData.append("turbidity", document.getElementById("turbidity").value);
