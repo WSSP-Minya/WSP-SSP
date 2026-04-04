@@ -256,7 +256,28 @@
     
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
-    
+             stationSelect.addEventListener("change", () => {
+                    const selectedStation = stationSelect.value;
+                    if (!selectedStation) return;
+            
+                    const pipeInput = document.getElementById("pipe_length");
+            
+                    // الحصول على pipe_length الحالية للمحطة إذا موجودة
+                    const existingPipeLength = window.fetchedRows?.find(r => r[3] === selectedStation)?.[5] || null;
+            
+                    if (department === "WSP") {
+                        pipeInput.disabled = false;               // أدمن يمكنه التعديل دائمًا
+                        pipeInput.value = existingPipeLength || "";
+                    } else {
+                        if (existingPipeLength) {
+                            pipeInput.value = existingPipeLength;  // نعرض القيمة الموجودة
+                            pipeInput.disabled = true;             // مقفل للمستخدم العادي
+                        } else {
+                            pipeInput.value = "";                  // يسمح بالإدخال لأول مرة
+                            pipeInput.disabled = false;
+                        }
+                    }
+                });
       
       document.getElementById("section").value = department;
     
@@ -369,28 +390,7 @@
       const script = document.createElement("script");
       script.src = `${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}&callback=handleWaterData`;
       document.body.appendChild(script);
-        stationSelect.addEventListener("change", () => {
-            const selectedStation = stationSelect.value;
-            if (!selectedStation) return;
-    
-            const pipeInput = document.getElementById("pipe_length");
-    
-            // الحصول على pipe_length الحالية للمحطة إذا موجودة
-            const existingPipeLength = window.fetchedRows?.find(r => r[3] === selectedStation)?.[5] || null;
-    
-            if (department === "WSP") {
-                pipeInput.disabled = false;               // أدمن يمكنه التعديل دائمًا
-                pipeInput.value = existingPipeLength || "";
-            } else {
-                if (existingPipeLength) {
-                    pipeInput.value = existingPipeLength;  // نعرض القيمة الموجودة
-                    pipeInput.disabled = true;             // مقفل للمستخدم العادي
-                } else {
-                    pipeInput.value = "";                  // يسمح بالإدخال لأول مرة
-                    pipeInput.disabled = false;
-                }
-            }
-        });
+       
     }
     
     function fetchStations(branch, callback) {
