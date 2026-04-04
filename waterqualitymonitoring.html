@@ -240,17 +240,31 @@
            document.getElementById('sample').addEventListener('change', function() {
                 const extra = document.querySelector('.extra-data');
                 const pipeInput = document.getElementById("pipe_length");
+                const station = document.getElementById("station").value;
             
                 if (this.value === 'المأخذ') {
                     extra.style.display = 'flex';
+            
+                    // 🔥 تأكد إن فيه محطة
+                    if (station && window.fetchedRows) {
+                        const row = window.fetchedRows.find(r => r[3] === station);
+            
+                        if (row && row[5]) {
+                            pipeInput.value = row[5];
+                        } else {
+                            pipeInput.value = "";
+                        }
+                    }
+            
                 } else {
                     extra.style.display = 'none';
-                
+            
                     pipeInput.value = "";
                     document.getElementById("distance_sw").value = "";
                     document.getElementById("screen_bottom").value = "";
                 }
             });
+           
            
 
     // متغير عام لتخزين القسم
