@@ -243,19 +243,9 @@
             
                 if (this.value === 'المأخذ') {
                     extra.style.display = 'flex';
-            
-                    // 🔥 رجّع قيمة pipe_length لو موجودة
-                    const station = document.getElementById("station").value;
-                    const existingPipeLength = window.fetchedRows?.find(r => r[3] === station)?.[5];
-            
-                    if (existingPipeLength) {
-                        pipeInput.value = existingPipeLength;
-                    }
-            
                 } else {
                     extra.style.display = 'none';
-            
-                    // 🔥 امسح القيم
+                
                     pipeInput.value = "";
                     document.getElementById("distance_sw").value = "";
                     document.getElementById("screen_bottom").value = "";
