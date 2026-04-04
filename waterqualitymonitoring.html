@@ -572,7 +572,7 @@
       if (department !== "WSP") {
         document.getElementById("branch").value = department;
         document.getElementById("branch").disabled = true;
-        document.getElementById("station").innerHTML = '<option value="" disabled selected>Select Station</option>';
+        fetchStations(department);
       }
     }
     
