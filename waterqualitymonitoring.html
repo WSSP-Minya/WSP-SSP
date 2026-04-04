@@ -544,9 +544,14 @@
         
         
         // حساب Water Level
-        const pipeLength = parseFloat(document.getElementById("pipe_length").value) || 0;
-        const distanceSW = parseFloat(document.getElementById("distance_sw").value) || 0;
-        const waterLevel = pipeLength - distanceSW;
+        const pipeLength = parseFloat(document.getElementById("pipe_length").value);
+        const distanceSW = parseFloat(document.getElementById("distance_sw").value);
+        
+        let waterLevel = "";
+        
+        if (!isNaN(pipeLength) && !isNaN(distanceSW)) {
+            waterLevel = pipeLength - distanceSW;
+        }
        
 
         const sampleValue = document.getElementById("sample").value;
