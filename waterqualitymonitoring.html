@@ -237,13 +237,31 @@
                 
                 window.location.href= pagename+".html";
             }
-            document.getElementById('sample').addEventListener('change', function() {
+           document.getElementById('sample').addEventListener('change', function() {
+                const extra = document.querySelector('.extra-data');
+                const pipeInput = document.getElementById("pipe_length");
+            
                 if (this.value === 'المأخذ') {
-                    document.querySelector('.extra-data').style.display = 'flex';  // إظهار الـ extra-data
+                    extra.style.display = 'flex';
+            
+                    // 🔥 رجّع قيمة pipe_length لو موجودة
+                    const station = document.getElementById("station").value;
+                    const existingPipeLength = window.fetchedRows?.find(r => r[3] === station)?.[5];
+            
+                    if (existingPipeLength) {
+                        pipeInput.value = existingPipeLength;
+                    }
+            
                 } else {
-                    document.querySelector('.extra-data').style.display = 'none';   // إخفاء الـ extra-data
+                    extra.style.display = 'none';
+            
+                    // 🔥 امسح القيم
+                    pipeInput.value = "";
+                    document.getElementById("distance_sw").value = "";
+                    document.getElementById("screen_bottom").value = "";
                 }
             });
+           
 
     // متغير عام لتخزين القسم
     let department = "";
@@ -579,6 +597,7 @@
         document.getElementById("branch").disabled = true;
         fetchStations(department);
       }
+        document.getElementById("sample").dispatchEvent(new Event("change"));
     }
     
     // ================= الطباعة والتصدير =================
