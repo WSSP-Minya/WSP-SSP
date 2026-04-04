@@ -440,7 +440,10 @@
         document.getElementById("station").value = row[3];
       }
     
-      document.getElementById("sample").value = row[4];
+     
+        const sampleSelect = document.getElementById("sample");
+        sampleSelect.value = row[4];
+        sampleSelect.dispatchEvent(new Event("change"));
      
       
         const pipeInput = document.getElementById("pipe_length");
