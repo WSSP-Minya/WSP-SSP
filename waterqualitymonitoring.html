@@ -458,12 +458,12 @@
         // حساب distance_sw من water_level
         const pipeLength = parseFloat(row[5]) || 0;
         const waterLevel = parseFloat(row[7]) || 0;
-        const distanceSW = pipeLength - waterLevel;
+       
 
-        if (waterLevel === "" && pipeLength === "") {
-           document.getElementById("distance_sw").value = "";   
+       if (isNaN(pipeLength) || isNaN(waterLevel)) {
+            document.getElementById("distance_sw").value = "";
         } else {
-           document.getElementById("distance_sw").value = distanceSW;
+            document.getElementById("distance_sw").value = pipeLength - waterLevel;
         }
         
       document.getElementById("turbidity").value = row[8];
