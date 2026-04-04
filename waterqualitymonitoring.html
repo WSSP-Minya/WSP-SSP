@@ -459,10 +459,13 @@
         const pipeLength = parseFloat(row[5]) || 0;
         const waterLevel = parseFloat(row[7]) || 0;
         const distanceSW = pipeLength - waterLevel;
+
+        if (waterLevel === "" && pipeLength === "") {
+           document.getElementById("distance_sw").value = "";   
+        } else {
+           document.getElementById("distance_sw").value = distanceSW;
+        }
         
-        document.getElementById("distance_sw").value = distanceSW;
-            
-     
       document.getElementById("turbidity").value = row[8];
       document.getElementById("pH").value = row[9];
       document.getElementById("temp").value = row[10];
@@ -516,23 +519,22 @@
       formData.append("location", document.getElementById("sample").value);
         
         formData.append("screen_bottom", document.getElementById("screen_bottom").value);
+        // حساب Water Level
+        const pipeLength = parseFloat(document.getElementById("pipe_length").value) || 0;
+        const distanceSW = parseFloat(document.getElementById("distance_sw").value) || 0;
+        const waterLevel = pipeLength - distanceSW;
+       
 
         const sampleValue = document.getElementById("sample").value;
 
         if (sampleValue === "المأخذ") {
             formData.append("pipe_length", document.getElementById("pipe_length").value);
+            formData.append("water_level", waterLevel);
         } else {
             formData.append("pipe_length", "");
             formData.append("water_level", "");
         }
        
-        // حساب Water Level
-        const pipeLength = parseFloat(document.getElementById("pipe_length").value) || 0;
-        const distanceSW = parseFloat(document.getElementById("distance_sw").value) || 0;
-        const waterLevel = pipeLength - distanceSW;
-        formData.append("water_level", waterLevel);
-        
-        
       formData.append("turbidity", document.getElementById("turbidity").value);
       formData.append("ph", document.getElementById("pH").value);
       formData.append("temp", document.getElementById("temp").value);
