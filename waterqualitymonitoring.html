@@ -262,8 +262,15 @@
                 // عرض قيمة pipe_length القديمة إن وجدت
                 if (existingPipeLength && existingPipeLength.toString().trim() !== "") {
                   pipeInput.value = existingPipeLength;
+                    
                 } else {
                   pipeInput.value = "";
+                }
+                const existingScreenBottom = lastEntry?.[6]; // عادةً index 6 كما في بياناتك
+                if (existingScreenBottom && existingScreenBottom.toString().trim() !== "") {
+                  screenBottomInput.value = existingScreenBottom;
+                } else {
+                  screenBottomInput.value = "";
                 }
             
                 // منطق تعطيل pipe_length (مسموح بالتعديل فقط لـ WSP أو لو القيمة غير موجودة)
