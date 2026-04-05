@@ -237,44 +237,45 @@
                 
                 window.location.href= pagename+".html";
             }
-    function updatePipeLength() {
+   
+          function handleSampleAndStationChange() {
+            const sample = document.getElementById("sample").value;
             const station = document.getElementById("station").value;
-            const pipeInput = document.getElementById("pipe_length");
-        
-            if (!station || !window.fetchedRows) return;
-        
-            const existingPipeLength = window.fetchedRows.find(
-                r => String(r[3]).trim() === String(station).trim()
-            )?.[5];
-        
-            if (existingPipeLength) {
-                pipeInput.value = existingPipeLength;
-            }
-        }  
-          document.getElementById('sample').addEventListener('change', function() {
             const extra = document.querySelector('.extra-data');
             const pipeInput = document.getElementById("pipe_length");
-            const existingPipeLength = window.fetchedRows.find(
+        
+            const existingPipeLength = window.fetchedRows?.find(
                 r => String(r[3]).trim() === String(station).trim()
             )?.[5];
         
-            if (this.value === 'المأخذ') {
-                extra.style.display = 'flex';       
-                updatePipeLength();
+            if (sample === 'المأخذ') {
+                extra.style.display = 'flex';
         
-                if (existingPipeLength !== undefined && existingPipeLength !== null) {
+                // ✅ الشرط 1: عرض القيمة القديمة إن وجدت
+                if (existingPipeLength !== undefined && existingPipeLength !== null && existingPipeLength !== "") {
                     pipeInput.value = existingPipeLength;
                 }
-                        
+        
+                // ✅ الشرط 2: منع التعديل إلا لـ WSP
+                if (department !== "WSP" && existingPipeLength) {
+                    pipeInput.disabled = true;
+                } else {
+                    pipeInput.disabled = false;
+                }
+        
             } else {
                 extra.style.display = 'none';
         
-                // 🔥 امسح القيم
+                // ✅ الشرط 3: مسح القيم وعدم إرسالها
                 pipeInput.value = "";
                 document.getElementById("distance_sw").value = "";
                 document.getElementById("screen_bottom").value = "";
             }
-        });
+        }
+        
+        // ربط الأحداث
+        document.getElementById('sample').addEventListener('change', handleSampleAndStationChange);
+        document.getElementById('station').addEventListener('change', handleSampleAndStationChange);
            
            
 
@@ -291,9 +292,7 @@
       const branchSelect = document.getElementById("branch");
 
        
-             stationSelect.addEventListener("change", () => {
-                 updatePipeLength()
-             });
+           
       
       document.getElementById("section").value = department;
     
