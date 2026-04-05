@@ -257,7 +257,7 @@
                 }
         
                 // ✅ الشرط 2: منع التعديل إلا لـ WSP
-                if (department !== "WSP" && existingPipeLength) {
+                if (department !== "WSP" && existingPipeLength !== undefined && existingPipeLength !== "") {
                     pipeInput.disabled = true;
                 } else {
                     pipeInput.disabled = false;
@@ -362,6 +362,7 @@
         const tbody = document.querySelector("table.table-data tbody");
         window.fetchedRows = data.water_data.slice(1); // حفظ كل الصفوف لاستخدامها لاحقاً
         tbody.innerHTML = "";
+        handleSampleAndStationChange();
 
        
     
