@@ -516,11 +516,12 @@
         // حساب distance_sw من water_level
         const pipeLength = parseFloat(row[5]);
         const waterLevel = parseFloat(row[7]);
+        document.getElementById("screen_bottom").value = row[6] ?? "";
        
 
        if (isNaN(pipeLength) || isNaN(waterLevel)) {
             document.getElementById("distance_sw").value = "";
-            document.getElementById("screen_bottom").value = "";
+           
         } else {
             document.getElementById("screen_bottom").value = row[6];
             document.getElementById("distance_sw").value = pipeLength - waterLevel;
