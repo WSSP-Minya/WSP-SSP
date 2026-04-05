@@ -254,6 +254,9 @@
           document.getElementById('sample').addEventListener('change', function() {
             const extra = document.querySelector('.extra-data');
             const pipeInput = document.getElementById("pipe_length");
+            const existingPipeLength = window.fetchedRows.find(
+                r => String(r[3]).trim() === String(station).trim()
+            )?.[5];
         
             if (this.value === 'المأخذ') {
                 extra.style.display = 'flex';       
