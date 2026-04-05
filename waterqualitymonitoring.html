@@ -251,6 +251,7 @@
                 .find(r => String(r[3]).trim() === String(station).trim());
             
               const existingPipeLength = lastEntry?.[5];
+              const existingScreenBottom = lastEntry?.[6];
               const lastDateStr = lastEntry?.[1];
               
               let enablePipeLength = true;
@@ -262,11 +263,11 @@
                 // عرض قيمة pipe_length القديمة إن وجدت
                 if (existingPipeLength && existingPipeLength.toString().trim() !== "") {
                   pipeInput.value = existingPipeLength;
-                    
                 } else {
                   pipeInput.value = "";
                 }
-                const existingScreenBottom = lastEntry?.[6]; // عادةً index 6 كما في بياناتك
+            
+                // عرض قيمة screen_bottom القديمة إن وجدت
                 if (existingScreenBottom && existingScreenBottom.toString().trim() !== "") {
                   screenBottomInput.value = existingScreenBottom;
                 } else {
@@ -298,10 +299,8 @@
             
                 screenBottomInput.disabled = !enableScreenBottom;
             
-                if (!enableScreenBottom) {
-                  
-                }
-            
+                // لا تمسح قيمة screenBottomInput هنا حتى تظهر دائماً
+                
               } else {
                 extra.style.display = 'none';
                 pipeInput.value = "";
