@@ -243,10 +243,11 @@
         
             if (this.value === 'المأخذ') {
                 extra.style.display = 'flex';
+                updatePipeLength();
         
                 // 🔥 رجّع قيمة pipe_length لو موجودة
                 const station = document.getElementById("station").value;
-                const existingPipeLength = window.fetchedRows?.find(r => r[3] === station)?.[5];
+                const existingPipeLength = window.fetchedRows?.find(r => String(r[3]).trim() === String(station).trim())?.[5];
         
                 if (existingPipeLength) {
                     pipeInput.value = existingPipeLength;
@@ -275,29 +276,24 @@
     
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
-            
+
+       function updatePipeLength() {
+            const station = document.getElementById("station").value;
+            const pipeInput = document.getElementById("pipe_length");
+        
+            if (!station || !window.fetchedRows) return;
+        
+            const existingPipeLength = window.fetchedRows.find(
+                r => String(r[3]).trim() === String(station).trim()
+            )?.[5];
+        
+            if (existingPipeLength) {
+                pipeInput.value = existingPipeLength;
+            }
+        }  
              stationSelect.addEventListener("change", () => {
-                    const selectedStation = stationSelect.value;
-                    if (!selectedStation || !window.fetchedRows) return;
-            
-                    const pipeInput = document.getElementById("pipe_length");
-            
-                    // الحصول على pipe_length الحالية للمحطة إذا موجودة
-                    const existingPipeLength = window.fetchedRows?.find(r => r[3] === selectedStation)?.[5] || null;
-            
-                    if (department === "WSP") {
-                        pipeInput.disabled = false;               // أدمن يمكنه التعديل دائمًا
-                        pipeInput.value = existingPipeLength || "";
-                    } else {
-                        if (existingPipeLength) {
-                            pipeInput.value = existingPipeLength;  // نعرض القيمة الموجودة
-                            pipeInput.disabled = true;             // مقفل للمستخدم العادي
-                        } else {
-                            pipeInput.value = "";                  // يسمح بالإدخال لأول مرة
-                            pipeInput.disabled = false;
-                        }
-                    }
-                });
+                 updatePipeLength()
+             });
       
       document.getElementById("section").value = department;
     
