@@ -273,9 +273,7 @@
             }
         }
         
-        // ربط الأحداث
-        document.getElementById('sample').addEventListener('change', handleSampleAndStationChange);
-        document.getElementById('station').addEventListener('change', handleSampleAndStationChange);
+       
            
            
 
@@ -295,6 +293,9 @@
            
       
       document.getElementById("section").value = department;
+      // ربط الأحداث
+      document.getElementById('sample').addEventListener('change', handleSampleAndStationChange);
+      document.getElementById('station').addEventListener('change', handleSampleAndStationChange);   
     
       if (department !== "WSP") {
         branchSelect.value = department;
