@@ -239,41 +239,71 @@
             }
    
           function handleSampleAndStationChange() {
-            const sample = document.getElementById("sample").value;
-            const station = document.getElementById("station").value;
-            const extra = document.querySelector('.extra-data');
-            const pipeInput = document.getElementById("pipe_length");
-        
-            const existingPipeLength = [...(window.fetchedRows || [])]
+              const sample = document.getElementById("sample").value;
+              const station = document.getElementById("station").value;
+              const extra = document.querySelector('.extra-data');
+              const pipeInput = document.getElementById("pipe_length");
+              const screenBottomInput = document.getElementById("screen_bottom");
+            
+              // جلب آخر صف مطابق للمحطة
+              const lastEntry = [...(window.fetchedRows || [])]
                 .reverse()
-                .find(r => String(r[3]).trim() === String(station).trim())
-                ?.[5];
-        
-            if (sample === 'المأخذ') {
+                .find(r => String(r[3]).trim() === String(station).trim());
+            
+              const existingPipeLength = lastEntry?.[5];
+              const lastDateStr = lastEntry?.[1];
+              
+              let enablePipeLength = true;
+              let enableScreenBottom = true;
+            
+              if (sample === 'المأخذ') {
                 extra.style.display = 'flex';
-        
-                // ✅ الشرط 1: عرض القيمة القديمة إن وجدت
+            
+                // عرض قيمة pipe_length القديمة إن وجدت
                 if (existingPipeLength && existingPipeLength.toString().trim() !== "") {
-                    pipeInput.value = existingPipeLength;
-                }
-        
-                // ✅ الشرط 2: منع التعديل إلا لـ WSP
-                if (department !== "WSP" && existingPipeLength && existingPipeLength.toString().trim() !== "") {
-                    pipeInput.disabled = true;
+                  pipeInput.value = existingPipeLength;
                 } else {
-                    pipeInput.disabled = false;
+                  pipeInput.value = "";
                 }
-        
-            } else {
+            
+                // منطق تعطيل pipe_length (مسموح بالتعديل فقط لـ WSP أو لو القيمة غير موجودة)
+                if (department !== "WSP" && existingPipeLength && existingPipeLength.toString().trim() !== "") {
+                  enablePipeLength = false;
+                }
+            
+                pipeInput.disabled = !enablePipeLength;
+            
+                // ====== منطق تعطيل screen_bottom بناء على 3 شهور ======
+            
+                if (department === "WSP") {
+                  // دائمًا متاح للتعديل
+                  enableScreenBottom = true;
+                } else if (lastDateStr) {
+                  const lastDate = new Date(lastDateStr);
+                  const now = new Date();
+                  const diffTime = now - lastDate;
+                  const diffDays = diffTime / (1000 * 60 * 60 * 24);
+                  enableScreenBottom = diffDays >= 90;
+                } else {
+                  // لو مفيش تاريخ تسجيل سابق، اسمح بالتعديل
+                  enableScreenBottom = true;
+                }
+            
+                screenBottomInput.disabled = !enableScreenBottom;
+            
+                if (!enableScreenBottom) {
+                  screenBottomInput.value = "";
+                }
+            
+              } else {
                 extra.style.display = 'none';
-        
-                // ✅ الشرط 3: مسح القيم وعدم إرسالها
                 pipeInput.value = "";
+                pipeInput.disabled = false;
+                screenBottomInput.value = "";
+                screenBottomInput.disabled = true;
                 document.getElementById("distance_sw").value = "";
-                document.getElementById("screen_bottom").value = "";
+              }
             }
-        }
-        
        
            
            
