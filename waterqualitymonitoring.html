@@ -242,17 +242,13 @@
             const pipeInput = document.getElementById("pipe_length");
         
             if (this.value === 'المأخذ') {
-                extra.style.display = 'flex';
-                
+                extra.style.display = 'flex';       
+                updatePipeLength();
         
-                // 🔥 رجّع قيمة pipe_length لو موجودة
-                const station = document.getElementById("station").value;
-                const existingPipeLength = window.fetchedRows?.find(r => String(r[3]).trim() === String(station).trim())?.[5];
-        
-                if (existingPipeLength) {
+                if (existingPipeLength !== undefined && existingPipeLength !== null) {
                     pipeInput.value = existingPipeLength;
                 }
-        
+                        
             } else {
                 extra.style.display = 'none';
         
