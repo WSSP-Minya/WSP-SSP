@@ -237,6 +237,20 @@
                 
                 window.location.href= pagename+".html";
             }
+    function updatePipeLength() {
+            const station = document.getElementById("station").value;
+            const pipeInput = document.getElementById("pipe_length");
+        
+            if (!station || !window.fetchedRows) return;
+        
+            const existingPipeLength = window.fetchedRows.find(
+                r => String(r[3]).trim() === String(station).trim()
+            )?.[5];
+        
+            if (existingPipeLength) {
+                pipeInput.value = existingPipeLength;
+            }
+        }  
           document.getElementById('sample').addEventListener('change', function() {
             const extra = document.querySelector('.extra-data');
             const pipeInput = document.getElementById("pipe_length");
@@ -273,20 +287,7 @@
       const stationSelect = document.getElementById("station");
       const branchSelect = document.getElementById("branch");
 
-       function updatePipeLength() {
-            const station = document.getElementById("station").value;
-            const pipeInput = document.getElementById("pipe_length");
-        
-            if (!station || !window.fetchedRows) return;
-        
-            const existingPipeLength = window.fetchedRows.find(
-                r => String(r[3]).trim() === String(station).trim()
-            )?.[5];
-        
-            if (existingPipeLength) {
-                pipeInput.value = existingPipeLength;
-            }
-        }  
+       
              stationSelect.addEventListener("change", () => {
                  updatePipeLength()
              });
