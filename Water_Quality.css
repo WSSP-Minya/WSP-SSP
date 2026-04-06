@@ -169,7 +169,7 @@ h1 {
 }
 
 #sample[type="location"]{
-  cursor: not-allowed;
+  cursor: allowed;
 }
 
 #date:hover,
