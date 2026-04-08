@@ -345,6 +345,9 @@ input[type="radio"]:checked + label{
   border-right-color: black;
 }
 thead th{
+ position: sticky;
+ top: 0;
+ z-index: 2;  
   background-color: #6c757d;
   border-right-style: solid;
   border-right-width: 2px;
