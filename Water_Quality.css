@@ -332,13 +332,13 @@ input[type="radio"]:checked + label{
 .table-data{
   border: 3px double black;
   border-collapse: collapse;
-  width:90vw;
+  width:100%;
   height: fit-content;
   position: relative;
   bottom:10px;
-  transform: translateX(50px);
+  
   margin-top:10px;
-  padding:30px;
+  padding:8px 12px;
   background-color: white;
   border-right-style: solid;
   border-right-width: 2px;
