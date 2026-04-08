@@ -178,14 +178,20 @@
         
     </div>
     <br><br><br><br><br><br><br>
-    <div>
+    <div class="table-tools">
+
+        <input type="date" id="fromDate">
+        <input type="date" id="toDate">
+    
+        
         <button onclick="printTable()" class="output">
-            <img src="https://static.vecteezy.com/system/resources/previews/006/693/009/non_2x/printer-icon-template-black-color-editable-printer-icon-symbol-flat-illustration-for-graphic-and-web-design-free-vector.jpg" alt="print">
+            <img src="https://static.vecteezy.com/system/resources/previews/006/693/009/non_2x/printer-icon-template-black-color-editable-printer-icon-symbol-flat-illustration-for-graphic-and-web-design-free-vector.jpg">
         </button>
     
         <button onclick="exportTableToExcel('waterqualitytable', 'water_quality_data')" class="output">
-            <img src="https://static.vecteezy.com/system/resources/previews/017/396/828/non_2x/microsoft-excel-mobile-apps-logo-free-png.png" alt="export">
+            <img src="https://static.vecteezy.com/system/resources/previews/017/396/828/non_2x/microsoft-excel-mobile-apps-logo-free-png.png">
         </button>
+
     </div>
     
     <table id = "waterqualitytable" class="table-data">
@@ -650,23 +656,153 @@
     
     // ================= الطباعة والتصدير =================
     function printTable() {
-      const table = document.getElementById("waterqualitytable").outerHTML;
-      const style = `<style>table{border-collapse:collapse;width:100%;}th,td{border:1px solid #000;padding:8px;text-align:center;}</style>`;
+
+      const branch = document.getElementById("branch").value;
+      const station = document.getElementById("station").value;
+      const location = document.getElementById("sample").value;
+      const fromDate = document.getElementById("fromDate").value;
+      const toDate = document.getElementById("toDate").value;
+    
+      const table = document.getElementById("waterqualitytable");
+      const rows = table.querySelectorAll("tbody tr");
+    
+      let filteredHTML = `
+        <table>
+          ${table.querySelector("thead").outerHTML}
+          <tbody>
+      `;
+    
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+    
+        if (cells.length < 4) return;
+    
+        const rowDateText = cells[0].textContent.trim();
+        const rowBranch = cells[1].textContent.trim();
+        const rowStation = cells[2].textContent.trim();
+        const rowLocation = cells[3].textContent.trim();
+    
+        let rowDate = null;
+    
+        if (rowDateText.includes("/")) {
+          const [day, month, year] = rowDateText.split("/");
+          rowDate = new Date(`${year}-${month}-${day}`);
+        }
+    
+        const from = fromDate ? new Date(fromDate) : null;
+        const to = toDate ? new Date(toDate) : null;
+    
+        let match = true;
+    
+        if (branch && rowBranch !== branch) match = false;
+        if (station && rowStation !== station) match = false;
+        if (location && rowLocation !== location) match = false;
+        if (from && rowDate && rowDate < from) match = false;
+        if (to && rowDate && rowDate > to) match = false;
+    
+        if (match) {
+          filteredHTML += "<tr>";
+          cells.forEach(cell => {
+            filteredHTML += `<td>${cell.textContent}</td>`;
+          });
+          filteredHTML += "</tr>";
+        }
+      });
+    
+      filteredHTML += "</tbody></table>";
+    
+      const style = `
+        <style>
+          body{font-family:Arial;}
+          table{border-collapse:collapse;width:100%;}
+          th,td{border:1px solid #000;padding:6px;text-align:center;}
+          th{background:#6c757d;color:#fff;}
+        </style>
+      `;
+    
       const win = window.open('', '', 'height=700,width=900');
-      win.document.write('<html><head><title>Raw Water Quality Monitoring</title>' + style + '</head><body>' + table + '</body></html>');
+      win.document.write(`
+        <html>
+          <head>
+            <title>Filtered Water Data</title>
+            ${style}
+          </head>
+          <body>
+            <h2 style="text-align:center;">Filtered Water Quality Report</h2>
+            ${filteredHTML}
+          </body>
+        </html>
+      `);
+    
       win.document.close();
       win.print();
     }
     
     function exportTableToExcel(waterqualitytable, filename='') {
-      const table = document.getElementById(waterqualitytable).outerHTML.replace(/ /g,'%20');
+    
+      const branch = document.getElementById("branch").value;
+      const station = document.getElementById("station").value;
+      const location = document.getElementById("sample").value;
+      const fromDate = document.getElementById("fromDate").value;
+      const toDate = document.getElementById("toDate").value;
+    
+      const table = document.getElementById("waterqualitytable");
+      const rows = table.querySelectorAll("tbody tr");
+    
+      let filteredHTML = `
+        <table border="1">
+          ${table.querySelector("thead").outerHTML}
+          <tbody>
+      `;
+    
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+    
+        // تجاهل الصفوف الفاضية
+        if (cells.length < 4) return;
+    
+        const rowDateText = cells[0].textContent.trim();
+        const rowBranch = cells[1].textContent.trim();
+        const rowStation = cells[2].textContent.trim();
+        const rowLocation = cells[3].textContent.trim();
+    
+        let rowDate = null;
+    
+        if (rowDateText.includes("/")) {
+          const [day, month, year] = rowDateText.split("/");
+          rowDate = new Date(`${year}-${month}-${day}`);
+        }
+    
+        const from = fromDate ? new Date(fromDate) : null;
+        const to = toDate ? new Date(toDate) : null;
+    
+        let match = true;
+    
+        if (branch && rowBranch !== branch) match = false;
+        if (station && rowStation !== station) match = false;
+        if (location && rowLocation !== location) match = false;
+        if (from && rowDate && rowDate < from) match = false;
+        if (to && rowDate && rowDate > to) match = false;
+    
+        if (match) {
+          filteredHTML += "<tr>";
+          cells.forEach(cell => {
+            filteredHTML += `<td>${cell.textContent}</td>`;
+          });
+          filteredHTML += "</tr>";
+        }
+      });
+    
+      filteredHTML += "</tbody></table>";
+    
       const link = document.createElement("a");
+      link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(filteredHTML);
+      link.download = filename ? filename + ".xls" : "filtered_data.xls";
       document.body.appendChild(link);
-      link.href = 'data:application/vnd.ms-excel,' + table;
-      link.download = filename ? filename+'.xls' : 'excel_data.xls';
       link.click();
       document.body.removeChild(link);
     }
+
 
     //  تسجيل الخروج
     function logout() {
