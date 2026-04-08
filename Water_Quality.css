@@ -358,8 +358,8 @@ tbody td{
   border: none;
   cursor: pointer;
   padding: 5px;
-  margin-left: 10px;
-  position:relative;
+  margin-left: 5px;
+  position:static;
   left:85%;
 }
 
@@ -381,6 +381,35 @@ tbody td{
   font-weight: bold;
 }
 
+/* الكونتينر كله */
+.table-tools{
+  display: flex;
+  justify-content: flex-end; /* كله يروح يمين */
+  align-items: center;
+  gap: 8px; /* مسافة صغيرة */
+  width: 90vw;
+  margin: 5px auto;
+}
+
+/* نخلي التاريخ حجمه صغير زي الأزرار */
+.table-tools input[type="date"]{
+  width: 130px;
+  height: 32px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  border-radius: 6px;
+  border: 1px solid #777;
+  transition: 0.3s;
+}
+
+/* hover */
+.table-tools input[type="date"]:hover,
+.table-tools input[type="date"]:focus{
+  border-color: red;
+  border-width: 2px;
+  background-color: lightblue;
+}
 /* ===== متجاوب للشاشات الصغيرة ===== */
 @media (max-width: 768px) {
     .buttonlabel {
