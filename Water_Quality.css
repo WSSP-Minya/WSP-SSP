@@ -331,6 +331,7 @@ input[type="radio"]:checked + label{
   transform: translateX(50px);
   margin-top:10px;
   padding:30px;
+  overflow-y: auto;   /* scroll رأسي */
   background-color: white;
   border-right-style: solid;
   border-right-width: 2px;
