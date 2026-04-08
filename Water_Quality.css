@@ -321,7 +321,7 @@ input[type="radio"]:checked + label{
   background-color: lightskyblue;
 }
 .table-container {
-  width: 90vw;
+  width: 100%;
   max-height: 400px;    /* ارتفاع ثابت للـ scroll الرأسي */
   overflow-y: auto;     /* scroll رأسي */
   margin-top: 10px;
@@ -332,7 +332,7 @@ input[type="radio"]:checked + label{
 .table-data{
   border: 3px double black;
   border-collapse: collapse;
-  width:100%;
+  width:90vw;
   height: fit-content;
   position: relative;
   bottom:10px;
