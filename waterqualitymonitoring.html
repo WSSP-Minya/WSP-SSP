@@ -658,6 +658,10 @@
     function printTable() {
 
       const branch = document.getElementById("branch").value;
+        if (!branch) {
+            alert("اختر الفرع أولاً");
+            return;
+          }
       const station = document.getElementById("station").value;
       const location = document.getElementById("sample").value;
       const fromDate = document.getElementById("fromDate").value;
@@ -755,6 +759,11 @@
     function exportTableToExcel(waterqualitytable, filename='') {
     
       const branch = document.getElementById("branch").value;
+          if (!branch) {
+            alert("اختر الفرع أولاً");
+            return;
+          }
+
       const station = document.getElementById("station").value;
       const location = document.getElementById("sample").value;
       const fromDate = document.getElementById("fromDate").value;
