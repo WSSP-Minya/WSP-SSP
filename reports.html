@@ -1557,14 +1557,15 @@
               
                 // إجمالي الطاقة (لازم يكون عندك capacity لكل محطة)
                 const totalCapacity = stations.reduce((sum, station, i) => {
-                  const capacity = Number(branchData[branch].details[station]?.[0]?.capacity) || 0;
+                  const capacity = Number(branchData[branch].capacity[i]) || 0;
                   return sum + capacity;
                 }, 0);
+
                 
                 // الطاقة للمحطات المعتمدة فقط
-                const certifiedCapacity = stations.reduce((sum, station, i) => {
-                  const dates = branchData[branch].certifiedDates || [];
-                  const capacity = Number(branchData[branch].details[station]?.[0]?.capacity) || 0;
+               const certifiedCapacity = stations.reduce((sum, station, i) => {
+               const date = branchData[branch].certifiedDates[i];
+               const capacity = Number(branchData[branch].capacity[i]) || 0;
                 
                   if (date && date.toString().trim() !== "") {
                     return sum + capacity;
