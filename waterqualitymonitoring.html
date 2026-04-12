@@ -664,7 +664,21 @@
       const toDate = document.getElementById("toDate").value;
     
       const table = document.getElementById("waterqualitytable");
-      const rows = table.querySelectorAll("tbody tr");
+      let rows = Array.from(table.querySelectorAll("tbody tr"));
+
+        // ترتيب حسب التاريخ (من الأقدم للأحدث)
+        rows.sort((a, b) => {
+          const getDate = (row) => {
+            const text = row.children[0].textContent.trim();
+        
+            if (!text.includes("/")) return new Date(0);
+        
+            const [day, month, year] = text.split("/");
+            return new Date(`${year}-${month}-${day}`);
+          };
+        
+          return getDate(a) - getDate(b);
+        });
     
       let filteredHTML = `
         <table>
@@ -747,7 +761,21 @@
       const toDate = document.getElementById("toDate").value;
     
       const table = document.getElementById("waterqualitytable");
-      const rows = table.querySelectorAll("tbody tr");
+      let rows = Array.from(table.querySelectorAll("tbody tr"));
+
+    // ترتيب حسب التاريخ (من الأقدم للأحدث)
+    rows.sort((a, b) => {
+      const getDate = (row) => {
+        const text = row.children[0].textContent.trim();
+    
+        if (!text.includes("/")) return new Date(0);
+    
+        const [day, month, year] = text.split("/");
+        return new Date(`${year}-${month}-${day}`);
+      };
+    
+      return getDate(a) - getDate(b);
+    });
     
       let filteredHTML = `
         <table border="1">
