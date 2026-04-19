@@ -473,9 +473,15 @@
             }
           });
         
-          
-          tbody.appendChild(tr);
+          // ✅ مهم جدًا: event هنا
+          tr.addEventListener("click", () => {
+            clearRowHighlight();
+            tr.classList.add("selected-row");
+            fillFormWithRow(row);
+          });
         
+          tbody.appendChild(tr);
+
         }); 
     
         if (!tbody.hasChildNodes()) {
