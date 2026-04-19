@@ -242,7 +242,7 @@
     const limits = {
       screen_bottom_min: 0.5, water_level: 2, turbidity: 60, pH_min: 6.5,  pH_max: 8.5, tds: 1000, fe: 0.3, mn: 0.4
     };
-    function colorCell(td, value, min = null, max = null, ispH = false) {
+    function colorCell(td, value, min = null, max = null, isPH = false) {
       if (value === "" || value == null || isNaN(value)) return;
     
       value = Number(value);
@@ -251,7 +251,7 @@
       if ((min !== null && value < min) || (max !== null && value > max)) {
         td.style.backgroundColor = "#ff0000"; // 🔴 خارج الحدود
       } 
-      else if (!ispH && max !== null && value > max * 0.85) {
+      else if (!isPH && max !== null && value > max * 0.85) {
         td.style.backgroundColor = "#ffc107"; // 🟡 قريب من الخطر
       } 
       
@@ -462,7 +462,7 @@
                   colorCell(td, cell, null, limits.turbidity);
                   break;
                 case 9:
-                  colorCell(td, cell, limits.pH_min, limits.pH_max);
+                  colorCell(td, cell, limits.pH_min, limits.pH_max, true);
                   break;
                 case 11:
                   colorCell(td, cell, null, limits.tds);
