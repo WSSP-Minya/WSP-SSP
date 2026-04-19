@@ -240,13 +240,13 @@
 <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbwmID_1B8zWVbymnhERq085vPKEz6GD6LNZAEF9ZKp08nJy0ANIyzbEcCqZFY6gM8aOxA/exec";
     const limits = {
-      turbidity: 5, pH_min: 6.5,  pH_max: 8.5, tds: 1000, fe: 0.3, mn: 0.4
+      turbidity: 60, pH_min: 6.5,  pH_max: 8.5, tds: 1000, fe: 0.3, mn: 0.4
     };
     function colorCell(td, value, min = null, max = null) {
       if (value === "" || value == null || isNaN(value)) return;
     
       value = Number(value);
-      td.style.fontWeight = "bold";
+      
     
       if ((min !== null && value < min) || (max !== null && value > max)) {
         td.style.backgroundColor = "#f8d7da"; // 🔴 خارج الحدود
