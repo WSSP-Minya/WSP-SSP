@@ -230,10 +230,12 @@
      <script>
             const scriptURL = "https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec";
             
+            
             function AccessedToPage(pagename){
                     
                     window.location.href= pagename+".html";
             }
+                   
   
             window.onload = () => {
               // الحصول على البيانات من الجلسة
@@ -445,6 +447,7 @@
                       })
                       .catch(err => console.error("Error fetching station details:", err));
               });
+              loadWaterData(); //تحميل بيانات Raw water monitoring
             };
 
           
@@ -2028,7 +2031,150 @@
               printWindow.print();
           }, 300);
       });
-      
+       ///////////////////////////////////////////////////
+       ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
+      let waterData = [];
+            
+            function loadWaterData() {
+              window.handleWaterData = function (data) {
+                waterData = data.water_data.slice(1);
+                console.log("Water Data Loaded:", waterData.length);
+              };
+            
+              const script = document.createElement("script");
+              script.src = `${scriptURL}?action=getData&callback=handleWaterData`;
+              document.body.appendChild(script);
+            }
+       ///دالة انشاء تقرير مجمع وتفصيلى
+       function generateFullWaterReport() {
+
+          const branches = {};
+        
+          /* =========================
+             1. تجميع البيانات
+          ==========================*/
+          waterData.forEach(r => {
+        
+            const branch = r[2];
+            const station = r[3];
+            const location = r[4];
+            const waterLevel = r[7];
+            const screenBottom = r[6];
+        
+            if (!branches[branch]) {
+              branches[branch] = {
+                summary: {
+                  intake:0,
+                  survey:0,
+                  waterLevel:0,
+                  screenBottom:0
+                },
+                stations: {}
+              };
+            }
+        
+            // Summary
+            const isIntake = location === "المأخذ";
+        
+            if (isIntake) branches[branch].summary.intake++;
+            else branches[branch].summary.survey++;
+        
+            if (waterLevel !== "" && waterLevel != null)
+              branches[branch].summary.waterLevel++;
+        
+            if (screenBottom !== "" && screenBottom != null)
+              branches[branch].summary.screenBottom++;
+        
+            // Stations
+            if (!branches[branch].stations[station]) {
+              branches[branch].stations[station] = {
+                intake:0,
+                survey:0,
+                waterLevel:0,
+                screenBottom:0
+              };
+            }
+        
+            if (isIntake) branches[branch].stations[station].intake++;
+            else branches[branch].stations[station].survey++;
+        
+            if (waterLevel !== "" && waterLevel != null)
+              branches[branch].stations[station].waterLevel++;
+        
+            if (screenBottom !== "" && screenBottom != null)
+              branches[branch].stations[station].screenBottom++;
+          });
+        
+          /* =========================
+             2. بناء HTML
+          ==========================*/
+          let html = `<h2>📊 Water Quality Full Report</h2>`;
+        
+          /* ===== إجمالي الفروع ===== */
+          html += `
+          <table class="report-table">
+            <tr>
+              <th>الفرع</th>
+              <th>المأخذ</th>
+              <th>المسح البيئى</th>
+              <th>Water Level</th>
+              <th>Screen Bottom</th>
+            </tr>
+          `;
+        
+          for (let b in branches) {
+            const s = branches[b].summary;
+        
+            html += `
+              <tr>
+                <td>${b}</td>
+                <td>${s.intake}</td>
+                <td>${s.survey}</td>
+                <td>${s.waterLevel}</td>
+                <td>${s.screenBottom}</td>
+              </tr>
+            `;
+          }
+        
+          html += `</table>`;
+        
+          /* ===== تفاصيل المحطات ===== */
+          for (let b in branches) {
+        
+            html += `<h3 style="margin-top:30px;color:#1976d2;">🏢 ${b}</h3>`;
+        
+            html += `
+            <table class="report-table">
+              <tr>
+                <th>المحطة</th>
+                <th>المأخذ</th>
+                <th>المسح البيئى</th>
+                <th>Water Level</th>
+                <th>Screen Bottom</th>
+              </tr>
+            `;
+        
+            const stations = branches[b].stations;
+        
+            for (let s in stations) {
+              const st = stations[s];
+        
+              html += `
+                <tr>
+                  <td>${s}</td>
+                  <td>${st.intake}</td>
+                  <td>${st.survey}</td>
+                  <td>${st.waterLevel}</td>
+                  <td>${st.screenBottom}</td>
+                </tr>
+              `;
+            }
+        
+            html += `</table>`;
+          }
+        
+          document.getElementById("waterReportContainer").innerHTML = html;
+        }
      
 
   
