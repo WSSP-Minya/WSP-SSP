@@ -59,7 +59,7 @@
     </select>
         
     <label class="dat" for="station">Station</label>
-    <select id="station" value="" type="select"><option>Select Staion</option></select> 
+    <select id="station" value="" type="select"><option>Select Station</option></select> 
 
     <label class="dat" for="sample">Location</label>
     <select id="sample" type="location">
@@ -179,7 +179,7 @@
     </div>
     <br><br>
     <div class="table-tools">
-        <select><option value="" disabled selected>Select Location</option> <option value="مسح بيئى">مسح بيئى</option><option value="المأخذ">المأخذ</option></select>
+        <select id="filteredprocess"><option value="" disabled selected>Select Process</option> <option value="مسح بيئى">مسح بيئى</option><option value="المأخذ">المأخذ</option></select>
         <label for="fromDate">From</label>
         <input type="date" id="fromDate">
         <label for="toDate">To</label>
@@ -717,9 +717,20 @@
             return;
           }
       const station = document.getElementById("station").value;
-      const location = document.getElementById("sample").value;
+      const location = document.getElementById("filteredprocess").value;
       const fromDate = document.getElementById("fromDate").value;
       const toDate = document.getElementById("toDate").value;
+        const survey = [
+          "اعلى التيار 3000م",
+          "اعلى التيار 2500م",
+          "اعلى التيار 2000م",
+          "اعلى التيار 1500م",
+          "اعلى التيار 1000م",
+          "اعلى التيار 500م",
+          "المأخذ",
+          "اسفل التيار 500م",
+          "اسفل التيار 1000م"
+        ];
     
       const table = document.getElementById("waterqualitytable");
       let rows = Array.from(table.querySelectorAll("tbody tr"));
@@ -768,7 +779,12 @@
     
         if (branch && rowBranch !== branch) match = false;
         if (station && rowStation !== station) match = false;
-        if (location && rowLocation !== location) match = false;
+        if (location === "المسح البيئى") {
+            if (!survey.includes(rowLocation)) match = false;
+            } else {
+            if (rowLocation !== location) match = false;
+            }
+        }
         if (from && rowDate && rowDate < from) match = false;
         if (to && rowDate && rowDate > to) match = false;
     
