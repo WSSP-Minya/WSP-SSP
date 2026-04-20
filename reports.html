@@ -63,9 +63,14 @@
       </div>
       
       <!-- قسم جودة المياه -->
-      <h2 hidden >Raw Water Quality Monitoring</h2>
+      <h2>Raw Water Monitoring</h2>
       <div class="grid" >
-          <div class="card" onclick="openModal('modal8')" hidden> <div class="icon"></div> </div>
+          <div class="card" onclick="openModal('modal6')">
+            <div class="icon">
+              <img src="https://cdn-icons-png.freepik.com/512/8382/8382798.png">
+            </div> 
+            Collective & Detailed Report
+          </div>
           
       </div>
       
@@ -221,6 +226,18 @@
                 </form>
             </div>
       </div>
+    <div id="modal6" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('modal6')">&times;</span>
+        <h3 class="modal-title">Collective & Detailed Report</h3>
+    
+        <div class="form-buttons">
+          <button type="button" onclick="generateFullWaterReport()"></button>
+        </div>
+    
+        
+      </div>
+    </div>
 
       
 
