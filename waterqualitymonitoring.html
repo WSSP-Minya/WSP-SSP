@@ -242,7 +242,9 @@
 <script>
     const scriptURL = "https://script.google.com/macros/s/AKfycbwmID_1B8zWVbymnhERq085vPKEz6GD6LNZAEF9ZKp08nJy0ANIyzbEcCqZFY6gM8aOxA/exec";
     const limits = {
-      screen_bottom_min: 0.5, water_level: 2, turbidity: 60, pH_min: 6.5,  pH_max: 8.5, tds: 1000, fe: 0.3, mn: 0.4
+      screen_bottom_min: 0.5, water_level: 2, turbidity: 60, pH_min: 6.5,  pH_max: 8.5, tds_max: 500, sulf_max: 200,
+      fe_max: 0.5, mn_max: 0.2, nh3_max: 0.5, no3_max: 2, do_min: 6, cod_max: 10, bod_max: 6,
+      og_max: 0.1
     };
     function colorCell(td, value, min = null, max = null, isPH = false) {
       if (value === "" || value == null || isNaN(value)) return;
@@ -475,14 +477,36 @@
                   colorCell(td, cell, limits.pH_min, limits.pH_max, true);
                   break;
                 case 11:
-                  colorCell(td, cell, null, limits.tds);
+                  colorCell(td, cell, null, limits.tds_max);
+                  break;
+                case 13:
+                  colorCell(td, cell, null, limits.sulf_max);
                   break;
                 case 14:
-                  colorCell(td, cell, null, limits.fe);
+                  colorCell(td, cell, null, limits.fe_max);
                   break;
                 case 15:
-                  colorCell(td, cell, null, limits.mn);
+                  colorCell(td, cell, null, limits.mn_max);
                   break;
+                case 16:
+                  colorCell(td, cell, null, limits.nh3_max);
+                  break;
+                case 18:
+                  colorCell(td, cell, null, limits.no3_max);
+                  break;
+                case 19:
+                  colorCell(td, cell, null, limits.do_min);
+                  break;
+                case 20:
+                  colorCell(td, cell, null, limits.cod_min);
+                  break;
+                case 21:
+                  colorCell(td, cell, null, limits.bod_min);
+                  break;
+                case 22:
+                  colorCell(td, cell, null, limits.og_max);
+                  break;
+                      
               }
         
               tr.appendChild(td);
