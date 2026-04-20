@@ -405,6 +405,11 @@ tbody td{
   margin: 5px auto;
 }
 
+.table-tools label{
+  font-size: 15px;
+  font-weight: bold;
+}
+
 /* نخلي التاريخ حجمه صغير زي الأزرار */
 .table-tools input[type="date"],
 .table-tools select{
