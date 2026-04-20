@@ -843,9 +843,20 @@
           }
 
       const station = document.getElementById("station").value;
-      const location = document.getElementById("sample").value;
+      const location = document.getElementById("filteredresults").value;
       const fromDate = document.getElementById("fromDate").value;
       const toDate = document.getElementById("toDate").value;
+         const survey = [
+          "اعلى التيار 3000 م",
+          "اعلى التيار 2500 م",
+          "اعلى التيار 2000 م",
+          "اعلى التيار 1500 م",
+          "اعلى التيار 1000 م",
+          "اعلى التيار 500 م",
+          "المأخذ",
+          "اسفل التيار 500 م",
+          "اسفل التيار 1000 م"
+        ];
     
       const table = document.getElementById("waterqualitytable");
       let rows = Array.from(table.querySelectorAll("tbody tr"));
@@ -895,7 +906,11 @@
     
         if (branch && rowBranch !== branch) match = false;
         if (station && rowStation !== station) match = false;
-        if (location && rowLocation !== location) match = false;
+        if (location === "المسح البيئى") {
+            if (!survey.includes(rowLocation)) match = false;
+            } else {
+            if (rowLocation !== location) match = false;
+            }
         if (from && rowDate && rowDate < from) match = false;
         if (to && rowDate && rowDate > to) match = false;
     
