@@ -179,7 +179,7 @@
     </div>
     <br><br>
     <div class="table-tools">
-        <select id="filteredprocess"><option value="" disabled selected>Select Process</option> <option value="مسح بيئى">مسح بيئى</option><option value="المأخذ">المأخذ</option></select>
+        <select id="filteredresults"><option value="" disabled selected>Select Results</option> <option value="المسح البيئى">المسح البيئى</option><option value="المأخذ">المأخذ</option></select>
         <label for="fromDate">From</label>
         <input type="date" id="fromDate">
         <label for="toDate">To</label>
@@ -717,7 +717,7 @@
             return;
           }
       const station = document.getElementById("station").value;
-      const location = document.getElementById("filteredprocess").value;
+      const location = document.getElementById("filteredresults").value;
       const fromDate = document.getElementById("fromDate").value;
       const toDate = document.getElementById("toDate").value;
         const survey = [
@@ -779,7 +779,7 @@
     
         if (branch && rowBranch !== branch) match = false;
         if (station && rowStation !== station) match = false;
-        if (location === "مسح بيئى") {
+        if (location === "المسح البيئى") {
             if (!survey.includes(rowLocation)) match = false;
             } else {
             if (rowLocation !== location) match = false;
