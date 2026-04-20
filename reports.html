@@ -2057,20 +2057,17 @@
             
             function loadWaterData() {
 
-              window.handleWaterData = function (data) {
+             window.handleWaterData = function (data) {
+              const rows = data.water_data || [];
             
-                const rows = data.water_data || [];
+              if (!Array.isArray(rows) || rows.length === 0) {
+                console.log("No data received");
+                return;
+              }
             
-                if (!Array.isArray(rows) || rows.length === 0) {
-                  console.log("No data received");
-                  return;
-                }
-            
-                // 🔥 ده أهم سطر
-                waterData = rows.slice(1);
-            
-                console.log("Loaded:", waterData.length);
-              };
+              waterData = rows.slice(1);   // ✅ هنا الحل الحقيقي
+              console.log("Water Data Loaded:", waterData.length);
+            };
             
               const script = document.createElement("script");
               script.src = `${scriptURL}?action=getData&callback=handleWaterData`;
