@@ -232,7 +232,9 @@
         <h3 class="modal-title">Collective & Detailed Report</h3>
     
         <div class="form-buttons">
-          <button type="button" onclick="generateFullWaterReport()"></button>
+          <button type="button" onclick="generateFullWaterReport()">
+            Generate Report
+          </button>
         </div>
           <div id="waterReportContainer"></div>
         
@@ -2054,14 +2056,17 @@
             
             function loadWaterData() {
               window.handleWaterData = function (data) {
+            
                 const rows = data.water_data || [];
-                  
-                  if (!Array.isArray(rows) || rows.length === 0) {
-                    console.log("No data received");
-                    return;
-                  }
-                  
-                  window.fetchedRows = rows.slice(1);
+            
+                if (!Array.isArray(rows) || rows.length === 0) {
+                  console.log("No data received");
+                  return;
+                }
+            
+                // 🔥 هنا المهم
+                waterData = rows.slice(1);
+            
                 console.log("Water Data Loaded:", waterData.length);
               };
             
@@ -2071,19 +2076,23 @@
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
-         const container = document.getElementById("waterReportContainer");
 
-            if (!container) {
-              console.error("report container not found");
-              return;
-            }
-            
-            container.innerHTML = html;
-
+          const container = document.getElementById("waterReportContainer");
+        
+          if (!container) {
+            console.error("report container not found");
+            return;
+          }
+        
+          if (!waterData || waterData.length === 0) {
+            container.innerHTML = "<p>No data loaded</p>";
+            return;
+          }
+        
           const branches = {};
         
           /* =========================
-             1. تجميع البيانات
+             1. التجميع
           ==========================*/
           waterData.forEach(r => {
         
@@ -2095,17 +2104,11 @@
         
             if (!branches[branch]) {
               branches[branch] = {
-                summary: {
-                  intake:0,
-                  survey:0,
-                  waterLevel:0,
-                  screenBottom:0
-                },
+                summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
                 stations: {}
               };
             }
         
-            // Summary
             const isIntake = location === "المأخذ";
         
             if (isIntake) branches[branch].summary.intake++;
@@ -2117,13 +2120,9 @@
             if (screenBottom !== "" && screenBottom != null)
               branches[branch].summary.screenBottom++;
         
-            // Stations
             if (!branches[branch].stations[station]) {
               branches[branch].stations[station] = {
-                intake:0,
-                survey:0,
-                waterLevel:0,
-                screenBottom:0
+                intake:0, survey:0, waterLevel:0, screenBottom:0
               };
             }
         
@@ -2140,11 +2139,11 @@
           /* =========================
              2. بناء HTML
           ==========================*/
-          let html = `<h2>📊 Water Quality Full Report</h2>`;
+          let html = `<h2>📊 Water Quality Report</h2>`;
         
-          /* ===== إجمالي الفروع ===== */
+          // ===== Summary =====
           html += `
-          <table class="report-table">
+          <table border="1">
             <tr>
               <th>الفرع</th>
               <th>المأخذ</th>
@@ -2170,13 +2169,13 @@
         
           html += `</table>`;
         
-          /* ===== تفاصيل المحطات ===== */
+          // ===== Details =====
           for (let b in branches) {
         
-            html += `<h3 style="margin-top:30px;color:#1976d2;">🏢 ${b}</h3>`;
+            html += `<h3>${b}</h3>`;
         
             html += `
-            <table class="report-table">
+            <table border="1">
               <tr>
                 <th>المحطة</th>
                 <th>المأخذ</th>
@@ -2186,10 +2185,8 @@
               </tr>
             `;
         
-            const stations = branches[b].stations;
-        
-            for (let s in stations) {
-              const st = stations[s];
+            for (let s in branches[b].stations) {
+              const st = branches[b].stations[s];
         
               html += `
                 <tr>
@@ -2205,7 +2202,7 @@
             html += `</table>`;
           }
         
-          document.getElementById("waterReportContainer").innerHTML = html;
+          container.innerHTML = html;
         }
      
 
