@@ -260,6 +260,7 @@
               // الحصول على البيانات من الجلسة
               const email = sessionStorage.getItem("email");
               const department = sessionStorage.getItem("department");
+               loadWaterData(); //تحميل بيانات Raw water monitoring
           
               // تحديد عناصر DOM
               const branchSelect1 = document.getElementById("branch_modal1");
@@ -466,7 +467,7 @@
                       })
                       .catch(err => console.error("Error fetching station details:", err));
               });
-              loadWaterData(); //تحميل بيانات Raw water monitoring
+             
             };
 
           
@@ -2055,6 +2056,7 @@
       let waterData = [];
             
             function loadWaterData() {
+
               window.handleWaterData = function (data) {
             
                 const rows = data.water_data || [];
@@ -2064,10 +2066,10 @@
                   return;
                 }
             
-                // 🔥 هنا المهم
+                // 🔥 ده أهم سطر
                 waterData = rows.slice(1);
             
-                console.log("Water Data Loaded:", waterData.length);
+                console.log("Loaded:", waterData.length);
               };
             
               const script = document.createElement("script");
