@@ -234,7 +234,7 @@
         <div class="form-buttons">
           <button type="button" onclick="generateFullWaterReport()"></button>
         </div>
-    
+          <div id="waterReportContainer"></div>
         
       </div>
     </div>
@@ -2054,7 +2054,14 @@
             
             function loadWaterData() {
               window.handleWaterData = function (data) {
-                waterData = data.water_data.slice(1);
+                const rows = data.water_data || [];
+                  
+                  if (!Array.isArray(rows) || rows.length === 0) {
+                    console.log("No data received");
+                    return;
+                  }
+                  
+                  window.fetchedRows = rows.slice(1);
                 console.log("Water Data Loaded:", waterData.length);
               };
             
@@ -2064,6 +2071,14 @@
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
+         const container = document.getElementById("waterReportContainer");
+
+            if (!container) {
+              console.error("report container not found");
+              return;
+            }
+            
+            container.innerHTML = html;
 
           const branches = {};
         
