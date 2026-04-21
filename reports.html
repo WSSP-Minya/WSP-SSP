@@ -2436,8 +2436,8 @@
               if (rowDate < from) return false;
             }
         
-            if (toDate) {
-              const to = new Date(toDate);
+            if (toDate_water) {
+              const to = new Date(toDate_water);
               to.setHours(23, 59, 59, 999);
               if (rowDate > to) return false;
             }
