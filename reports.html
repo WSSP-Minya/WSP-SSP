@@ -2093,7 +2093,7 @@
               document.body.appendChild(script);
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
-      function generateFullWaterReport() {
+       function generateFullWaterReport() {
       
         const fromDate = document.getElementById("fromDate_water").value;
         const toDate = document.getElementById("toDate_water").value;
@@ -2115,7 +2115,7 @@
       
           if (toDate) {
             const to = new Date(toDate);
-            to.setHours(23,59,59,999);
+            to.setHours(23, 59, 59, 999);
             if (rowDate > to) return false;
           }
       
@@ -2129,9 +2129,6 @@
       
         const branches = {};
       
-        // ⭐ إضافة مهمة: لحساب المسح البيئي الحقيقي
-        const envSet = new Set();
-      
         filteredData.forEach(r => {
       
           const branch = r[2];
@@ -2139,53 +2136,54 @@
           const location = r[4];
           const waterLevel = r[7];
           const screenBottom = r[6];
-          const date = r[1];
       
           if (!branches[branch]) {
             branches[branch] = {
-              summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
+              summary: {
+                intake: 0,
+                survey: 0,
+                waterLevel: 0,
+                screenBottom: 0
+              },
               stations: {}
             };
           }
       
+          // ⭐ تصنيف المسح البيئي بطريقة صحيحة
+          const isEnv = envLocations.includes(location);
           const isIntake = location === "المأخذ";
       
+          // ===== Summary =====
+          if (isEnv) branches[branch].summary.survey++;
           if (isIntake) branches[branch].summary.intake++;
-          else branches[branch].summary.survey++;
       
-          if (waterLevel) branches[branch].summary.waterLevel++;
-          if (screenBottom) branches[branch].summary.screenBottom++;
+          if (waterLevel !== "" && waterLevel != null)
+            branches[branch].summary.waterLevel++;
       
+          if (screenBottom !== "" && screenBottom != null)
+            branches[branch].summary.screenBottom++;
+      
+          // ===== Station =====
           if (!branches[branch].stations[station]) {
             branches[branch].stations[station] = {
-              intake:0, survey:0, waterLevel:0, screenBottom:0,
-      
-              // ⭐ إضافة جديدة لحساب المسح البيئي
-              envSet: new Set()
+              intake: 0,
+              survey: 0,
+              waterLevel: 0,
+              screenBottom: 0
             };
           }
       
-          const st = branches[branch].stations[station];
+          if (isEnv) branches[branch].stations[station].survey++;
+          if (isIntake) branches[branch].stations[station].intake++;
       
-          if (isIntake) st.intake++;
-          else st.survey++;
+          if (waterLevel !== "" && waterLevel != null)
+            branches[branch].stations[station].waterLevel++;
       
-          if (waterLevel) st.waterLevel++;
-          if (screenBottom) st.screenBottom++;
-      
-          // ⭐ المسح البيئي الحقيقي (كل تاريخ = مسح واحد)
-          const isEnv =
-            location.includes("اعلى التيار") ||
-            location === "المأخذ" ||
-            location.includes("اسفل التيار");
-      
-          if (isEnv) {
-            st.envSet.add(date);
-          }
-      
+          if (screenBottom !== "" && screenBottom != null)
+            branches[branch].stations[station].screenBottom++;
         });
       
-        // 🖨️ إضافة الفترة فى التقرير
+        // 🖨️ الفترة الزمنية
         let periodText = "";
         if (fromDate || toDate) {
           periodText = `<p style="text-align:center;">
@@ -2193,7 +2191,6 @@
           </p>`;
         }
       
-        // بناء HTML
         let html = `
         <html>
         <head>
@@ -2223,20 +2220,13 @@
         `;
       
         for (let b in branches) {
-      
-          let branchEnvCount = 0;
-      
-          for (let s in branches[b].stations) {
-            branchEnvCount += branches[b].stations[s].envSet.size;
-          }
-      
           const s = branches[b].summary;
       
           html += `
             <tr>
               <td>${b}</td>
               <td>${s.intake}</td>
-              <td>${branchEnvCount}</td>
+              <td>${s.survey}</td>
               <td>${s.waterLevel}</td>
               <td>${s.screenBottom}</td>
             </tr>
@@ -2262,17 +2252,13 @@
           `;
       
           for (let s in branches[b].stations) {
-      
             const st = branches[b].stations[s];
       
             html += `
               <tr>
                 <td>${s}</td>
                 <td>${st.intake}</td>
-      
-                <!-- ⭐ هنا المسح البيئي الصحيح -->
-                <td>${st.envSet.size}</td>
-      
+                <td>${st.survey}</td>
                 <td>${st.waterLevel}</td>
                 <td>${st.screenBottom}</td>
               </tr>
@@ -2284,9 +2270,6 @@
       
         html += `</body></html>`;
       
-        // =========================
-        // 3. فتح نافذة للطباعة
-        // =========================
         const printWindow = window.open("", "_blank");
         printWindow.document.write(html);
         printWindow.document.close();
