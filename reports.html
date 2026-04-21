@@ -2414,8 +2414,8 @@
           // =========================
           // الفلاتر (فترة + فرع + محطة)
           // =========================
-          const fromDate = document.getElementById("fromDate_water").value;
-          const toDate = document.getElementById("toDate_water").value;
+          const fromDate_water = document.getElementById("fromDate_water").value;
+          const toDate_water = document.getElementById("toDate_water").value;
         
           // 🔴 فلتر اختياري (إذا غير موجود في الصفحة سيعتبر فارغ)
           const branchEl = document.getElementById("branch");
@@ -2431,8 +2431,8 @@
             const station = r[3];
         
             // فلترة التاريخ
-            if (fromDate) {
-              const from = new Date(fromDate);
+            if (fromDate_water) {
+              const from = new Date(fromDate_water);
               if (rowDate < from) return false;
             }
         
@@ -2518,8 +2518,8 @@
           if (fromDate || toDate || selectedBranch || selectedStation) {
             html += `<p style="text-align:center;">`;
         
-            if (fromDate || toDate) {
-              html += `الفترة: ${fromDate || "البداية"} إلى ${toDate || "النهاية"}<br>`;
+            if (fromDate_water || toDate_water) {
+              html += `الفترة: ${fromDate_water || "البداية"} إلى ${toDate_water || "النهاية"}<br>`;
             }
         
             if (selectedBranch) html += `الفرع: ${selectedBranch}<br>`;
