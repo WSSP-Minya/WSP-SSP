@@ -2057,24 +2057,34 @@
             
             function loadWaterData() {
 
-            window.handleWaterReportData = function (data) {
-              console.log("📊 report data:", data);
-          
-              const rows = data.water_data || [];
-          
-              if (!Array.isArray(rows) || rows.length === 0) {
-                console.log("No data received");
-                return;
-              }
-          
-              waterData = rows.slice(1);
-              console.log("✅ Water Data Loaded:", waterData.length);
-            };
-          
-            const script = document.createElement("script");
-            script.src = `${scriptURL}?action=getData&callback=handleWaterReportData`;
-            document.body.appendChild(script);
-          }
+              const email = sessionStorage.getItem("email");
+              const department = sessionStorage.getItem("department");
+            
+              window.handleWaterReportData = function (data) {
+                console.log("📊 report data:", data);
+            
+                if (data.status === "unauthorized") {
+                  alert("❌ غير مصرح لك بالوصول");
+                  return;
+                }
+            
+                const rows = data.water_data || [];
+            
+                if (!Array.isArray(rows) || rows.length === 0) {
+                  console.log("No data received");
+                  return;
+                }
+            
+                waterData = rows.slice(1);
+                console.log("✅ Water Data Loaded:", waterData.length);
+              };
+            
+              const script = document.createElement("script");
+            
+              script.src = `${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}&callback=handleWaterReportData`;
+            
+              document.body.appendChild(script);
+            }
        ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
 
