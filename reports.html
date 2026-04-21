@@ -2103,7 +2103,9 @@
           return;
         }
       
-        // 🔥 فلترة البيانات حسب التاريخ
+        // =========================
+        // فلترة التاريخ
+        // =========================
         let filteredData = waterData.filter(r => {
       
           const rowDate = new Date(r[1]);
@@ -2127,6 +2129,21 @@
           return;
         }
       
+        // =========================
+        // تعريف المسح البيئي
+        // =========================
+        const envLocations = [
+          "اعلى التيار 3000 م",
+          "اعلى التيار 2500 م",
+          "اعلى التيار 2000 م",
+          "اعلى التيار 1500 م",
+          "اعلى التيار 1000 م",
+          "اعلى التيار 500 م",
+          "المأخذ",
+          "اسفل التيار 500 م",
+          "اسفل التيار 1000 م"
+        ];
+      
         const branches = {};
       
         filteredData.forEach(r => {
@@ -2136,12 +2153,13 @@
           const location = r[4];
           const waterLevel = r[7];
           const screenBottom = r[6];
+          const date = r[1];
       
           if (!branches[branch]) {
             branches[branch] = {
               summary: {
-                intake: 0,
-                survey: 0,
+                intakeSamples: 0,   // عينات المأخذ
+                envVisits: new Set(), // مسح بيئي (محطة + تاريخ)
                 waterLevel: 0,
                 screenBottom: 0
               },
@@ -2149,52 +2167,59 @@
             };
           }
       
-          // ⭐ تصنيف المسح البيئي بطريقة صحيحة
-          const envLocations = [
-            "اعلى التيار 3000 م",
-            "اعلى التيار 2500 م",
-            "اعلى التيار 2000 م",
-            "اعلى التيار 1500 م",
-            "اعلى التيار 1000 م",
-            "اعلى التيار 500 م",
-            "المأخذ",
-            "اسفل التيار 500 م",
-            "اسفل التيار 1000 م"
-          ];
-          const isEnv = envLocations.includes(location);
-          const isIntake = location === "المأخذ";
-      
-          // ===== Summary =====
-          if (isEnv) branches[branch].summary.survey++;
-          if (isIntake) branches[branch].summary.intake++;
-      
-          if (waterLevel !== "" && waterLevel != null)
-            branches[branch].summary.waterLevel++;
-      
-          if (screenBottom !== "" && screenBottom != null)
-            branches[branch].summary.screenBottom++;
-      
-          // ===== Station =====
           if (!branches[branch].stations[station]) {
             branches[branch].stations[station] = {
-              intake: 0,
-              survey: 0,
+              intakeSamples: 0,
+              envVisits: new Set(),
               waterLevel: 0,
               screenBottom: 0
             };
           }
       
-          if (isEnv) branches[branch].stations[station].survey++;
-          if (isIntake) branches[branch].stations[station].intake++;
+          // =========================
+          // 1) عينات المأخذ
+          // =========================
+          if (location === "المأخذ") {
+            branches[branch].summary.intakeSamples++;
+            branches[branch].stations[station].intakeSamples++;
+          }
       
-          if (waterLevel !== "" && waterLevel != null)
+          // =========================
+          // 2) المسح البيئي (زيارة = محطة + تاريخ)
+          // =========================
+          const isEnv = envLocations.includes(location);
+          const visitKey = station + "_" + date;
+      
+          if (isEnv) {
+            if (!branches[branch].summary.envVisits.has(visitKey)) {
+              branches[branch].summary.envVisits.add(visitKey);
+            }
+      
+            if (!branches[branch].stations[station].envVisits.has(visitKey)) {
+              branches[branch].stations[station].envVisits.add(visitKey);
+            }
+          }
+      
+          // =========================
+          // 3) water level
+          // =========================
+          if (waterLevel !== "" && waterLevel != null) {
+            branches[branch].summary.waterLevel++;
             branches[branch].stations[station].waterLevel++;
+          }
       
-          if (screenBottom !== "" && screenBottom != null)
+          // =========================
+          // 4) screen bottom
+          // =========================
+          if (screenBottom !== "" && screenBottom != null) {
+            branches[branch].summary.screenBottom++;
             branches[branch].stations[station].screenBottom++;
+          }
         });
       
-        // 🖨️ الفترة الزمنية
+        // =========================
+        // HTML
+        // =========================
         let periodText = "";
         if (fromDate || toDate) {
           periodText = `<p style="text-align:center;">
@@ -2218,13 +2243,15 @@
         ${periodText}
         `;
       
-        // ===== Summary =====
+        // =========================
+        // SUMMARY
+        // =========================
         html += `
         <table>
           <tr>
             <th>الفرع</th>
-            <th>المأخذ</th>
-            <th>المسح البيئى</th>
+            <th>عينات المأخذ</th>
+            <th>المسح البيئى (زيارات)</th>
             <th>متابعة المناسيب</th>
             <th>متابعة قاع المجرى المائى</th>
           </tr>
@@ -2236,8 +2263,8 @@
           html += `
             <tr>
               <td>${b}</td>
-              <td>${s.intake}</td>
-              <td>${s.survey}</td>
+              <td>${s.intakeSamples}</td>
+              <td>${s.envVisits.size}</td>
               <td>${s.waterLevel}</td>
               <td>${s.screenBottom}</td>
             </tr>
@@ -2246,7 +2273,9 @@
       
         html += `</table>`;
       
-        // ===== Details =====
+        // =========================
+        // DETAILS
+        // =========================
         for (let b in branches) {
       
           html += `<h3>${b}</h3>`;
@@ -2255,8 +2284,8 @@
           <table>
             <tr>
               <th>المحطة</th>
-              <th>المأخذ</th>
-              <th>المسح البيئى</th>
+              <th>عينات المأخذ</th>
+              <th>المسح البيئى (زيارات)</th>
               <th>متابعة المناسيب</th>
               <th>متابعة قاع المجرى المائى</th>
             </tr>
@@ -2268,8 +2297,8 @@
             html += `
               <tr>
                 <td>${s}</td>
-                <td>${st.intake}</td>
-                <td>${st.survey}</td>
+                <td>${st.intakeSamples}</td>
+                <td>${st.envVisits.size}</td>
                 <td>${st.waterLevel}</td>
                 <td>${st.screenBottom}</td>
               </tr>
@@ -2286,7 +2315,6 @@
         printWindow.document.close();
         printWindow.print();
       }
-     
 
   
      </script>
