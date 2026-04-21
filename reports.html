@@ -2144,7 +2144,17 @@
           "اسفل التيار 1000 م"
         ];
       
+        // =========================
+        // 🔴 إضافة جديدة: الحد الأدنى لاعتماد زيارة المسح البيئي
+        // =========================
+        const MIN_ENV_POINTS = 6; // يمكن تغييره حسب السياسة (6 أو 7 مثلاً)
+      
         const branches = {};
+      
+        // =========================
+        // 🔴 إضافة جديدة: تجميع نقاط المسح البيئي قبل الحساب النهائي
+        // =========================
+        const envMap = {};
       
         filteredData.forEach(r => {
       
@@ -2158,8 +2168,8 @@
           if (!branches[branch]) {
             branches[branch] = {
               summary: {
-                intakeSamples: 0,   // عينات المأخذ
-                envVisits: new Set(), // مسح بيئي (محطة + تاريخ)
+                intakeSamples: 0,
+                envVisits: new Set(),
                 waterLevel: 0,
                 screenBottom: 0
               },
@@ -2177,27 +2187,33 @@
           }
       
           // =========================
-          // 1) عينات المأخذ
+          // 1) عينات المأخذ (🔴 تعديل: بناءً على وجود قياسات فعلية)
           // =========================
-          if (location === "المأخذ") {
+          const hasTurbidity = r[8] !== "" && r[8] != null;
+          const hasPH = r[9] !== "" && r[9] != null;
+          const hasTDS = r[10] !== "" && r[10] != null;
+          const hasTemp = r[11] !== "" && r[11] != null;
+      
+          const isIntakeSample =
+            location === "المأخذ" &&
+            (hasTurbidity || hasPH || hasTDS || hasTemp);
+      
+          if (isIntakeSample) {
             branches[branch].summary.intakeSamples++;
             branches[branch].stations[station].intakeSamples++;
           }
       
           // =========================
-          // 2) المسح البيئي (زيارة = محطة + تاريخ)
+          // 2) المسح البيئي (🔴 تعديل: تجميع أولي فقط)
           // =========================
           const isEnv = envLocations.includes(location);
-          const visitKey = station + "_" + date;
+          const key = station + "_" + date;
       
           if (isEnv) {
-            if (!branches[branch].summary.envVisits.has(visitKey)) {
-              branches[branch].summary.envVisits.add(visitKey);
+            if (!envMap[key]) {
+              envMap[key] = new Set();
             }
-      
-            if (!branches[branch].stations[station].envVisits.has(visitKey)) {
-              branches[branch].stations[station].envVisits.add(visitKey);
-            }
+            envMap[key].add(location);
           }
       
           // =========================
@@ -2216,6 +2232,32 @@
             branches[branch].stations[station].screenBottom++;
           }
         });
+      
+        // =========================
+        // 🔴 إضافة جديدة: حساب الزيارات البيئية الفعلية (Partial acceptance)
+        // =========================
+        for (let key in envMap) {
+      
+          const [station, date] = key.split("_");
+          const locationsSet = envMap[key];
+      
+          const pointsCount = locationsSet.size;
+      
+          // زيارة صحيحة إذا وصلت للحد الأدنى وليس شرط 9/9
+          const isValidVisit = pointsCount >= MIN_ENV_POINTS;
+      
+          if (isValidVisit) {
+      
+            const branch = Object.keys(branches).find(b =>
+              branches[b].stations[station]
+            );
+      
+            if (branch) {
+              branches[branch].summary.envVisits.add(key);
+              branches[branch].stations[station].envVisits.add(key);
+            }
+          }
+        }
       
         // =========================
         // HTML
