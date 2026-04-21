@@ -60,6 +60,8 @@
               </div> 
               Performance dashboard
           </div>
+        
+        
       </div>
       
       <!-- قسم جودة المياه -->
@@ -70,6 +72,12 @@
               <img src="https://cdn-icons-png.freepik.com/512/8382/8382798.png">
             </div> 
             Collective & Detailed Report
+          </div>
+         <div class="card" onclick="openModal('modal7')">
+            <div class="icon">
+              <img src="https://cdn-icons-png.freepik.com/512/8382/8382798.png">
+            </div> 
+            Intake Statistical Report
           </div>
           
       </div>
@@ -240,12 +248,48 @@
             <input type="date" id="toDate_water">
           </div>
           <button type="button" onclick="generateFullWaterReport()">
-            Generate Report
+             Report
           </button>
         </div>
           <div id="waterReportContainer"></div>
         
+      </div
+        <div id="modal7" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal('modal7')">&times;</span>
+        <h3 class="modal-title">Intake Statistical Report</h3>
+    
+        <!-- الفرع -->
+        <label>الفرع</label>
+        <select id="branch">
+          <option value="">Branch</option>
+        </select>
+    
+        <br><br>
+    
+        <!-- المحطة -->
+        <label>Station</label>
+        <select id="station">
+          <option value="">station</option>
+        </select>
+    
+        <br><br>
+    
+        <!-- الفترة -->
+        <label>From</label>
+        <input type="date" id="fromDate_water">
+    
+        <label>To</label>
+        <input type="date" id="toDate_water">
+    
+        <br><br>
+    
+        <button onclick="generateIntakeStatisticsReport()">
+           Report
+        </button>
+    
       </div>
+    </div>
     </div>
 
       
@@ -2357,6 +2401,182 @@
         printWindow.document.close();
         printWindow.print();
       }
+      /////////////////////////////////
+      /////حساب متوسطات نتائج عينات المأخذ/////
+       function generateStatisticsReport() {
+
+          if (!waterData || waterData.length === 0) {
+            alert("لا توجد بيانات");
+            return;
+          }
+        
+          // =========================
+          // الفلاتر (فترة + فرع + محطة)
+          // =========================
+          const fromDate = document.getElementById("fromDate_water").value;
+          const toDate = document.getElementById("toDate_water").value;
+        
+          // 🔴 فلتر اختياري (إذا غير موجود في الصفحة سيعتبر فارغ)
+          const branchEl = document.getElementById("branch");
+          const stationEl = document.getElementById("station");
+        
+          const selectedBranch = branchEl ? branchEl.value : "";
+          const selectedStation = stationEl ? stationEl.value : "";
+        
+          let filteredData = waterData.filter(r => {
+        
+            const rowDate = new Date(r[1]);
+            const branch = r[2];
+            const station = r[3];
+        
+            // فلترة التاريخ
+            if (fromDate) {
+              const from = new Date(fromDate);
+              if (rowDate < from) return false;
+            }
+        
+            if (toDate) {
+              const to = new Date(toDate);
+              to.setHours(23, 59, 59, 999);
+              if (rowDate > to) return false;
+            }
+        
+            // فلترة الفرع
+            if (selectedBranch && branch !== selectedBranch) return false;
+        
+            // فلترة المحطة
+            if (selectedStation && station !== selectedStation) return false;
+        
+            return true;
+          });
+        
+          if (filteredData.length === 0) {
+            alert("لا توجد بيانات فى هذه الفترة أو الاختيار");
+            return;
+          }
+        
+          // =========================
+          // تجميع بيانات المأخذ
+          // =========================
+          const stats = {};
+        
+          filteredData.forEach(r => {
+        
+            const branch = r[2];
+            const station = r[3];
+            const location = r[4];
+        
+            // شرط المأخذ فقط
+            if (location !== "المأخذ") return;
+        
+            const turbidity = r[8];
+            const ph = r[9];
+            const tds = r[10];
+            const temp = r[11];
+        
+            if (!stats[branch]) stats[branch] = {};
+            if (!stats[branch][station]) {
+              stats[branch][station] = {
+                count: 0,
+                turbidity: 0,
+                ph: 0,
+                tds: 0,
+                temp: 0
+              };
+            }
+        
+            const s = stats[branch][station];
+        
+            s.count++;
+        
+            if (turbidity !== "" && turbidity != null) s.turbidity += Number(turbidity);
+            if (ph !== "" && ph != null) s.ph += Number(ph);
+            if (tds !== "" && tds != null) s.tds += Number(tds);
+            if (temp !== "" && temp != null) s.temp += Number(temp);
+          });
+        
+          // =========================
+          // HTML
+          // =========================
+          let html = `
+          <html>
+          <head>
+            <style>
+              body { font-family: Arial; direction: rtl; padding:20px; }
+              table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+              th, td { border:1px solid #000; padding:8px; text-align:center; }
+              th { background:#eee; }
+            </style>
+          </head>
+          <body>
+        
+          <h2 style="text-align:center;">تقرير إحصائي لعينات المأخذ</h2>
+          `;
+        
+          // عرض الفترة
+          if (fromDate || toDate || selectedBranch || selectedStation) {
+            html += `<p style="text-align:center;">`;
+        
+            if (fromDate || toDate) {
+              html += `الفترة: ${fromDate || "البداية"} إلى ${toDate || "النهاية"}<br>`;
+            }
+        
+            if (selectedBranch) html += `الفرع: ${selectedBranch}<br>`;
+            if (selectedStation) html += `المحطة: ${selectedStation}<br>`;
+        
+            html += `</p>`;
+          }
+        
+          // =========================
+          // الجداول
+          // =========================
+          for (let b in stats) {
+        
+            html += `<h3>${b}</h3>`;
+        
+            html += `
+            <table>
+              <tr>
+                <th>المحطة</th>
+                <th>عدد العينات</th>
+                <th>متوسط العكارة</th>
+                <th>متوسط pH</th>
+                <th>متوسط TDS</th>
+                <th>متوسط الحرارة</th>
+              </tr>
+            `;
+        
+            for (let s in stats[b]) {
+        
+              const d = stats[b][s];
+        
+              const avgTurbidity = d.count ? (d.turbidity / d.count).toFixed(2) : 0;
+              const avgPH = d.count ? (d.ph / d.count).toFixed(2) : 0;
+              const avgTDS = d.count ? (d.tds / d.count).toFixed(2) : 0;
+              const avgTemp = d.count ? (d.temp / d.count).toFixed(2) : 0;
+        
+              html += `
+                <tr>
+                  <td>${s}</td>
+                  <td>${d.count}</td>
+                  <td>${avgTurbidity}</td>
+                  <td>${avgPH}</td>
+                  <td>${avgTDS}</td>
+                  <td>${avgTemp}</td>
+                </tr>
+              `;
+            }
+        
+            html += `</table>`;
+          }
+        
+          html += `</body></html>`;
+        
+          const w = window.open("", "_blank");
+          w.document.write(html);
+          w.document.close();
+          w.print();
+        }
 
   
      </script>
