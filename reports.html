@@ -2076,23 +2076,16 @@
        ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
 
-          const container = document.getElementById("waterReportContainer");
-        
-          if (!container) {
-            console.error("report container not found");
-            return;
-          }
-        
           if (!waterData || waterData.length === 0) {
-            container.innerHTML = "<p>No data loaded</p>";
+            alert("No data loaded");
             return;
           }
         
           const branches = {};
         
-          /* =========================
-             1. التجميع
-          ==========================*/
+          // =========================
+          // 1. التجميع
+          // =========================
           waterData.forEach(r => {
         
             const branch = r[2];
@@ -2113,11 +2106,8 @@
             if (isIntake) branches[branch].summary.intake++;
             else branches[branch].summary.survey++;
         
-            if (waterLevel !== "" && waterLevel != null)
-              branches[branch].summary.waterLevel++;
-        
-            if (screenBottom !== "" && screenBottom != null)
-              branches[branch].summary.screenBottom++;
+            if (waterLevel) branches[branch].summary.waterLevel++;
+            if (screenBottom) branches[branch].summary.screenBottom++;
         
             if (!branches[branch].stations[station]) {
               branches[branch].stations[station] = {
@@ -2128,21 +2118,41 @@
             if (isIntake) branches[branch].stations[station].intake++;
             else branches[branch].stations[station].survey++;
         
-            if (waterLevel !== "" && waterLevel != null)
-              branches[branch].stations[station].waterLevel++;
-        
-            if (screenBottom !== "" && screenBottom != null)
-              branches[branch].stations[station].screenBottom++;
+            if (waterLevel) branches[branch].stations[station].waterLevel++;
+            if (screenBottom) branches[branch].stations[station].screenBottom++;
           });
         
-          /* =========================
-             2. بناء HTML
-          ==========================*/
-          let html = `<h2>📊 Water Quality Report</h2>`;
+          // =========================
+          // 2. بناء HTML للطباعة
+          // =========================
+          let html = `
+          <html>
+          <head>
+            <title>Water Report</title>
+            <style>
+              body { font-family: Arial; direction: rtl; padding:20px; }
+              h2, h3 { text-align:center; }
+              table {
+                width:100%;
+                border-collapse: collapse;
+                margin-bottom:20px;
+              }
+              th, td {
+                border:1px solid #000;
+                padding:8px;
+                text-align:center;
+              }
+              th { background:#eee; }
+            </style>
+          </head>
+          <body>
+        
+          <h2>تقرير جودة المياه (مجمع + تفصيلى)</h2>
+          `;
         
           // ===== Summary =====
           html += `
-          <table border="1">
+          <table>
             <tr>
               <th>الفرع</th>
               <th>المأخذ</th>
@@ -2174,7 +2184,7 @@
             html += `<h3>${b}</h3>`;
         
             html += `
-            <table border="1">
+            <table>
               <tr>
                 <th>المحطة</th>
                 <th>المأخذ</th>
@@ -2201,7 +2211,15 @@
             html += `</table>`;
           }
         
-          container.innerHTML = html;
+          html += `</body></html>`;
+        
+          // =========================
+          // 3. فتح نافذة للطباعة
+          // =========================
+          const printWindow = window.open("", "_blank");
+          printWindow.document.write(html);
+          printWindow.document.close();
+          printWindow.print();
         }
      
 
