@@ -2093,176 +2093,205 @@
               document.body.appendChild(script);
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
-            function generateFullWaterReport() {
-            
-              const fromDate = document.getElementById("fromDate_water").value;
-              const toDate = document.getElementById("toDate_water").value;
-            
-              if (!waterData || waterData.length === 0) {
-                alert("لا توجد بيانات");
-                return;
-              }
-            
-              // 🔥 فلترة البيانات حسب التاريخ
-              let filteredData = waterData.filter(r => {
-            
-                const rowDate = new Date(r[1]); // عمود التاريخ عندك
-            
-                if (fromDate) {
-                  const from = new Date(fromDate);
-                  if (rowDate < from) return false;
-                }
-            
-                if (toDate) {
-                  const to = new Date(toDate);
-                  to.setHours(23,59,59,999); // يشمل اليوم بالكامل
-                  if (rowDate > to) return false;
-                }
-            
-                return true;
-              });
-            
-              if (filteredData.length === 0) {
-                alert("لا توجد بيانات فى هذه الفترة");
-                return;
-              }
-            
-              const branches = {};
-            
-              // نفس الكود القديم لكن بدل waterData استخدم filteredData
-              filteredData.forEach(r => {
-            
-                const branch = r[2];
-                const station = r[3];
-                const location = r[4];
-                const waterLevel = r[7];
-                const screenBottom = r[6];
-            
-                if (!branches[branch]) {
-                  branches[branch] = {
-                    summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
-                    stations: {}
-                  };
-                }
-            
-                const isIntake = location === "المأخذ";
-            
-                if (isIntake) branches[branch].summary.intake++;
-                else branches[branch].summary.survey++;
-            
-                if (waterLevel) branches[branch].summary.waterLevel++;
-                if (screenBottom) branches[branch].summary.screenBottom++;
-            
-                if (!branches[branch].stations[station]) {
-                  branches[branch].stations[station] = {
-                    intake:0, survey:0, waterLevel:0, screenBottom:0
-                  };
-                }
-            
-                if (isIntake) branches[branch].stations[station].intake++;
-                else branches[branch].stations[station].survey++;
-            
-                if (waterLevel) branches[branch].stations[station].waterLevel++;
-                if (screenBottom) branches[branch].stations[station].screenBottom++;
-              });
-            
-              // 🖨️ إضافة الفترة فى التقرير
-              let periodText = "";
-              if (fromDate || toDate) {
-                periodText = `<p style="text-align:center;">
-                  الفترة من ${fromDate || "البداية"} إلى ${toDate || "الآن"}
-                </p>`;
-              }
-            
-              // بناء HTML
-              let html = `
-              <html>
-              <head>
-                <style>
-                  body { font-family: Arial; direction: rtl; padding:20px; }
-                  table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-                  th, td { border:1px solid #000; padding:8px; text-align:center; }
-                  th { background:#eee; }
-                </style>
-              </head>
-              <body>
-            
-              <h2>تقرير متابعة مصدر المياه</h2>
-              ${periodText}
-              `;
-            
-              // ===== Summary =====
-              html += `
-              <table>
-                <tr>
-                  <th>الفرع</th>
-                  <th>المأخذ</th>
-                  <th>المسح البيئى</th>
-                  <th>متابعة المناسيب</th>
-                  <th>متابعة قاع المجرى المائى</th>
-                </tr>
-              `;
-            
-              for (let b in branches) {
-                const s = branches[b].summary;
-            
-                html += `
-                  <tr>
-                    <td>${b}</td>
-                    <td>${s.intake}</td>
-                    <td>${s.survey}</td>
-                    <td>${s.waterLevel}</td>
-                    <td>${s.screenBottom}</td>
-                  </tr>
-                `;
-              }
-            
-              html += `</table>`;
-            
-              // ===== Details =====
-              for (let b in branches) {
-            
-                html += `<h3>${b}</h3>`;
-            
-                html += `
-                <table>
-                  <tr>
-                    <th>المحطة</th>
-                    <th>المأخذ</th>
-                    <th>المسح البيئى</th>
-                    <th>متابعة المناسيب</th>
-                    <th>متابعة قاع المجرى المائى</th>
-                  </tr>
-                `;
-            
-                for (let s in branches[b].stations) {
-                  const st = branches[b].stations[s];
-            
-                  html += `
-                    <tr>
-                      <td>${s}</td>
-                      <td>${st.intake}</td>
-                      <td>${st.survey}</td>
-                      <td>${st.waterLevel}</td>
-                      <td>${st.screenBottom}</td>
-                    </tr>
-                  `;
-                }
-            
-                html += `</table>`;
-              }
-            
-              html += `</body></html>`;
-
-
-          // =========================
-          // 3. فتح نافذة للطباعة
-          // =========================
-          const printWindow = window.open("", "_blank");
-          printWindow.document.write(html);
-          printWindow.document.close();
-          printWindow.print();
+      function generateFullWaterReport() {
+      
+        const fromDate = document.getElementById("fromDate_water").value;
+        const toDate = document.getElementById("toDate_water").value;
+      
+        if (!waterData || waterData.length === 0) {
+          alert("لا توجد بيانات");
+          return;
         }
+      
+        // 🔥 فلترة البيانات حسب التاريخ
+        let filteredData = waterData.filter(r => {
+      
+          const rowDate = new Date(r[1]);
+      
+          if (fromDate) {
+            const from = new Date(fromDate);
+            if (rowDate < from) return false;
+          }
+      
+          if (toDate) {
+            const to = new Date(toDate);
+            to.setHours(23,59,59,999);
+            if (rowDate > to) return false;
+          }
+      
+          return true;
+        });
+      
+        if (filteredData.length === 0) {
+          alert("لا توجد بيانات فى هذه الفترة");
+          return;
+        }
+      
+        const branches = {};
+      
+        // ⭐ إضافة مهمة: لحساب المسح البيئي الحقيقي
+        const envSet = new Set();
+      
+        filteredData.forEach(r => {
+      
+          const branch = r[2];
+          const station = r[3];
+          const location = r[4];
+          const waterLevel = r[7];
+          const screenBottom = r[6];
+          const date = r[1];
+      
+          if (!branches[branch]) {
+            branches[branch] = {
+              summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
+              stations: {}
+            };
+          }
+      
+          const isIntake = location === "المأخذ";
+      
+          if (isIntake) branches[branch].summary.intake++;
+          else branches[branch].summary.survey++;
+      
+          if (waterLevel) branches[branch].summary.waterLevel++;
+          if (screenBottom) branches[branch].summary.screenBottom++;
+      
+          if (!branches[branch].stations[station]) {
+            branches[branch].stations[station] = {
+              intake:0, survey:0, waterLevel:0, screenBottom:0,
+      
+              // ⭐ إضافة جديدة لحساب المسح البيئي
+              envSet: new Set()
+            };
+          }
+      
+          const st = branches[branch].stations[station];
+      
+          if (isIntake) st.intake++;
+          else st.survey++;
+      
+          if (waterLevel) st.waterLevel++;
+          if (screenBottom) st.screenBottom++;
+      
+          // ⭐ المسح البيئي الحقيقي (كل تاريخ = مسح واحد)
+          const isEnv =
+            location.includes("اعلى التيار") ||
+            location === "المأخذ" ||
+            location.includes("اسفل التيار");
+      
+          if (isEnv) {
+            st.envSet.add(date);
+          }
+      
+        });
+      
+        // 🖨️ إضافة الفترة فى التقرير
+        let periodText = "";
+        if (fromDate || toDate) {
+          periodText = `<p style="text-align:center;">
+            الفترة من ${fromDate || "البداية"} إلى ${toDate || "الآن"}
+          </p>`;
+        }
+      
+        // بناء HTML
+        let html = `
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial; direction: rtl; padding:20px; }
+            table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+            th, td { border:1px solid #000; padding:8px; text-align:center; }
+            th { background:#eee; }
+          </style>
+        </head>
+        <body>
+      
+        <h2>تقرير متابعة مصدر المياه</h2>
+        ${periodText}
+        `;
+      
+        // ===== Summary =====
+        html += `
+        <table>
+          <tr>
+            <th>الفرع</th>
+            <th>المأخذ</th>
+            <th>المسح البيئى</th>
+            <th>متابعة المناسيب</th>
+            <th>متابعة قاع المجرى المائى</th>
+          </tr>
+        `;
+      
+        for (let b in branches) {
+      
+          let branchEnvCount = 0;
+      
+          for (let s in branches[b].stations) {
+            branchEnvCount += branches[b].stations[s].envSet.size;
+          }
+      
+          const s = branches[b].summary;
+      
+          html += `
+            <tr>
+              <td>${b}</td>
+              <td>${s.intake}</td>
+              <td>${branchEnvCount}</td>
+              <td>${s.waterLevel}</td>
+              <td>${s.screenBottom}</td>
+            </tr>
+          `;
+        }
+      
+        html += `</table>`;
+      
+        // ===== Details =====
+        for (let b in branches) {
+      
+          html += `<h3>${b}</h3>`;
+      
+          html += `
+          <table>
+            <tr>
+              <th>المحطة</th>
+              <th>المأخذ</th>
+              <th>المسح البيئى</th>
+              <th>متابعة المناسيب</th>
+              <th>متابعة قاع المجرى المائى</th>
+            </tr>
+          `;
+      
+          for (let s in branches[b].stations) {
+      
+            const st = branches[b].stations[s];
+      
+            html += `
+              <tr>
+                <td>${s}</td>
+                <td>${st.intake}</td>
+      
+                <!-- ⭐ هنا المسح البيئي الصحيح -->
+                <td>${st.envSet.size}</td>
+      
+                <td>${st.waterLevel}</td>
+                <td>${st.screenBottom}</td>
+              </tr>
+            `;
+          }
+      
+          html += `</table>`;
+        }
+      
+        html += `</body></html>`;
+      
+        // =========================
+        // 3. فتح نافذة للطباعة
+        // =========================
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+      }
      
 
   
