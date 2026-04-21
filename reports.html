@@ -232,6 +232,13 @@
         <h3 class="modal-title">Collective & Detailed Report</h3>
     
         <div class="form-buttons">
+          <div class="generalinfo">
+            <label>From</label>
+            <input type="date" id="fromDate_water">
+          
+            <label>To</label>
+            <input type="date" id="toDate_water">
+          </div>
           <button type="button" onclick="generateFullWaterReport()">
             Generate Report
           </button>
@@ -2086,145 +2093,168 @@
               document.body.appendChild(script);
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
-       function generateFullWaterReport() {
-
-          if (!waterData || waterData.length === 0) {
-            alert("No data loaded");
-            return;
-          }
-        
-          const branches = {};
-        
-          // =========================
-          // 1. التجميع
-          // =========================
-          waterData.forEach(r => {
-        
-            const branch = r[2];
-            const station = r[3];
-            const location = r[4];
-            const waterLevel = r[7];
-            const screenBottom = r[6];
-        
-            if (!branches[branch]) {
-              branches[branch] = {
-                summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
-                stations: {}
-              };
-            }
-        
-            const isIntake = location === "المأخذ";
-        
-            if (isIntake) branches[branch].summary.intake++;
-            else branches[branch].summary.survey++;
-        
-            if (waterLevel) branches[branch].summary.waterLevel++;
-            if (screenBottom) branches[branch].summary.screenBottom++;
-        
-            if (!branches[branch].stations[station]) {
-              branches[branch].stations[station] = {
-                intake:0, survey:0, waterLevel:0, screenBottom:0
-              };
-            }
-        
-            if (isIntake) branches[branch].stations[station].intake++;
-            else branches[branch].stations[station].survey++;
-        
-            if (waterLevel) branches[branch].stations[station].waterLevel++;
-            if (screenBottom) branches[branch].stations[station].screenBottom++;
-          });
-        
-          // =========================
-          // 2. بناء HTML للطباعة
-          // =========================
-          let html = `
-          <html>
-          <head>
-            <title>Water Report</title>
-            <style>
-              body { font-family: Arial; direction: rtl; padding:20px; }
-              h2, h3 { text-align:center; }
-              table {
-                width:100%;
-                border-collapse: collapse;
-                margin-bottom:20px;
+            function generateFullWaterReport() {
+            
+              const fromDate = document.getElementById("fromDate_water").value;
+              const toDate = document.getElementById("toDate_water").value;
+            
+              if (!waterData || waterData.length === 0) {
+                alert("لا توجد بيانات");
+                return;
               }
-              th, td {
-                border:1px solid #000;
-                padding:8px;
-                text-align:center;
+            
+              // 🔥 فلترة البيانات حسب التاريخ
+              let filteredData = waterData.filter(r => {
+            
+                const rowDate = new Date(r[1]); // عمود التاريخ عندك
+            
+                if (fromDate) {
+                  const from = new Date(fromDate);
+                  if (rowDate < from) return false;
+                }
+            
+                if (toDate) {
+                  const to = new Date(toDate);
+                  to.setHours(23,59,59,999); // يشمل اليوم بالكامل
+                  if (rowDate > to) return false;
+                }
+            
+                return true;
+              });
+            
+              if (filteredData.length === 0) {
+                alert("لا توجد بيانات فى هذه الفترة");
+                return;
               }
-              th { background:#eee; }
-            </style>
-          </head>
-          <body>
-        
-          <h2>تقرير جودة المياه (مجمع + تفصيلى)</h2>
-          `;
-        
-          // ===== Summary =====
-          html += `
-          <table>
-            <tr>
-              <th>الفرع</th>
-              <th>المأخذ</th>
-              <th>المسح البيئى</th>
-              <th>Water Level</th>
-              <th>Screen Bottom</th>
-            </tr>
-          `;
-        
-          for (let b in branches) {
-            const s = branches[b].summary;
-        
-            html += `
-              <tr>
-                <td>${b}</td>
-                <td>${s.intake}</td>
-                <td>${s.survey}</td>
-                <td>${s.waterLevel}</td>
-                <td>${s.screenBottom}</td>
-              </tr>
-            `;
-          }
-        
-          html += `</table>`;
-        
-          // ===== Details =====
-          for (let b in branches) {
-        
-            html += `<h3>${b}</h3>`;
-        
-            html += `
-            <table>
-              <tr>
-                <th>المحطة</th>
-                <th>المأخذ</th>
-                <th>المسح البيئى</th>
-                <th>Water Level</th>
-                <th>Screen Bottom</th>
-              </tr>
-            `;
-        
-            for (let s in branches[b].stations) {
-              const st = branches[b].stations[s];
-        
+            
+              const branches = {};
+            
+              // نفس الكود القديم لكن بدل waterData استخدم filteredData
+              filteredData.forEach(r => {
+            
+                const branch = r[2];
+                const station = r[3];
+                const location = r[4];
+                const waterLevel = r[7];
+                const screenBottom = r[6];
+            
+                if (!branches[branch]) {
+                  branches[branch] = {
+                    summary: { intake:0, survey:0, waterLevel:0, screenBottom:0 },
+                    stations: {}
+                  };
+                }
+            
+                const isIntake = location === "المأخذ";
+            
+                if (isIntake) branches[branch].summary.intake++;
+                else branches[branch].summary.survey++;
+            
+                if (waterLevel) branches[branch].summary.waterLevel++;
+                if (screenBottom) branches[branch].summary.screenBottom++;
+            
+                if (!branches[branch].stations[station]) {
+                  branches[branch].stations[station] = {
+                    intake:0, survey:0, waterLevel:0, screenBottom:0
+                  };
+                }
+            
+                if (isIntake) branches[branch].stations[station].intake++;
+                else branches[branch].stations[station].survey++;
+            
+                if (waterLevel) branches[branch].stations[station].waterLevel++;
+                if (screenBottom) branches[branch].stations[station].screenBottom++;
+              });
+            
+              // 🖨️ إضافة الفترة فى التقرير
+              let periodText = "";
+              if (fromDate || toDate) {
+                periodText = `<p style="text-align:center;">
+                  الفترة من ${fromDate || "البداية"} إلى ${toDate || "الآن"}
+                </p>`;
+              }
+            
+              // بناء HTML
+              let html = `
+              <html>
+              <head>
+                <style>
+                  body { font-family: Arial; direction: rtl; padding:20px; }
+                  table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+                  th, td { border:1px solid #000; padding:8px; text-align:center; }
+                  th { background:#eee; }
+                </style>
+              </head>
+              <body>
+            
+              <h2>تقرير جودة المياه</h2>
+              ${periodText}
+              `;
+            
+              // ===== Summary =====
               html += `
+              <table>
                 <tr>
-                  <td>${s}</td>
-                  <td>${st.intake}</td>
-                  <td>${st.survey}</td>
-                  <td>${st.waterLevel}</td>
-                  <td>${st.screenBottom}</td>
+                  <th>الفرع</th>
+                  <th>المأخذ</th>
+                  <th>المسح البيئى</th>
+                  <th>Water Level</th>
+                  <th>Screen Bottom</th>
                 </tr>
               `;
-            }
-        
-            html += `</table>`;
-          }
-        
-          html += `</body></html>`;
-        
+            
+              for (let b in branches) {
+                const s = branches[b].summary;
+            
+                html += `
+                  <tr>
+                    <td>${b}</td>
+                    <td>${s.intake}</td>
+                    <td>${s.survey}</td>
+                    <td>${s.waterLevel}</td>
+                    <td>${s.screenBottom}</td>
+                  </tr>
+                `;
+              }
+            
+              html += `</table>`;
+            
+              // ===== Details =====
+              for (let b in branches) {
+            
+                html += `<h3>${b}</h3>`;
+            
+                html += `
+                <table>
+                  <tr>
+                    <th>المحطة</th>
+                    <th>المأخذ</th>
+                    <th>المسح البيئى</th>
+                    <th>Water Level</th>
+                    <th>Screen Bottom</th>
+                  </tr>
+                `;
+            
+                for (let s in branches[b].stations) {
+                  const st = branches[b].stations[s];
+            
+                  html += `
+                    <tr>
+                      <td>${s}</td>
+                      <td>${st.intake}</td>
+                      <td>${st.survey}</td>
+                      <td>${st.waterLevel}</td>
+                      <td>${st.screenBottom}</td>
+                    </tr>
+                  `;
+                }
+            
+                html += `</table>`;
+              }
+            
+              html += `</body></html>`;
+
+
           // =========================
           // 3. فتح نافذة للطباعة
           // =========================
