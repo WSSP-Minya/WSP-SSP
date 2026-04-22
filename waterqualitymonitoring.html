@@ -821,49 +821,7 @@
        
         if (from && rowDate && rowDate < from) match = false;
         if (to && rowDate && rowDate > to) match = false;
-    
-       if (match) {
-            const key = `${rowDateText}-${rowStation}`;
-            if (!groupedRows[key]) {
-                groupedRows[key] = [];
-            }
-            groupedRows[key].push(cells);
-        }
-    });
-
-    // قم بدمج نتائج المسح البيئى إن تم اختيار "المسح البيئى"
-    for (const key in groupedRows) {
-        const rowsForDateStation = groupedRows[key];
-        if (location === "المسح البيئى") {
-            const mergedRow = [];
-            rowsForDateStation.forEach(row => {
-                const cells = row[0].parentElement.querySelectorAll("td");
-                cells.forEach((cell, index) => {
-                    if (index === 3) {
-                        // إضافة المسح البيئى في مكان واحد
-                        mergedRow.push(survey.join(", "));
-                    } else {
-                        mergedRow.push(cell.textContent.trim());
-                    }
-                });
-            });
-
-            filteredHTML += "<tr>";
-            mergedRow.forEach(cellContent => {
-                filteredHTML += `<td>${cellContent}</td>`;
-            });
-            filteredHTML += "</tr>";
-        } else {
-            // دمج الصفوف الطبيعية التي لا تتعلق بالمسح البيئى
-            rowsForDateStation.forEach(row => {
-                filteredHTML += "<tr>";
-                row.forEach(cell => {
-                    filteredHTML += `<td>${cell.textContent}</td>`;
-                });
-                filteredHTML += "</tr>";
-            });
-        }
-    }
+        if (match) { filteredHTML += "<tr>"; cells.forEach(cell => { filteredHTML += <td>${cell.textContent}</td>; }); filteredHTML += "</tr>"; } });
     
       filteredHTML += "</tbody></table>";
     
