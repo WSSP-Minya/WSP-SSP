@@ -2404,261 +2404,252 @@
       }
       /////////////////////////////////
       /////حساب متوسطات نتائج عينات المأخذ/////
-       function generateStatisticsReport() {
-
-          if (!waterData || waterData.length === 0) {
-            alert("لا توجد بيانات");
-            return;
-          }
-        
-          // =========================
-          // الفلاتر (فترة + فرع + محطة)
-          // =========================
-          const fromDate_water = document.getElementById("fromDate_water").value;
-          const toDate_water = document.getElementById("toDate_water").value;
-        
-          // 🔴 فلتر اختياري (إذا غير موجود في الصفحة سيعتبر فارغ)
-          const branchEl = document.getElementById("branch");
-          const stationEl = document.getElementById("station");
-        
-          const selectedBranch = branchEl ? branchEl.value : "";
-          const selectedStation = stationEl ? stationEl.value : "";
-        
-          let filteredData = waterData.filter(r => {
-        
-            const rowDate = new Date(r[1]);
-            const branch = r[2];
-            const station = r[3];
-        
-            // فلترة التاريخ
-            if (fromDate_water) {
-              const from = new Date(fromDate_water);
-              if (rowDate < from) return false;
-            }
-        
-            if (toDate_water) {
-              const to = new Date(toDate_water);
-              to.setHours(23, 59, 59, 999);
-              if (rowDate > to) return false;
-            }
-        
-            // فلترة الفرع
-            if (selectedBranch && branch !== selectedBranch) return false;
-        
-            // فلترة المحطة
-            if (selectedStation && station !== selectedStation) return false;
-        
-            return true;
-          });
-        
-          if (filteredData.length === 0) {
-            alert("لا توجد بيانات فى هذه الفترة أو الاختيار");
-            return;
-          }
-        
-          // =========================
-          // تجميع بيانات المأخذ
-          // =========================
-          const stats = {};
-        
-          filteredData.forEach(r => {
-        
-            const branch = r[2];
-            const station = r[3];
-            const location = r[4];
-        
-            // شرط المأخذ فقط
-            if (location !== "المأخذ") return;
-        
-            const turbidity = r[8];
-            const ph = r[9];
-            const temp = r[10];
-            const tds = r[11];
-            const ch = r[12];
-            const sulf = r[13];
-            const fe = r[14];
-            const mn = r[15];
-            const nh3 = r[16];
-            const no2 = r[17];
-            const no3 = r[18];
-            const Do = r[19];
-            const cod = r[20];
-            const bod = r[21];
-            const og = r[22];
-            const tc = r[23];
-            const ta = r[24];
-            
-        
-            if (!stats[branch]) stats[branch] = {};
-            if (!stats[branch][station]) {
-              stats[branch][station] = {
-                count: 0,
-                turbidity: 0,
-                ph: 0,
-                temp: 0,
-                tds: 0,
-                ch: 0,
-              sulf: 0,
-                fe: 0,
-                mn: 0,
-                nh3: 0,
-                no2: 0,
-                no3: 0,
-                Do: 0,
-                cod: 0,
-                bod: 0,
-                og: 0,
-                tc: 0,
-                ta: 0
-              };
-            }
-        
-            const s = stats[branch][station];
-        
-            s.count++;
-        
-            if (turbidity !== "" && turbidity != null) s.turbidity += Number(turbidity);
-            if (ph !== "" && ph != null) s.ph += Number(ph);
-            if (temp !== "" && temp != null) s.temp += Number(temp);
-            if (tds !== "" && tds != null) s.tds += Number(tds);
-            if (ch !== "" && ch != null) s.ch += Number(ch);
-            if (sulf !== "" && sulf != null) s.sulf += Number(sulf);
-            if (fe !== "" && fe != null) s.fe += Number(fe);
-            if (mn !== "" && mn != null) s.mn += Number(mn);
-            if (nh3 !== "" && nh3 != null) s.nh3 += Number(nh3);
-            if (no2 !== "" && no2 != null) s.no2 += Number(no2);
-            if (no3 !== "" && no3 != null) s.no3 += Number(no3);
-            if (Do !== "" && Do != null) s.do += Number(Do);
-            if (cod !== "" && cod != null) s.cod += Number(cod);
-            if (bod !== "" && bod != null) s.bod += Number(bod);
-            if (og !== "" && og != null) s.og += Number(og);
-            if (tc !== "" && tc != null) s.tc += Number(tc);
-            if (ta !== "" && ta != null) s.ta += Number(ta);
-                        
-          });
-        
-          // =========================
-          // HTML
-          // =========================
-          let html = `
-          <html>
-          <head>
-            <style>
-              body { font-family: Arial; direction: rtl; padding:20px; }
-              table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-              th, td { border:1px solid #000; padding:8px; text-align:center; }
-              th { background:#eee; }
-            </style>
-          </head>
-          <body>
-        
-          <h2 style="text-align:center;">تقرير إحصائي لعينات المأخذ</h2>
+      function generateStatisticsReport() {
+      
+      if (!waterData || waterData.length === 0) {
+      alert("لا توجد بيانات");
+      return;
+      }
+      
+      // =========================
+      // الفلاتر
+      // =========================
+      const fromDate_water = document.getElementById("fromDate_water").value;
+      const toDate_water = document.getElementById("toDate_water").value;
+      
+      const branchEl = document.getElementById("branch");
+      const stationEl = document.getElementById("station");
+      
+      const selectedBranch = branchEl ? branchEl.value : "";
+      const selectedStation = stationEl ? stationEl.value : "";
+      
+      let filteredData = waterData.filter(r => {
+      
+      ```
+      const rowDate = new Date(r[1]);
+      const branch = r[2];
+      const station = r[3];
+      
+      if (fromDate_water) {
+        const from = new Date(fromDate_water);
+        if (rowDate < from) return false;
+      }
+      
+      if (toDate_water) {
+        const to = new Date(toDate_water);
+        to.setHours(23, 59, 59, 999);
+        if (rowDate > to) return false;
+      }
+      
+      if (selectedBranch && branch !== selectedBranch) return false;
+      if (selectedStation && station !== selectedStation) return false;
+      
+      return true;
+      ```
+      
+      });
+      
+      if (filteredData.length === 0) {
+      alert("لا توجد بيانات فى هذه الفترة أو الاختيار");
+      return;
+      }
+      
+      // =========================
+      // تجهيز الإحصائيات
+      // =========================
+      function init() {
+      return { sum: 0, count: 0, min: Infinity, max: -Infinity };
+      }
+      
+      function update(p, val) {
+      if (val !== "" && val != null) {
+      const v = Number(val);
+      p.sum += v;
+      p.count++;
+      if (v < p.min) p.min = v;
+      if (v > p.max) p.max = v;
+      }
+      }
+      
+      function calc(p, digits = 2) {
+      return {
+      count: p.count,
+      avg: p.count ? (p.sum / p.count).toFixed(digits) : "-",
+      min: p.count ? p.min.toFixed(digits) : "-",
+      max: p.count ? p.max.toFixed(digits) : "-"
+      };
+      }
+      
+      const stats = {};
+      
+      filteredData.forEach(r => {
+      
+      ```
+      const branch = r[2];
+      const station = r[3];
+      const location = r[4];
+      
+      if (location !== "المأخذ") return;
+      
+      const turbidity = r[8];
+      const ph = r[9];
+      const temp = r[10];
+      const tds = r[11];
+      const ch = r[12];
+      const sulf = r[13];
+      const fe = r[14];
+      const mn = r[15];
+      const nh3 = r[16];
+      const no2 = r[17];
+      const no3 = r[18];
+      const Do = r[19];
+      const cod = r[20];
+      const bod = r[21];
+      const og = r[22];
+      const tc = r[23];
+      const ta = r[24];
+      
+      if (!stats[branch]) stats[branch] = {};
+      
+      if (!stats[branch][station]) {
+        stats[branch][station] = {
+          turbidity: init(),
+          ph: init(),
+          temp: init(),
+          tds: init(),
+          ch: init(),
+          sulf: init(),
+          fe: init(),
+          mn: init(),
+          nh3: init(),
+          no2: init(),
+          no3: init(),
+          do: init(),
+          cod: init(),
+          bod: init(),
+          og: init(),
+          tc: init(),
+          ta: init()
+        };
+      }
+      
+      const s = stats[branch][station];
+      
+      update(s.turbidity, turbidity);
+      update(s.ph, ph);
+      update(s.temp, temp);
+      update(s.tds, tds);
+      update(s.ch, ch);
+      update(s.sulf, sulf);
+      update(s.fe, fe);
+      update(s.mn, mn);
+      update(s.nh3, nh3);
+      update(s.no2, no2);
+      update(s.no3, no3);
+      update(s.do, Do);
+      update(s.cod, cod);
+      update(s.bod, bod);
+      update(s.og, og);
+      update(s.tc, tc);
+      update(s.ta, ta);
+      ```
+      
+      });
+      
+      // =========================
+      // إنشاء التقرير
+      // =========================
+      let html = `
+      
+        <html>
+        <head>
+          <style>
+            body { font-family: Arial; direction: rtl; padding:20px; }
+            table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+            th, td { border:1px solid #000; padding:6px; text-align:center; }
+            th { background:#eee; }
+          </style>
+        </head>
+        <body>
+      
+        <h2 style="text-align:center;">تقرير إحصائي لعينات المأخذ</h2>
+      
+        <p style="text-align:center;">
+        الفترة الزمنية: من ${fromDate_water || "...."} إلى ${toDate_water || "...."}<br>
+        الفرع: ${selectedBranch || "الكل"}
+        </p>
+        `;
+      
+      for (let b in stats) {
+      
+      ```
+      html += `<h3>${b}</h3>`;
+      
+      html += `
+      <table>
+        <tr>
+          <th>المحطة</th>
+          <th>المؤشر</th>
+          <th>عدد القياسات</th>
+          <th>المتوسط</th>
+          <th>أقل قيمة</th>
+          <th>أعلى قيمة</th>
+        </tr>
+      `;
+      
+      for (let s in stats[b]) {
+      
+        const d = stats[b][s];
+      
+        const params = {
+          "Turbidity": calc(d.turbidity, 1),
+          "pH": calc(d.ph, 2),
+          "Temp": calc(d.temp, 2),
+          "TDS": calc(d.tds, 2),
+          "Chlorides": calc(d.ch, 2),
+          "Sulfates": calc(d.sulf, 2),
+          "Fe": calc(d.fe, 2),
+          "Mn": calc(d.mn, 2),
+          "NH3": calc(d.nh3, 2),
+          "NO2": calc(d.no2, 3),
+          "NO3": calc(d.no3, 2),
+          "DO": calc(d.do, 1),
+          "COD": calc(d.cod, 1),
+          "BOD": calc(d.bod, 1),
+          "Oil & Grease": calc(d.og, 1),
+          "Total Coliform": calc(d.tc, 0),
+          "Total Algae": calc(d.ta, 0)
+        };
+      
+        for (let p in params) {
+      
+          const val = params[p];
+      
+          html += `
+          <tr>
+            <td>${s}</td>
+            <td>${p}</td>
+            <td>${val.count}</td>
+            <td>${val.avg}</td>
+            <td>${val.min}</td>
+            <td>${val.max}</td>
+          </tr>
           `;
-        
-          // عرض الفترة
-          if (fromDate_water || toDate_water || selectedBranch || selectedStation) {
-            html += `<p style="text-align:center;">`;
-        
-            if (fromDate_water || toDate_water) {
-              html += `الفترة: ${fromDate_water || "البداية"} إلى ${toDate_water || "النهاية"}<br>`;
-            }
-        
-            if (selectedBranch) html += `الفرع: ${selectedBranch}<br>`;
-            if (selectedStation) html += `المحطة: ${selectedStation}<br>`;
-        
-            html += `</p>`;
-          }
-        
-          // =========================
-          // الجداول
-          // =========================
-          for (let b in stats) {
-        
-            html += `<h3>${b}</h3>`;
-        
-            html += `
-            <table>
-              <tr>
-                <th>المحطة</th>
-                <th>عدد العينات</th>
-                <th>Turbidity</th>
-                <th>pH</th>
-                <th>Temp</th>
-                <th>TDS</th>
-                <th>Chlorides</th>
-                <th>Sulfates</th>
-                <th>Fe</th>
-                <th>Mn</th>
-                <th>NH<span>3</span></th>
-                <th>NO<span>2</span></th>
-                <th>NO<span>3</span></th>
-                <th>DO</th>
-                <th>COD</th>
-                <th>BOD</th>
-                <th>Oil & Grease</th>
-                <th>Total Coliform</th>
-                <th>Total Algae</th>
-               
-              </tr>
-            `;
-        
-            for (let s in stats[b]) {
-        
-              const d = stats[b][s];
-        
-              const avgTurbidity = d.count ? (d.turbidity / d.count).toFixed(1) : 0;
-              const avgPH = d.count ? (d.ph / d.count).toFixed(2) : 0;
-              const avgTemp = d.count ? (d.temp / d.count).toFixed(2) : 0;
-              const avgTDS = d.count ? (d.tds / d.count).toFixed(2) : 0;
-              const avgch = d.count ? (d.ch / d.count).toFixed(2) : 0;
-              const avgsulf = d.count ? (d.sulf / d.count).toFixed(2) : 0;
-              const avgfe = d.count ? (d.fe / d.count).toFixed(2) : 0;
-              const avgmn = d.count ? (d.mn / d.count).toFixed(2) : 0;
-              const avgnh3 = d.count ? (d.nh3 / d.count).toFixed(2) : 0;
-              const avgno2 = d.count ? (d.no2 / d.count).toFixed(3) : 0;
-              const avgno3 = d.count ? (d.no3 / d.count).toFixed(2) : 0;
-              const avgdo = d.count ? (d.do / d.count).toFixed(1) : 0;
-              const avgcod = d.count ? (d.cod / d.count).toFixed(1) : 0;
-              const avgbod = d.count ? (d.bod / d.count).toFixed(1) : 0;
-              const avgog = d.count ? (d.og / d.count).toFixed(1) : 0;
-              const avgtc = d.count ? (d.tc / d.count).toFixed(0) : 0;
-              const avgta = d.count ? (d.ta / d.count).toFixed(0) : 0;
-              
-              html += `
-                <tr>
-                  <td>${s}</td>
-                  <td>${d.count}</td>
-                  <td>${avgTurbidity}</td>
-                  <td>${avgPH}</td>
-                  <td>${avgTemp}</td>
-                  <td>${avgTDS}</td>
-                  <td>${avgch}</td>
-                  <td>${avgsulf}</td>
-                  <td>${avgfe}</td>
-                  <td>${avgmn}</td>
-                  <td>${avgnh3}</td>
-                  <td>${avgno2}</td>
-                  <td>${avgno3}</td>
-                  <td>${avgdo}</td>
-                  <td>${avgcod}</td>
-                  <td>${avgbod}</td>
-                  <td>${avgog}</td>
-                  <td>${avgtc}</td>
-                  <td>${avgta}</td>
-                </tr>
-              `;
-            }
-        
-            html += `</table>`;
-          }
-        
-          html += `</body></html>`;
-        
-          const w = window.open("", "_blank");
-          w.document.write(html);
-          w.document.close();
-          w.print();
         }
+      }
+      
+      html += `</table>`;
+      ```
+      
+      }
+      
+      html += `</body></html>`;
+      
+      const w = window.open("", "_blank");
+      w.document.write(html);
+      w.document.close();
+      w.print();
+      }
 
   
      </script>
