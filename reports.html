@@ -2481,12 +2481,12 @@
             const nh3 = r[16];
             const no2 = r[17];
             const no3 = r[18];
-            const Do = [19];
-            const cod = [20];
-            const bod = [21];
-            const og = [22];
-            const tc = [23];
-            const ta = [24];
+            const Do = r[19];
+            const cod = r[20];
+            const bod = r[21];
+            const og = r[22];
+            const tc = r[23];
+            const ta = r[24];
             
         
             if (!stats[branch]) stats[branch] = {};
@@ -2615,14 +2615,14 @@
               const avgfe = d.count ? (d.fe / d.count).toFixed(2) : 0;
               const avgmn = d.count ? (d.mn / d.count).toFixed(2) : 0;
               const avgnh3 = d.count ? (d.nh3 / d.count).toFixed(2) : 0;
-              const avgno2 = d.count ? (d.no2 / d.count).toFixed(2) : 0;
+              const avgno2 = d.count ? (d.no2 / d.count).toFixed(3) : 0;
               const avgno3 = d.count ? (d.no3 / d.count).toFixed(2) : 0;
               const avgdo = d.count ? (d.do / d.count).toFixed(2) : 0;
               const avgcod = d.count ? (d.cod / d.count).toFixed(2) : 0;
               const avgbod = d.count ? (d.bod / d.count).toFixed(2) : 0;
               const avgog = d.count ? (d.og / d.count).toFixed(2) : 0;
-              const avgtc = d.count ? (d.tc / d.count).toFixed(2) : 0;
-              const avgta = d.count ? (d.ta / d.count).toFixed(2) : 0;
+              const avgtc = d.count ? (d.tc / d.count).toFixed(1) : 0;
+              const avgta = d.count ? (d.ta / d.count).toFixed(1) : 0;
               
               html += `
                 <tr>
