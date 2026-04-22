@@ -256,42 +256,56 @@
       </div>
     </div>
         <div id="modal7" class="modal">
-      <div class="modal-content">
-        <span class="close" onclick="closeModal('modal7')">&times;</span>
-        <h3 class="modal-title">Intake Statistical Report</h3>
-    
-        <!-- الفرع -->
-        <label>branch</label>
-        <select id="branch">
-          <option value="">Branch</option>
-        </select>
-    
-        <br><br>
-    
-        <!-- المحطة -->
-        <label>Station</label>
-        <select id="station">
-          <option value="">station</option>
-        </select>
-    
-        <br><br>
-    
-        <!-- الفترة -->
-        <label>From</label>
-        <input type="date" id="fromDate_water">
-    
-        <label>To</label>
-        <input type="date" id="toDate_water">
-    
-        <br><br>
-    
-        <button onclick="generateStatisticsReport()">
-           Report
-        </button>
-    
-      </div>
-    </div>
-    </div>
+          <div class="modal-content">
+            <span class="close" onclick="closeModal('modal7')">&times;</span>
+        
+            <h3 class="modal-title">Intake Statistical Report</h3>
+        
+            <form onsubmit="return false;">
+        
+              <div class="generalinfo">
+        
+                <!-- الفرع -->
+                <label>Branch</label>
+                <select id="branch_water">
+                  <option selected disabled>Select Branch</option>
+                  <option>العدوه</option>
+                  <option>مغاغة</option>
+                  <option>بنى مزار</option>
+                  <option>مطاى</option>
+                  <option>سمالوط</option>
+                  <option>المنيا</option>
+                  <option>ابوقرقاص</option>
+                  <option>ملوى</option>
+                  <option>ديرمواس</option>
+                </select>
+        
+                <!-- المحطة -->
+                <label>Station</label>
+                <select id="station_water">
+                  <option selected disabled>Select Station</option>
+                </select>
+        
+                <!-- الفترة -->
+                <label>From Date</label>
+                <input type="date" id="fromDate_water">
+        
+                <label>To Date</label>
+                <input type="date" id="toDate_water">
+        
+              </div>
+        
+              <div class="form-buttons">
+                <button type="button" onclick="generateStatisticsReport()">
+                  Generate Report
+                </button>
+              </div>
+        
+            </form>
+        
+          </div>
+        </div>
+   
 
       
 
@@ -2441,8 +2455,8 @@
       const fromDate_water = document.getElementById("fromDate_water").value;
       const toDate_water = document.getElementById("toDate_water").value;
       
-      const branchEl = document.getElementById("branch");
-      const stationEl = document.getElementById("station");
+      const branchEl = document.getElementById("branch_water");
+      const stationEl = document.getElementById("station_water");
       
       const selectedBranch = branchEl ? branchEl.value : "";
       const selectedStation = stationEl ? stationEl.value : "";
