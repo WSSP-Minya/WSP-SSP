@@ -2390,8 +2390,11 @@
             "ديرمواس"
           ];
       
-        for (let b in branchOrder) {
-          const s = branchOrder[b].summary;
+        for (let b of branchOrder) {
+
+          if (!branches[b]) continue;
+        
+          const s = branches[b].summary;
       
           html += `
             <tr>
@@ -2410,7 +2413,11 @@
         // DETAILS
         // =========================
          
-        for (let b in branchOrder) {
+        for (let b of branchOrder) {
+
+          if (!branches[b]) continue;
+        
+          
       
           html += `<h3>${b}</h3>`;
       
@@ -2425,8 +2432,9 @@
             </tr>
           `;
       
-          for (let s in branchOrder[b].stations) {
-            const st = branchOrder[b].stations[s];
+          for (let station in branches[b].stations) {
+
+            const st = branches[b].stations[station];
       
             html += `
               <tr>
@@ -2678,9 +2686,8 @@
           </tr>
         `;
       
-      for (let b of branchOrder) {
+      for (let station in stats[b]) {
 
-        if (!stats[b]) continue;
       
       const d = stats[b][station];
       
