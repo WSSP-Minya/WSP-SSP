@@ -2318,11 +2318,45 @@
         <html>
         <head>
           <style>
-            body { font-family: Arial; direction: rtl; padding:20px; }
-            table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-            th, td { border:1px solid #000; padding:8px; text-align:center; }
-            th { background:#eee; }
+              body {
+              font-family: Arial;
+              direction: rtl;
+              padding:20px;
+              font-size: 17px;
+            }
+          
+            h2 {
+              font-size: 26px;
+            }
+          
+            h3 {
+              font-size: 22px;
+            }
+          
+            table {
+              width:100%;
+              border-collapse:collapse;
+              margin-bottom:20px;
+              font-size: 16px;
+            }
+          
+            th, td {
+              border:1px solid #000;
+              padding:8px;
+              text-align:center;
+            }
+          
+            th {
+              background:#eee;
+              font-size: 16px;
+            }
+          
+            p {
+              font-size: 18px;
+              font-weight: bold;
+            }
           </style>
+          
         </head>
         <body>
       
@@ -2343,9 +2377,21 @@
             <th>متابعة قاع المجرى المائى</th>
           </tr>
         `;
+         
+         const branchOrder = [
+            "العدوه",
+            "مغاغة",
+            "بنى مزار",
+            "مطاى",
+            "سمالوط",
+            "المنيا",
+            "ابوقرقاص",
+            "ملوى",
+            "ديرمواس"
+          ];
       
-        for (let b in branches) {
-          const s = branches[b].summary;
+        for (let b in branchOrder) {
+          const s = branchOrder[b].summary;
       
           html += `
             <tr>
@@ -2363,7 +2409,8 @@
         // =========================
         // DETAILS
         // =========================
-        for (let b in branches) {
+         
+        for (let b in branchOrder) {
       
           html += `<h3>${b}</h3>`;
       
@@ -2378,8 +2425,8 @@
             </tr>
           `;
       
-          for (let s in branches[b].stations) {
-            const st = branches[b].stations[s];
+          for (let s in branchOrder[b].stations) {
+            const st = branchOrder[b].stations[s];
       
             html += `
               <tr>
@@ -2473,6 +2520,17 @@
       }
       
       const stats = {};
+      const branchOrder = [
+        "العدوه",
+        "مغاغة",
+        "بنى مزار",
+        "مطاى",
+        "سمالوط",
+        "المنيا",
+        "ابوقرقاص",
+        "ملوى",
+        "ديرمواس"
+      ];
       /////// تجميع البيانات
       filteredData.forEach(r => {
       
@@ -2601,7 +2659,9 @@
       </p>
       `;
       
-      for (let b in stats) {
+      for (let b of branchOrder) {
+
+        if (!stats[b]) continue;
       
       html += `<h3>${b}</h3>`;
       
@@ -2618,7 +2678,9 @@
           </tr>
         `;
       
-      for (let station in stats[b]) {
+      for (let b of branchOrder) {
+
+        if (!stats[b]) continue;
       
       const d = stats[b][station];
       
