@@ -242,10 +242,10 @@
         <div class="form-buttons">
           <div class="generalinfo">
             <label>From</label>
-            <input type="date" id="fromDate_water">
+            <input type="date" id="fromDate">
           
             <label>To</label>
-            <input type="date" id="toDate_water">
+            <input type="date" id="toDate">
           </div>
           <button type="button" onclick="generateFullWaterReport()">
              Report
@@ -2472,8 +2472,22 @@
         
             const turbidity = r[8];
             const ph = r[9];
-            const tds = r[10];
-            const temp = r[11];
+            const temp = r[10];
+            const tds = r[11];
+            const ch = r[12];
+            const sulf = r[13];
+            const fe = r[14];
+            const mn = r[15];
+            const nh3 = r[16];
+            const no2 = r[17];
+            const no3 = r[18];
+            const do = [19];
+            const cod = [20];
+            const bod = [21];
+            const og = [22];
+            const tc = [23];
+            const ta = [24];
+            
         
             if (!stats[branch]) stats[branch] = {};
             if (!stats[branch][station]) {
@@ -2481,8 +2495,21 @@
                 count: 0,
                 turbidity: 0,
                 ph: 0,
+                temp: 0,
                 tds: 0,
-                temp: 0
+                ch: 0,
+              sulf: 0,
+                fe: 0,
+                mn: 0,
+                nh3: 0,
+                no2: 0,
+                no3: 0,
+                do: 0,
+                cod: 0,
+                bod: 0,
+                og: 0,
+                tc: 0,
+                ta: 0
               };
             }
         
@@ -2492,8 +2519,22 @@
         
             if (turbidity !== "" && turbidity != null) s.turbidity += Number(turbidity);
             if (ph !== "" && ph != null) s.ph += Number(ph);
-            if (tds !== "" && tds != null) s.tds += Number(tds);
             if (temp !== "" && temp != null) s.temp += Number(temp);
+            if (tds !== "" && tds != null) s.tds += Number(tds);
+            if (ch !== "" && ch != null) s.ch += Number(tds);
+            if (sulf !== "" && sulf != null) s.sulf += Number(tds);
+            if (fe !== "" && fe != null) s.fe += Number(tds);
+            if (mn !== "" && mn != null) s.mn += Number(tds);
+            if (nh3 !== "" && nh3 != null) s.nh3 += Number(tds);
+            if (no2 !== "" && no2 != null) s.no2 += Number(tds);
+            if (no3 !== "" && no3 != null) s.no3 += Number(tds);
+            if (do !== "" && do != null) s.do += Number(tds);
+            if (cod !== "" && cod != null) s.cod += Number(tds);
+            if (bod !== "" && bod != null) s.bod += Number(tds);
+            if (og !== "" && og != null) s.og += Number(tds);
+            if (tc !== "" && tc != null) s.tc += Number(tds);
+            if (ta !== "" && ta != null) s.ta += Number(tds);
+                        
           });
         
           // =========================
@@ -2540,10 +2581,24 @@
               <tr>
                 <th>المحطة</th>
                 <th>عدد العينات</th>
-                <th>متوسط العكارة</th>
-                <th>متوسط pH</th>
-                <th>متوسط TDS</th>
-                <th>متوسط الحرارة</th>
+                <th>Turbidity</th>
+                <th>pH</th>
+                <th>Temp</th>
+                <th>TDS</th>
+                <th>Chlorides</th>
+                <th>Sulfates</th>
+                <th>Fe</th>
+                <th>Mn</th>
+                <th>NH<span>3</span></th>
+                <th>NO<span>2</span></th>
+                <th>NO<span>3</span></th>
+                <th>DO</th>
+                <th>COD</th>
+                <th>BOD</th>
+                <th>Oil & Grease</th>
+                <th>Total Coliform</th>
+                <th>Total Algae</th>
+               
               </tr>
             `;
         
@@ -2553,17 +2608,43 @@
         
               const avgTurbidity = d.count ? (d.turbidity / d.count).toFixed(2) : 0;
               const avgPH = d.count ? (d.ph / d.count).toFixed(2) : 0;
-              const avgTDS = d.count ? (d.tds / d.count).toFixed(2) : 0;
               const avgTemp = d.count ? (d.temp / d.count).toFixed(2) : 0;
-        
+              const avgTDS = d.count ? (d.tds / d.count).toFixed(2) : 0;
+              const avgCh = d.count ? (d.Ch / d.count).toFixed(2) : 0;
+              const avgSulf = d.count ? (d.sulf / d.count).toFixed(2) : 0;
+              const avgfe = d.count ? (d.fe / d.count).toFixed(2) : 0;
+              const avgmn = d.count ? (d.mn / d.count).toFixed(2) : 0;
+              const avgnh3 = d.count ? (d.nh3 / d.count).toFixed(2) : 0;
+              const avgno2 = d.count ? (d.no2 / d.count).toFixed(2) : 0;
+              const avgno3 = d.count ? (d.no3 / d.count).toFixed(2) : 0;
+              const avgdo = d.count ? (d.do / d.count).toFixed(2) : 0;
+              const avgcod = d.count ? (d.cod / d.count).toFixed(2) : 0;
+              const avgbod = d.count ? (d.bod / d.count).toFixed(2) : 0;
+              const avgog = d.count ? (d.og / d.count).toFixed(2) : 0;
+              const avgtc = d.count ? (d.tc / d.count).toFixed(2) : 0;
+              const avgta = d.count ? (d.ta / d.count).toFixed(2) : 0;
+              
               html += `
                 <tr>
                   <td>${s}</td>
                   <td>${d.count}</td>
                   <td>${avgTurbidity}</td>
                   <td>${avgPH}</td>
-                  <td>${avgTDS}</td>
                   <td>${avgTemp}</td>
+                  <td>${avgTDS}</td>
+                  <td>${avgch}</td>
+                  <td>${avgsulf}</td>
+                  <td>${avgfe}</td>
+                  <td>${avgmn}</td>
+                  <td>${avgnh3}</td>
+                  <td>${avgno2}</td>
+                  <td>${avgno3}</td>
+                  <td>${avgdo}</td>
+                  <td>${avgcod}</td>
+                  <td>${avgbod}</td>
+                  <td>${avgog}</td>
+                  <td>${avgtc}</td>
+                  <td>${avgta}</td>
                 </tr>
               `;
             }
