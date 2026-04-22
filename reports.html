@@ -2606,7 +2606,7 @@
         
               const d = stats[b][s];
         
-              const avgTurbidity = d.count ? (d.turbidity / d.count).toFixed(2) : 0;
+              const avgTurbidity = d.count ? (d.turbidity / d.count).toFixed(1) : 0;
               const avgPH = d.count ? (d.ph / d.count).toFixed(2) : 0;
               const avgTemp = d.count ? (d.temp / d.count).toFixed(2) : 0;
               const avgTDS = d.count ? (d.tds / d.count).toFixed(2) : 0;
@@ -2617,12 +2617,12 @@
               const avgnh3 = d.count ? (d.nh3 / d.count).toFixed(2) : 0;
               const avgno2 = d.count ? (d.no2 / d.count).toFixed(3) : 0;
               const avgno3 = d.count ? (d.no3 / d.count).toFixed(2) : 0;
-              const avgdo = d.count ? (d.do / d.count).toFixed(2) : 0;
-              const avgcod = d.count ? (d.cod / d.count).toFixed(2) : 0;
-              const avgbod = d.count ? (d.bod / d.count).toFixed(2) : 0;
-              const avgog = d.count ? (d.og / d.count).toFixed(2) : 0;
-              const avgtc = d.count ? (d.tc / d.count).toFixed(1) : 0;
-              const avgta = d.count ? (d.ta / d.count).toFixed(1) : 0;
+              const avgdo = d.count ? (d.do / d.count).toFixed(1) : 0;
+              const avgcod = d.count ? (d.cod / d.count).toFixed(1) : 0;
+              const avgbod = d.count ? (d.bod / d.count).toFixed(1) : 0;
+              const avgog = d.count ? (d.og / d.count).toFixed(1) : 0;
+              const avgtc = d.count ? (d.tc / d.count).toFixed(0) : 0;
+              const avgta = d.count ? (d.ta / d.count).toFixed(0) : 0;
               
               html += `
                 <tr>
