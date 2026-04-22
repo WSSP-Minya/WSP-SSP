@@ -2402,18 +2402,16 @@
         printWindow.document.close();
         printWindow.print();
       }
-      /////////////////////////////////
-      /////حساب متوسطات نتائج عينات المأخذ/////
+     
+      ///////////////////////////////
+      ///// حساب إحصائيات عينات المأخذ /////
       function generateStatisticsReport() {
       
       if (!waterData || waterData.length === 0) {
       alert("لا توجد بيانات");
       return;
       }
-      
-      // =========================
       // الفلاتر
-      // =========================
       const fromDate_water = document.getElementById("fromDate_water").value;
       const toDate_water = document.getElementById("toDate_water").value;
       
@@ -2424,8 +2422,6 @@
       const selectedStation = stationEl ? stationEl.value : "";
       
       let filteredData = waterData.filter(r => {
-      
-      ```
       const rowDate = new Date(r[1]);
       const branch = r[2];
       const station = r[3];
@@ -2445,7 +2441,6 @@
       if (selectedStation && station !== selectedStation) return false;
       
       return true;
-      ```
       
       });
       
@@ -2454,9 +2449,7 @@
       return;
       }
       
-      // =========================
-      // تجهيز الإحصائيات
-      // =========================
+      // دوال الإحصاء
       function init() {
       return { sum: 0, count: 0, min: Infinity, max: -Infinity };
       }
@@ -2482,9 +2475,10 @@
       
       const stats = {};
       
-      filteredData.forEach(r => {
       
-      ```
+      // تجميع البيانات
+      
+      filteredData.forEach(r => {
       const branch = r[2];
       const station = r[3];
       const location = r[4];
@@ -2552,13 +2546,9 @@
       update(s.og, og);
       update(s.tc, tc);
       update(s.ta, ta);
-      ```
-      
       });
       
-      // =========================
       // إنشاء التقرير
-      // =========================
       let html = `
       
         <html>
@@ -2582,7 +2572,6 @@
       
       for (let b in stats) {
       
-     
       html += `<h3>${b}</h3>`;
       
       html += `
@@ -2639,7 +2628,6 @@
       }
       
       html += `</table>`;
-      ```
       
       }
       
