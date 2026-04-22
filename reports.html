@@ -2403,6 +2403,7 @@
         printWindow.print();
       }
      
+      
       ///////////////////////////////
       ///// حساب إحصائيات عينات المأخذ /////
       function generateStatisticsReport() {
@@ -2411,7 +2412,7 @@
       alert("لا توجد بيانات");
       return;
       }
-      // الفلاتر
+      /////// الفلاتر
       const fromDate_water = document.getElementById("fromDate_water").value;
       const toDate_water = document.getElementById("toDate_water").value;
       
@@ -2421,27 +2422,24 @@
       const selectedBranch = branchEl ? branchEl.value : "";
       const selectedStation = stationEl ? stationEl.value : "";
       
+      let from = fromDate_water ? new Date(fromDate_water) : null;
+      let to = toDate_water ? new Date(toDate_water) : null;
+      
+      if (to) to.setHours(23, 59, 59, 999);
+      
       let filteredData = waterData.filter(r => {
+      
       const rowDate = new Date(r[1]);
       const branch = r[2];
       const station = r[3];
       
-      if (fromDate_water) {
-        const from = new Date(fromDate_water);
-        if (rowDate < from) return false;
-      }
-      
-      if (toDate_water) {
-        const to = new Date(toDate_water);
-        to.setHours(23, 59, 59, 999);
-        if (rowDate > to) return false;
-      }
+      if (from && rowDate < from) return false;
+      if (to && rowDate > to) return false;
       
       if (selectedBranch && branch !== selectedBranch) return false;
       if (selectedStation && station !== selectedStation) return false;
       
       return true;
-      
       });
       
       if (filteredData.length === 0) {
@@ -2449,7 +2447,7 @@
       return;
       }
       
-      // دوال الإحصاء
+      /////// دوال الإحصاء
       function init() {
       return { sum: 0, count: 0, min: Infinity, max: -Infinity };
       }
@@ -2457,6 +2455,7 @@
       function update(p, val) {
       if (val !== "" && val != null) {
       const v = Number(val);
+      if (isNaN(v)) return;
       p.sum += v;
       p.count++;
       if (v < p.min) p.min = v;
@@ -2474,11 +2473,9 @@
       }
       
       const stats = {};
-      
-      
-      // تجميع البيانات
-      
+      /////// تجميع البيانات
       filteredData.forEach(r => {
+      
       const branch = r[2];
       const station = r[3];
       const location = r[4];
@@ -2496,7 +2493,7 @@
       const nh3 = r[16];
       const no2 = r[17];
       const no3 = r[18];
-      const Do = r[19];
+      const DO = r[19];
       const cod = r[20];
       const bod = r[21];
       const og = r[22];
@@ -2506,25 +2503,25 @@
       if (!stats[branch]) stats[branch] = {};
       
       if (!stats[branch][station]) {
-        stats[branch][station] = {
-          turbidity: init(),
-          ph: init(),
-          temp: init(),
-          tds: init(),
-          ch: init(),
-          sulf: init(),
-          fe: init(),
-          mn: init(),
-          nh3: init(),
-          no2: init(),
-          no3: init(),
-          do: init(),
-          cod: init(),
-          bod: init(),
-          og: init(),
-          tc: init(),
-          ta: init()
-        };
+      stats[branch][station] = {
+      turbidity: init(),
+      ph: init(),
+      temp: init(),
+      tds: init(),
+      ch: init(),
+      sulf: init(),
+      fe: init(),
+      mn: init(),
+      nh3: init(),
+      no2: init(),
+      no3: init(),
+      do: init(),
+      cod: init(),
+      bod: init(),
+      og: init(),
+      tc: init(),
+      ta: init()
+      };
       }
       
       const s = stats[branch][station];
@@ -2540,95 +2537,105 @@
       update(s.nh3, nh3);
       update(s.no2, no2);
       update(s.no3, no3);
-      update(s.do, Do);
+      update(s.do, DO);
       update(s.cod, cod);
       update(s.bod, bod);
       update(s.og, og);
       update(s.tc, tc);
       update(s.ta, ta);
+      
       });
       
       // إنشاء التقرير
       let html = `
       
-        <html>
-        <head>
-          <style>
-            body { font-family: Arial; direction: rtl; padding:20px; }
-            table { width:100%; border-collapse:collapse; margin-bottom:20px; }
-            th, td { border:1px solid #000; padding:6px; text-align:center; }
-            th { background:#eee; }
-          </style>
-        </head>
-        <body>
+      <html>
+      <head>
+      <style>
+      body { font-family: Arial; direction: rtl; padding:20px; }
+      table { width:100%; border-collapse:collapse; margin-bottom:20px; }
+      th, td { border:1px solid #000; padding:6px; text-align:center; }
+      th { background:#eee; }
+      </style>
+      </head>
+      <body>
       
-        <h2 style="text-align:center;">تقرير إحصائي لعينات المأخذ</h2>
+      <h2 style="text-align:center;">تقرير إحصائي لعينات المأخذ</h2>
       
-        <p style="text-align:center;">
-        الفترة الزمنية: من ${fromDate_water || "...."} إلى ${toDate_water || "...."}<br>
-        الفرع: ${selectedBranch || "الكل"}
-        </p>
-        `;
+      <p style="text-align:center;">
+      الفترة الزمنية: من ${fromDate_water || "...."} إلى ${toDate_water || "...."}<br>
+      الفرع: ${selectedBranch || "الكل"}
+      </p>
+      `;
       
       for (let b in stats) {
       
       html += `<h3>${b}</h3>`;
       
       html += `
-      <table>
-        <tr>
-          <th>المحطة</th>
-          <th>المؤشر</th>
-          <th>عدد القياسات</th>
-          <th>المتوسط</th>
-          <th>أقل قيمة</th>
-          <th>أعلى قيمة</th>
-        </tr>
-      `;
       
-      for (let s in stats[b]) {
-      
-        const d = stats[b][s];
-      
-        const params = {
-          "Turbidity": calc(d.turbidity, 1),
-          "pH": calc(d.ph, 2),
-          "Temp": calc(d.temp, 2),
-          "TDS": calc(d.tds, 2),
-          "Chlorides": calc(d.ch, 2),
-          "Sulfates": calc(d.sulf, 2),
-          "Fe": calc(d.fe, 2),
-          "Mn": calc(d.mn, 2),
-          "NH3": calc(d.nh3, 2),
-          "NO2": calc(d.no2, 3),
-          "NO3": calc(d.no3, 2),
-          "DO": calc(d.do, 1),
-          "COD": calc(d.cod, 1),
-          "BOD": calc(d.bod, 1),
-          "Oil & Grease": calc(d.og, 1),
-          "Total Coliform": calc(d.tc, 0),
-          "Total Algae": calc(d.ta, 0)
-        };
-      
-        for (let p in params) {
-      
-          const val = params[p];
-      
-          html += `
+        <table>
           <tr>
-            <td>${s}</td>
-            <td>${p}</td>
-            <td>${val.count}</td>
-            <td>${val.avg}</td>
-            <td>${val.min}</td>
-            <td>${val.max}</td>
+            <th>المحطة</th>
+            <th>المؤشر</th>
+            <th>عدد القياسات</th>
+            <th>المتوسط</th>
+            <th>أقل قيمة</th>
+            <th>أعلى قيمة</th>
           </tr>
-          `;
+        `;
+      
+      for (let station in stats[b]) {
+      
+      const d = stats[b][station];
+      
+      const params = {
+        "Turbidity": calc(d.turbidity, 1),
+        "pH": calc(d.ph, 2),
+        "Temp": calc(d.temp, 2),
+        "TDS": calc(d.tds, 2),
+        "Chlorides": calc(d.ch, 2),
+        "Sulfates": calc(d.sulf, 2),
+        "Fe": calc(d.fe, 2),
+        "Mn": calc(d.mn, 2),
+        "NH3": calc(d.nh3, 2),
+        "NO2": calc(d.no2, 3),
+        "NO3": calc(d.no3, 2),
+        "DO": calc(d.do, 1),
+        "COD": calc(d.cod, 1),
+        "BOD": calc(d.bod, 1),
+        "Oil & Grease": calc(d.og, 1),
+        "Total Coliform": calc(d.tc, 0),
+        "Total Algae": calc(d.ta, 0)
+      };
+      
+      const keys = Object.keys(params);
+      
+      for (let i = 0; i < keys.length; i++) {
+      
+        const p = keys[i];
+        const val = params[p];
+      
+        html += "<tr>";
+      
+        if (i === 0) {
+          html += `<td rowspan="${keys.length}">${station}</td>`;
         }
+      
+        html += `
+          <td>${p}</td>
+          <td>${val.count}</td>
+          <td>${val.avg}</td>
+          <td>${val.min}</td>
+          <td>${val.max}</td>
+        `;
+      
+        html += "</tr>";
+      }
+      
       }
       
       html += `</table>`;
-      
       }
       
       html += `</body></html>`;
@@ -2637,7 +2644,9 @@
       w.document.write(html);
       w.document.close();
       w.print();
+      
       }
+
 
   
      </script>
