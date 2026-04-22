@@ -822,9 +822,12 @@
         if (from && rowDate && rowDate < from) match = false;
         if (to && rowDate && rowDate > to) match = false;
         if (match) { filteredHTML += "<tr>"; cells.forEach(cell => { 
-            filteredHTML += <td>${cell.textContent}</td>;
+            filteredHTML += 
+                <td>${cell.textContent}</td>;
                 }); 
-            filteredHTML += "</tr>"; } });
+            filteredHTML += "</tr>"; 
+                   } 
+      });
     
       filteredHTML += "</tbody></table>";
     
