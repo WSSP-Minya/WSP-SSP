@@ -337,6 +337,8 @@
               const stationSelect3 = document.getElementById("station_modal3");
               const certifiedDateInput = document.getElementById("certifieddate");
               const locationSelect = document.getElementById("location");
+              const branchSelect4 = document.getElementById("branch_water");
+              const stationSelect4 = document.getElementById("station_water");
           
               // تعيين القسم في الواجهة
               document.getElementById("section").value = department || "";
@@ -356,6 +358,11 @@
                   console.log("Branch 3 changed:", branchSelect3.value);
                   fetchStations(branchSelect3.value, stationSelect3); // تم تمرير stationSelect2
               });
+
+               branchSelect4.addEventListener("change", () => {
+                  console.log("Branch 4 changed:", branchSelect4.value);
+                  fetchStations(branchSelect4.value, stationSelect4); // تم تمرير stationSelect4
+              });
           
               let branchStations1 = [];
               let branchDates1 = [];
@@ -363,6 +370,8 @@
               let branchDates2 = [];
               let branchStations3 = [];
               let branchDates3 = [];
+              let branchStations4 = [];
+              
 
           
               // جلب المحطات بناءً على الفرع
@@ -391,6 +400,8 @@
                               } else if (stationSelect === stationSelect3) {
                                   branchStations3 = data.stations;
                                   branchDates3 = data.certifiedDates;
+                              } else if (stationSelect === stationSelect4) {
+                                  branchStations4 = data.stations;
                               }
           
                               data.stations.forEach(station => {
