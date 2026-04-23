@@ -769,6 +769,30 @@
       const table = document.getElementById("waterqualitytable");
       let rows = Array.from(table.querySelectorAll("tbody tr"));
 
+          const envMap = {};
+
+          rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length < 4) return;
+        
+            const rowDateText = cells[0].textContent.trim();
+            const rowStation = cells[2].textContent.trim();
+            const rowLocation = cells[3].textContent.trim();
+        
+            if (!rowDateText.includes("/")) return;
+        
+            const [day, month, year] = rowDateText.split("/");
+            const formattedDate = `${year}-${month}-${day}`;
+            const key = rowStation + "_" + formattedDate;
+        
+            if (survey.includes(rowLocation)) {
+              if (!envMap[key]) {
+                envMap[key] = new Set();
+              }
+              envMap[key].add(rowLocation);
+            }
+          });
+
         // ترتيب حسب التاريخ (من الأقدم للأحدث)
         rows.sort((a, b) => {
           const getDate = (row) => {
@@ -813,11 +837,17 @@
     
         if (branch && rowBranch !== branch) match = false;
         if (station && rowStation !== station) match = false;
+        const key = rowStation + "_" + formattedDate;
+
         if (location === "المسح البيئى") {
-            if (!survey.includes(rowLocation)) match = false;
-            } else {
-            if (rowLocation !== location) match = false;
-            }
+          if (!envMap[key] || !envMap[key].has(rowLocation)) {
+            match = false;
+          }
+        } else {
+          if (rowLocation !== location) {
+            match = false;
+          }
+        }
        
         if (from && rowDate && rowDate < from) match = false;
         if (to && rowDate && rowDate > to) match = false;
