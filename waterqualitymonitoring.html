@@ -990,9 +990,7 @@
                 r.children[3].textContent.trim()
               );
         
-              const hasSurvey = locationsInGroup.some(loc =>
-                survey.includes(loc)
-              );
+              const hasSurvey = survey.every(loc => locationsInGroup.includes(loc));
         
               if (!hasSurvey) matchGroup = false;
         
