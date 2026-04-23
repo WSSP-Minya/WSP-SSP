@@ -305,6 +305,51 @@
         
           </div>
         </div>
+        <div id="dashboardModal" style="display:none; padding:15px;">
+    
+      <h2 style="text-align:center;">Water Quality Dashboard</h2>
+    
+      <!-- ================= FILTERS ================= -->
+      <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:15px;">
+    
+        <select id="dash_viewType">
+          <option value="monthly">شهري</option>
+          <option value="survey">مسح بيئي</option>
+        </select>
+    
+        <select id="dash_branch">
+          <option selected disabled>Select Branch</option>
+                  <option>العدوه</option>
+                  <option>مغاغة</option>
+                  <option>بنى مزار</option>
+                  <option>مطاى</option>
+                  <option>سمالوط</option>
+                  <option>المنيا</option>
+                  <option>ابوقرقاص</option>
+                  <option>ملوى</option>
+                  <option>ديرمواس</option>
+        </select>
+        <select id="dash_station"></select>
+    
+        <input type="date" id="dash_from">
+        <input type="date" id="dash_to">
+    
+        <input type="date" id="dash_singleDate" style="display:none;">
+    
+        <button onclick="generateDashboard()">تحديث</button>
+        <button onclick="closeDashboardModule8()">إغلاق</button>
+    
+      </div>
+    
+      <!-- ================= CHARTS ================= -->
+      <canvas id="phChart"></canvas>
+      <canvas id="tdsChart"></canvas>
+      <canvas id="tempChart"></canvas>
+      <canvas id="doChart"></canvas>
+      <canvas id="codChart"></canvas>
+      <canvas id="bodChart"></canvas>
+    
+    </div>
    
 
       
@@ -339,6 +384,8 @@
               const locationSelect = document.getElementById("location");
               const branchSelect4 = document.getElementById("branch_water");
               const stationSelect4 = document.getElementById("station_water");
+              const branchSelect5 = document.getElementById("dash_branch");
+              const stationSelect5 = document.getElementById("dash_station");
           
               // تعيين القسم في الواجهة
               document.getElementById("section").value = department || "";
@@ -363,6 +410,10 @@
                   console.log("Branch 4 changed:", branchSelect4.value);
                   fetchStations(branchSelect4.value, stationSelect4); // تم تمرير stationSelect4
               });
+              branchSelect5.addEventListener("change", () => {
+                  console.log("Branch 5 changed:", branchSelect5.value);
+                  fetchStations(branchSelect5.value, stationSelect5); // تم تمرير stationSelect4
+              });
           
               let branchStations1 = [];
               let branchDates1 = [];
@@ -371,6 +422,7 @@
               let branchStations3 = [];
               let branchDates3 = [];
               let branchStations4 = [];
+              let branchStation5 = [];
               
 
           
@@ -402,6 +454,8 @@
                                   branchDates3 = data.certifiedDates;
                               } else if (stationSelect === stationSelect4) {
                                   branchStations4 = data.stations;
+                              } else if (stationSelect === stationSelect5) {
+                                  branchStations5 = data.stations;
                               }
           
                               data.stations.forEach(station => {
@@ -570,6 +624,19 @@
                 if (event.target === m) m.style.display = "none";
               });
             }
+        /////////////////////////////
+      // OPEN / CLOSE
+      /////////////////////////////
+      
+      function openDashboardModule8() {
+        document.getElementById("dashboardModal").style.display = "block";
+        initDashboardFilters();
+        generateDashboard();
+      }
+      
+      function closeDashboardModule8() {
+        document.getElementById("dashboardModal").style.display = "none";
+      }
           // تقرير الإجراءات التصحيحية لمحطة واحدة
           document.getElementById("reportstation").addEventListener("click", () => {
             const branch1 = document.getElementById("branch_modal1").value || "----";
@@ -2713,6 +2780,265 @@
       w.print();
       
       }
+    //////////////
+    ///////Dashboard لنتائج الماخذ والمسح البيئى
+
+  
+      /////////////////////////////
+      //  STORAGE
+      /////////////////////////////
+      
+      let charts = {};
+      const monthlyStats = {};
+      
+      const surveyPointsOrder = [
+        "اعلى التيار 3000 م",
+        "اعلى التيار 2500 م",
+        "اعلى التيار 2000 م",
+        "اعلى التيار 1500 م",
+        "اعلى التيار 1000 م",
+        "اعلى التيار 500 م",
+        "المأخذ",
+        "اسفل التيار 500 م",
+        "اسفل التيار 1000 م"
+      ];
+      
+     
+      
+      /////////////////////////////
+      // FILTERS INIT
+      /////////////////////////////
+      
+      function initDashboardFilters() {
+      
+        const branchEl = document.getElementById("dash_branch");
+        const stationEl = document.getElementById("dash_station");
+      
+        const branches = [...new Set(waterData.map(r => r[2]))];
+      
+        branchEl.innerHTML = `<option value="">كل الفروع</option>`;
+        branches.forEach(b => {
+          branchEl.innerHTML += `<option value="${b}">${b}</option>`;
+        });
+      
+        branchEl.onchange = function () {
+      
+          const selected = this.value;
+      
+          const stations = waterData
+            .filter(r => !selected || r[2] === selected)
+            .map(r => r[3]);
+      
+          const unique = [...new Set(stations)];
+      
+          stationEl.innerHTML = `<option value="">كل المحطات</option>`;
+          unique.forEach(s => {
+            stationEl.innerHTML += `<option value="${s}">${s}</option>`;
+          });
+        };
+      }
+      
+      /////////////////////////////
+      // FILTER DATA
+      /////////////////////////////
+      
+      function getFilteredData() {
+      
+        const branch = document.getElementById("dash_branch").value;
+        const station = document.getElementById("dash_station").value;
+      
+        const from = document.getElementById("dash_from").value;
+        const to = document.getElementById("dash_to").value;
+      
+        let fromDate = from ? new Date(from) : null;
+        let toDate = to ? new Date(to) : null;
+      
+        if (toDate) toDate.setHours(23,59,59,999);
+      
+        return waterData.filter(r => {
+      
+          const d = new Date(r[1]);
+          const b = r[2];
+          const s = r[3];
+      
+          if (r[4] !== "المأخذ") return false;
+      
+          if (branch && b !== branch) return false;
+          if (station && s !== station) return false;
+      
+          if (fromDate && d < fromDate) return false;
+          if (toDate && d > toDate) return false;
+      
+          return true;
+        });
+      }
+      
+      /////////////////////////////
+      // MONTHLY PROCESSING
+      /////////////////////////////
+      
+      function resetMonthly() {
+        Object.keys(monthlyStats).forEach(k => delete monthlyStats[k]);
+      }
+      
+      function monthKey(date) {
+        const d = new Date(date);
+        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+      }
+      
+      function push(ind, date, val) {
+      
+        if (val === "" || val == null) return;
+      
+        const v = Number(val);
+        if (isNaN(v)) return;
+      
+        const m = monthKey(date);
+      
+        if (!monthlyStats[ind]) monthlyStats[ind] = {};
+        if (!monthlyStats[ind][m]) monthlyStats[ind][m] = [];
+      
+        monthlyStats[ind][m].push(v);
+      }
+      
+      function build(ind) {
+      
+        const data = monthlyStats[ind] || {};
+        const labels = Object.keys(data).sort();
+      
+        const values = labels.map(m => {
+          const arr = data[m];
+          return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
+        });
+      
+        return { labels, values };
+      }
+      
+      /////////////////////////////
+      // SURVEY PROCESSING
+      /////////////////////////////
+      
+      function buildSurveySeries(data, index) {
+      
+        const map = {};
+      
+        data.forEach(r => {
+      
+          const point = r[4];
+          const val = Number(r[index]);
+      
+          if (!surveyPointsOrder.includes(point)) return;
+          if (isNaN(val)) return;
+      
+          if (!map[point]) map[point] = [];
+      
+          map[point].push(val);
+        });
+      
+        return surveyPointsOrder.map(p => {
+      
+          const arr = map[p] || [];
+          if (!arr.length) return null;
+      
+          return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
+        });
+      }
+      
+      /////////////////////////////
+      // CHART DRAW
+      /////////////////////////////
+      
+      function draw(id, label, data, color) {
+      
+        const ctx = document.getElementById(id).getContext("2d");
+      
+        if (charts[id]) charts[id].destroy();
+      
+        charts[id] = new Chart(ctx, {
+          type: "line",
+          data: {
+            labels: data.labels || surveyPointsOrder,
+            datasets: [{
+              label,
+              data: data.values || data,
+              borderColor: color,
+              tension: 0.3,
+              fill: false
+            }]
+          }
+        });
+      }
+      
+      /////////////////////////////
+      // MAIN SWITCH
+      /////////////////////////////
+      
+      function generateDashboard() {
+      
+        const type = document.getElementById("dash_viewType").value;
+      
+        if (type === "survey") {
+          generateSurvey();
+        } else {
+          generateMonthly();
+        }
+      }
+      
+      /////////////////////////////
+      // MONTHLY MODE
+      /////////////////////////////
+      
+      function generateMonthly() {
+      
+        const filtered = getFilteredData();
+        resetMonthly();
+      
+        filtered.forEach(r => {
+      
+          const date = r[1];
+      
+          push("pH", date, r[9]);
+          push("TDS", date, r[11]);
+          push("Temp", date, r[10]);
+          push("DO", date, r[19]);
+          push("COD", date, r[20]);
+          push("BOD", date, r[21]);
+      
+        });
+      
+        draw("phChart", "pH", build("pH"), "blue");
+        draw("tdsChart", "TDS", build("TDS"), "green");
+        draw("tempChart", "Temp", build("Temp"), "orange");
+        draw("doChart", "DO", build("DO"), "purple");
+        draw("codChart", "COD", build("COD"), "red");
+        draw("bodChart", "BOD", build("BOD"), "brown");
+      }
+      
+      /////////////////////////////
+      // SURVEY MODE
+      /////////////////////////////
+      
+      function generateSurvey() {
+      
+        const filtered = getFilteredData();
+      
+        const pH = buildSurveySeries(filtered, 9);
+        const tds = buildSurveySeries(filtered, 11);
+        const temp = buildSurveySeries(filtered, 10);
+        const dox = buildSurveySeries(filtered, 19);
+        const cod = buildSurveySeries(filtered, 20);
+        const bod = buildSurveySeries(filtered, 21);
+      
+        draw("phChart", "pH Profile", pH, "blue");
+        draw("tdsChart", "TDS Profile", tds, "green");
+        draw("tempChart", "Temp Profile", temp, "orange");
+        draw("doChart", "DO Profile", dox, "purple");
+        draw("codChart", "COD Profile", cod, "red");
+        draw("bodChart", "BOD Profile", bod, "brown");
+      }
+
+</script>   
+       
 
 
   
