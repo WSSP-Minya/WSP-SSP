@@ -286,10 +286,15 @@ select, input[type="date"] {
 /*تجربة dashboard*/
 /* CARD OUTER */
 .dashboard-card {
+  width: 95%;
+  height: 92vh;
   background: #fff;
-  padding: 20px;
   border-radius: 12px;
-  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  overflow-y: auto;
 }
 
 /* MODAL */
@@ -298,6 +303,7 @@ select, input[type="date"] {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.6);
+  z-index: 9999;
   justify-content: center;
   align-items: center;
 }
