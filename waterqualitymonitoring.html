@@ -744,131 +744,136 @@
     function printTable() {
 
       const branch = document.getElementById("branch").value;
-        if (!branch) {
-            alert("اختر الفرع أولاً");
-            return;
-          }
+      if (!branch) {
+        alert("اختر الفرع أولاً");
+        return;
+      }
+    
       const station = document.getElementById("station").value;
       const location = document.getElementById("filteredresults").value;
       const fromDate = document.getElementById("fromDate").value;
       const toDate = document.getElementById("toDate").value;
-        const survey = [
-          "اعلى التيار 3000 م",
-          "اعلى التيار 2500 م",
-          "اعلى التيار 2000 م",
-          "اعلى التيار 1500 م",
-          "اعلى التيار 1000 م",
-          "اعلى التيار 500 م",
-          "المأخذ",
-          "اسفل التيار 500 م",
-          "اسفل التيار 1000 م"
-        ];
-      
-      
-
-      const table = document.getElementById("waterqualitytable");
+    
+      const survey = [
+        "اعلى التيار 3000 م",
+        "اعلى التيار 2500 م",
+        "اعلى التيار 2000 م",
+        "اعلى التيار 1500 م",
+        "اعلى التيار 1000 م",
+        "اعلى التيار 500 م",
+        "المأخذ",
+        "اسفل التيار 500 م",
+        "اسفل التيار 1000 م"
+      ];
+    
+      const normalize = str => str.replace(/\s+/g, '').trim();
+    
+      const table = document.getElementById(tableId);
       let rows = Array.from(table.querySelectorAll("tbody tr"));
-
-          const envMap = {};
-
-          rows.forEach(row => {
-            const cells = row.querySelectorAll("td");
-            if (cells.length < 4) return;
-        
-            const rowDateText = cells[0].textContent.trim();
-            const rowStation = cells[2].textContent.trim();
-            const rowLocation = cells[3].textContent.trim();
-        
-            if (!rowDateText.includes("/")) return;
-        
-            const [day, month, year] = rowDateText.split("/");
-            const formattedDate = `${year}-${month}-${day}`;
-            const key = rowStation + "_" + formattedDate;
-        
-            if (survey.includes(rowLocation)) {
-              if (!envMap[key]) {
-                envMap[key] = new Set();
-              }
-              envMap[key].add(rowLocation);
-            }
-          });
-
-        // ترتيب حسب التاريخ (من الأقدم للأحدث)
-        rows.sort((a, b) => {
-          const getDate = (row) => {
-            const text = row.children[0].textContent.trim();
-        
-            if (!text.includes("/")) return new Date(0);
-        
-            const [day, month, year] = text.split("/");
-            return new Date(`${year}-${month}-${day}`);
-          };
-        
-          return getDate(a) - getDate(b);
-        });
+    
+      // ترتيب حسب التاريخ
+      rows.sort((a, b) => {
+        const getDate = (row) => {
+          const text = row.children[0].textContent.trim();
+          if (!text.includes("/")) return new Date(0);
+          const [day, month, year] = text.split("/");
+          return new Date(`${year}-${month}-${day}`);
+        };
+        return getDate(a) - getDate(b);
+      });
+    
+      // 🧠 تجميع حسب (تاريخ + فرع + محطة)
+      let grouped = {};
+    
+      rows.forEach(row => {
+        const cells = row.querySelectorAll("td");
+        if (cells.length < 4) return;
+    
+        const date = cells[0].textContent.trim();
+        const branchVal = cells[1].textContent.trim();
+        const stationVal = cells[2].textContent.trim();
+    
+        const key = `${date}|${branchVal}|${stationVal}`;
+    
+        if (!grouped[key]) grouped[key] = [];
+        grouped[key].push(row);
+      });
     
       let filteredHTML = `
-        <table>
+        <table border="1">
           ${table.querySelector("thead").outerHTML}
           <tbody>
       `;
     
-      rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
+      Object.values(grouped).forEach(group => {
     
-        if (cells.length < 4) return;
+        let matchGroup = true;
     
-        const rowDateText = cells[0].textContent.trim();
-        const rowBranch = cells[1].textContent.trim();
-        const rowStation = cells[2].textContent.trim();
-        const rowLocation = cells[3].textContent.trim();
+        const firstCells = group[0].querySelectorAll("td");
+    
+        const rowDateText = firstCells[0].textContent.trim();
+        const rowBranch = firstCells[1].textContent.trim();
+        const rowStation = firstCells[2].textContent.trim();
     
         let rowDate = null;
-           let formattedDate = "";
-    
         if (rowDateText.includes("/")) {
           const [day, month, year] = rowDateText.split("/");
-          formattedDate = `${year}-${month}-${day}`;
-          rowDate = new Date(`${year}-${month}-${day}`); 
+          rowDate = new Date(`${year}-${month}-${day}`);
         }
     
         const from = fromDate ? new Date(fromDate) : null;
         const to = toDate ? new Date(toDate) : null;
     
-        let match = true;
+        if (branch && rowBranch !== branch) matchGroup = false;
+        if (station && rowStation !== station) matchGroup = false;
+        if (from && rowDate && rowDate < from) matchGroup = false;
+        if (to && rowDate && rowDate > to) matchGroup = false;
     
-        if (branch && rowBranch !== branch) match = false;
-        if (station && rowStation !== station) match = false;
-       
-
-        
-        if (!formattedDate) match = false;  
-        
-        const key = rowStation + "_" + formattedDate;
-
         if (location === "المسح البيئى") {
-          if (!envMap[key] || !envMap[key].has(rowLocation)) {
-            match = false;
-          }
-        } else {
-          if (rowLocation !== location) {
-            match = false;
-          }
-        }
-       
-        if (from && rowDate && rowDate < from) match = false;
-        if (to && rowDate && rowDate > to) match = false;
-                if (match) {
-          filteredHTML += "<tr>";
-          cells.forEach(cell => {
-            filteredHTML += `<td>${cell.textContent}</td>`;
+    
+          const locationsInGroup = group.map(r =>
+            normalize(r.children[3].textContent)
+          );
+    
+          // ✔️ لازم كل نقاط المسح موجودة
+          const hasSurvey = survey.every(loc =>
+            locationsInGroup.includes(normalize(loc))
+          );
+    
+          if (!hasSurvey) matchGroup = false;
+    
+          // ✔️ ترتيب النقاط
+          group.sort((a, b) => {
+            const locA = normalize(a.children[3].textContent);
+            const locB = normalize(b.children[3].textContent);
+    
+            return survey.findIndex(s => normalize(s) === locA) -
+                   survey.findIndex(s => normalize(s) === locB);
           });
-          filteredHTML += "</tr>";
+    
+        } else {
+    
+          group = group.filter(row =>
+            normalize(row.children[3].textContent) === normalize(location)
+          );
+    
+          if (group.length === 0) matchGroup = false;
         }
+    
+        if (matchGroup) {
+          group.forEach(row => {
+            filteredHTML += "<tr>";
+            row.querySelectorAll("td").forEach(cell => {
+              filteredHTML += `<td>${cell.textContent}</td>`;
+            });
+            filteredHTML += "</tr>";
+          });
+        }
+    
       });
     
       filteredHTML += "</tbody></table>";
-    
+       
       const style = `
         <style>
           body{font-family:Arial;}
