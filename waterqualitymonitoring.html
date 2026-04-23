@@ -1030,13 +1030,20 @@
       filteredHTML += "</tbody></table>";
     
       // 📥 تحميل Excel
-      const link = document.createElement("a");
-      link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(filteredHTML);
-      link.download = filename ? filename + ".xls" : "filtered_data.xls";
-    
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
+      const BOM = "\uFEFF";
+
+        const blob = new Blob(
+          [BOM + filteredHTML],
+          { type: "application/vnd.ms-excel;charset=utf-8;" }
+        );
+        
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename ? filename + ".xls" : "filtered_data.xls";
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     }
 
     //  تسجيل الخروج
