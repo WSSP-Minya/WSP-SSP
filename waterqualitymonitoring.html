@@ -824,10 +824,12 @@
         const rowLocation = cells[3].textContent.trim();
     
         let rowDate = null;
+           let formattedDate = "";
     
         if (rowDateText.includes("/")) {
           const [day, month, year] = rowDateText.split("/");
-          rowDate = new Date(`${year}-${month}-${day}`);
+          formattedDate = `${year}-${month}-${day}`;
+          rowDate = new Date(`${year}-${month}-${day}`); 
         }
     
         const from = fromDate ? new Date(fromDate) : null;
@@ -837,6 +839,11 @@
     
         if (branch && rowBranch !== branch) match = false;
         if (station && rowStation !== station) match = false;
+       
+
+        
+        if (!formattedDate) match = false;  
+        
         const key = rowStation + "_" + formattedDate;
 
         if (location === "المسح البيئى") {
