@@ -283,7 +283,52 @@ select, input[type="date"] {
   border-radius: 10px;
   box-sizing: border-box;
 }
+/*تجربة dashboard*/
+/* CARD OUTER */
+.dashboard-card {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+}
 
+/* MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  justify-content: center;
+  align-items: center;
+}
+
+/* MODAL CONTENT */
+.modal-content {
+  background: white;
+  width: 80%;
+  height: 80%;
+  border-radius: 10px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.modal-body {
+  flex: 1;
+  overflow: auto;
+}
+
+.charts {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
 /* --------------------------- */
 /*      Responsive Design       */
 /* --------------------------- */
