@@ -896,105 +896,139 @@
       win.print();
     }
     
-    function exportTableToExcel(waterqualitytable, filename='') {
-    
-      const branch = document.getElementById("branch").value;
+   function exportTableToExcel(tableId, filename = '') {
+
+          const branch = document.getElementById("branch").value;
           if (!branch) {
             alert("اختر الفرع أولاً");
             return;
           }
-
-      const station = document.getElementById("station").value;
-      const location = document.getElementById("filteredresults").value;
-      const fromDate = document.getElementById("fromDate").value;
-      const toDate = document.getElementById("toDate").value;
-         const survey = [
-          "اعلى التيار 3000 م",
-          "اعلى التيار 2500 م",
-          "اعلى التيار 2000 م",
-          "اعلى التيار 1500 م",
-          "اعلى التيار 1000 م",
-          "اعلى التيار 500 م",
-          "المأخذ",
-          "اسفل التيار 500 م",
-          "اسفل التيار 1000 م"
-        ];
-    
-      const table = document.getElementById("waterqualitytable");
-      let rows = Array.from(table.querySelectorAll("tbody tr"));
-
-    // ترتيب حسب التاريخ (من الأقدم للأحدث)
-    rows.sort((a, b) => {
-      const getDate = (row) => {
-        const text = row.children[0].textContent.trim();
-    
-        if (!text.includes("/")) return new Date(0);
-    
-        const [day, month, year] = text.split("/");
-        return new Date(`${year}-${month}-${day}`);
-      };
-    
-      return getDate(a) - getDate(b);
-    });
-    
-      let filteredHTML = `
-        <table border="1">
-          ${table.querySelector("thead").outerHTML}
-          <tbody>
-      `;
-    
-      rows.forEach(row => {
-        const cells = row.querySelectorAll("td");
-    
-        // تجاهل الصفوف الفاضية
-        if (cells.length < 4) return;
-    
-        const rowDateText = cells[0].textContent.trim();
-        const rowBranch = cells[1].textContent.trim();
-        const rowStation = cells[2].textContent.trim();
-        const rowLocation = cells[3].textContent.trim();
-    
-        let rowDate = null;
-    
-        if (rowDateText.includes("/")) {
-          const [day, month, year] = rowDateText.split("/");
-          rowDate = new Date(`${year}-${month}-${day}`);
-        }
-    
-        const from = fromDate ? new Date(fromDate) : null;
-        const to = toDate ? new Date(toDate) : null;
-    
-        let match = true;
-    
-        if (branch && rowBranch !== branch) match = false;
-        if (station && rowStation !== station) match = false;
-        if (location === "المسح البيئى") {
-            if (!survey.includes(rowLocation)) match = false;
-            } else {
-            if (rowLocation !== location) match = false;
-            }
-        if (from && rowDate && rowDate < from) match = false;
-        if (to && rowDate && rowDate > to) match = false;
-    
-        if (match) {
-          filteredHTML += "<tr>";
-          cells.forEach(cell => {
-            filteredHTML += `<td>${cell.textContent}</td>`;
+        
+          const station = document.getElementById("station").value;
+          const location = document.getElementById("filteredresults").value;
+          const fromDate = document.getElementById("fromDate").value;
+          const toDate = document.getElementById("toDate").value;
+        
+          const survey = [
+            "اعلى التيار 3000 م",
+            "اعلى التيار 2500 م",
+            "اعلى التيار 2000 م",
+            "اعلى التيار 1500 م",
+            "اعلى التيار 1000 م",
+            "اعلى التيار 500 م",
+            "المأخذ",
+            "اسفل التيار 500 م",
+            "اسفل التيار 1000 م"
+          ];
+        
+          const table = document.getElementById(tableId);
+          let rows = Array.from(table.querySelectorAll("tbody tr"));
+        
+          // ترتيب حسب التاريخ
+          rows.sort((a, b) => {
+            const getDate = (row) => {
+              const text = row.children[0].textContent.trim();
+              if (!text.includes("/")) return new Date(0);
+              const [day, month, year] = text.split("/");
+              return new Date(`${year}-${month}-${day}`);
+            };
+            return getDate(a) - getDate(b);
           });
-          filteredHTML += "</tr>";
+        
+          // 🧠 تجميع حسب (تاريخ + فرع + محطة)
+          let grouped = {};
+        
+          rows.forEach(row => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length < 4) return;
+        
+            const date = cells[0].textContent.trim();
+            const branchVal = cells[1].textContent.trim();
+            const stationVal = cells[2].textContent.trim();
+        
+            const key = `${date}|${branchVal}|${stationVal}`;
+        
+            if (!grouped[key]) grouped[key] = [];
+            grouped[key].push(row);
+          });
+        
+          let filteredHTML = `
+            <table border="1">
+              ${table.querySelector("thead").outerHTML}
+              <tbody>
+          `;
+        
+          // 🔍 فلترة
+          Object.values(grouped).forEach(group => {
+        
+            let matchGroup = true;
+        
+            const firstCells = group[0].querySelectorAll("td");
+        
+            const rowDateText = firstCells[0].textContent.trim();
+            const rowBranch = firstCells[1].textContent.trim();
+            const rowStation = firstCells[2].textContent.trim();
+        
+            let rowDate = null;
+            if (rowDateText.includes("/")) {
+              const [day, month, year] = rowDateText.split("/");
+              rowDate = new Date(`${year}-${month}-${day}`);
+            }
+        
+            const from = fromDate ? new Date(fromDate) : null;
+            const to = toDate ? new Date(toDate) : null;
+        
+            if (branch && rowBranch !== branch) matchGroup = false;
+            if (station && rowStation !== station) matchGroup = false;
+            if (from && rowDate && rowDate < from) matchGroup = false;
+            if (to && rowDate && rowDate > to) matchGroup = false;
+        
+            // 🟢 حالة المسح البيئى
+            if (location === "المسح البيئى") {
+        
+              const locationsInGroup = group.map(r =>
+                r.children[3].textContent.trim()
+              );
+        
+              const hasSurvey = locationsInGroup.some(loc =>
+                survey.includes(loc)
+              );
+        
+              if (!hasSurvey) matchGroup = false;
+        
+            } else {
+              // 🟡 الفلترة العادية
+              group = group.filter(row =>
+                row.children[3].textContent.trim() === location
+              );
+        
+              if (group.length === 0) matchGroup = false;
+            }
+        
+            // 📤 إضافة النتائج
+            if (matchGroup) {
+              group.forEach(row => {
+                filteredHTML += "<tr>";
+                row.querySelectorAll("td").forEach(cell => {
+                  filteredHTML += `<td>${cell.textContent}</td>`;
+                });
+                filteredHTML += "</tr>";
+              });
+            }
+        
+          });
+        
+          filteredHTML += "</tbody></table>";
+        
+          // 📥 تحميل كملف Excel
+          const link = document.createElement("a");
+          link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(filteredHTML);
+          link.download = filename ? filename + ".xls" : "filtered_data.xls";
+        
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         }
-      });
-    
-      filteredHTML += "</tbody></table>";
-    
-      const link = document.createElement("a");
-      link.href = 'data:application/vnd.ms-excel,' + encodeURIComponent(filteredHTML);
-      link.download = filename ? filename + ".xls" : "filtered_data.xls";
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-
 
     //  تسجيل الخروج
     function logout() {
