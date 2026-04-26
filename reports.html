@@ -3004,7 +3004,7 @@
          
       
         });
-        draw("phChart", "Turbidity", build("Turbidity"), "blue");
+        draw("turbidityChart", "Turbidity", build("Turbidity"), "blue");
         draw("phChart", "pH", build("pH"), "blue");
         draw("tempChart", "Temp", build("Temp"), "orange");
         draw("tdsChart", "TDS", build("TDS"), "green");
@@ -3029,7 +3029,7 @@
         const cod = buildSurveySeries(filtered, 20);
         const bod = buildSurveySeries(filtered, 21);
       
-        draw("phChart", "turbidity Profile", turbidity, "blue");
+        draw("turbidityChart", "turbidity Profile", turbidity, "blue");
         draw("phChart", "pH Profile", pH, "blue");
         draw("tdsChart", "TDS Profile", tds, "green");
         draw("tempChart", "Temp Profile", temp, "orange");
@@ -3039,10 +3039,6 @@
       }
 
 
-       
-
-
-  
      </script>
   </body>
 
