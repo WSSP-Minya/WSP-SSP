@@ -79,8 +79,8 @@
             </div> 
             Intake Statistical Report
           </div>
-        <div class="card" onclick="openModal('dashboardModal')" hidden>
-            <div class="icon" hidden>
+        <div class="card" onclick="openModal('modal8')">
+            <div class="icon">
               <img src="water-quality-testing-rgb-color-icon-2WX6M5E.jpg">
             </div> 
             Dash
@@ -311,9 +311,9 @@
         
           </div>
         </div>
-        <div id="dashboardModal" class="modal">
+        <div id="modal8" class="modal">
         
-          <div class="dashboard-card">
+          <div class="modal-content">
         
             <h2 style="text-align:center;">Water Quality Dashboard</h2>
         
@@ -352,8 +352,8 @@
             <div class="dashboard-grid">
         
               <canvas id="phChart"></canvas>
-              <canvas id="tdsChart"></canvas>
               <canvas id="tempChart"></canvas>
+              <canvas id="tdsChart"></canvas>
               <canvas id="doChart"></canvas>
               <canvas id="codChart"></canvas>
               <canvas id="bodChart"></canvas>
@@ -634,20 +634,8 @@
               document.querySelectorAll('.modal').forEach(m => {
                 if (event.target === m) m.style.display = "none";
               });
-            }
-        /////////////////////////////
-      // OPEN / CLOSE
-      /////////////////////////////
+             
       
-      function openDashboardModule8() {
-        document.getElementById("dashboardModal").style.display = "block";
-        initDashboardFilters();
-        generateDashboard();
-      }
-      
-      function closeDashboardModule8() {
-        document.getElementById("dashboardModal").style.display = "none";
-      }
           // تقرير الإجراءات التصحيحية لمحطة واحدة
           document.getElementById("reportstation").addEventListener("click", () => {
             const branch1 = document.getElementById("branch_modal1").value || "----";
@@ -3007,19 +2995,19 @@
         filtered.forEach(r => {
       
           const date = r[1];
-      
-          push("pH", date, r[9]);
-          push("TDS", date, r[11]);
-          push("Temp", date, r[10]);
-          push("DO", date, r[19]);
-          push("COD", date, r[20]);
-          push("BOD", date, r[21]);
+          
+          push("Turbidity", date, r[9]);
+          push("pH", date, r[10]);
+          push("Temp", date, r[11]);
+          push("TDS", date, r[12]);
+          
+         
       
         });
-      
+        draw("phChart", "Turbidity", build("Turbidity"), "blue");
         draw("phChart", "pH", build("pH"), "blue");
-        draw("tdsChart", "TDS", build("TDS"), "green");
         draw("tempChart", "Temp", build("Temp"), "orange");
+        draw("tdsChart", "TDS", build("TDS"), "green");
         draw("doChart", "DO", build("DO"), "purple");
         draw("codChart", "COD", build("COD"), "red");
         draw("bodChart", "BOD", build("BOD"), "brown");
@@ -3032,14 +3020,16 @@
       function generateSurvey() {
       
         const filtered = getFilteredData();
-      
-        const pH = buildSurveySeries(filtered, 9);
-        const tds = buildSurveySeries(filtered, 11);
-        const temp = buildSurveySeries(filtered, 10);
+        const turbidity = buildSurveySeries(filtered, 9);
+        const pH = buildSurveySeries(filtered, 10);
+        const temp = buildSurveySeries(filtered, 11);
+        const tds = buildSurveySeries(filtered, 12);
+       
         const dox = buildSurveySeries(filtered, 19);
         const cod = buildSurveySeries(filtered, 20);
         const bod = buildSurveySeries(filtered, 21);
       
+        draw("phChart", "turbidity Profile", turbidity, "blue");
         draw("phChart", "pH Profile", pH, "blue");
         draw("tdsChart", "TDS Profile", tds, "green");
         draw("tempChart", "Temp Profile", temp, "orange");
