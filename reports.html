@@ -624,6 +624,11 @@
             
               if (id === "modal5") {
                 loadDashboardData();
+              } 
+              else if (id === "modal8") {
+                setTimeout(() => {
+                  initDashboardFilters();
+                }, 200);
               }
             }
           
@@ -2811,33 +2816,41 @@
       /////////////////////////////
       
       function initDashboardFilters() {
-      
-        const branchEl = document.getElementById("dash_branch");
-        const stationEl = document.getElementById("dash_station");
-      
-        const branches = [...new Set(waterData.map(r => r[2]))];
-      
-        branchEl.innerHTML = `<option value="">كل الفروع</option>`;
-        branches.forEach(b => {
-          branchEl.innerHTML += `<option value="${b}">${b}</option>`;
-        });
-      
-        branchEl.onchange = function () {
-      
-          const selected = this.value;
-      
-          const stations = waterData
-            .filter(r => !selected || r[2] === selected)
-            .map(r => r[3]);
-      
-          const unique = [...new Set(stations)];
-      
-          stationEl.innerHTML = `<option value="">كل المحطات</option>`;
-          unique.forEach(s => {
-            stationEl.innerHTML += `<option value="${s}">${s}</option>`;
-          });
-        };
+
+      const branchEl = document.getElementById("dash_branch");
+      const stationEl = document.getElementById("dash_station");
+    
+      if (!waterData || waterData.length === 0) {
+        console.log("Water data not loaded yet");
+        return;
       }
+    
+      const branches = [...new Set(waterData.map(r => r[2]))];
+    
+      branchEl.innerHTML = `<option value="">كل الفروع</option>`;
+      branches.forEach(b => {
+        branchEl.innerHTML += `<option value="${b}">${b}</option>`;
+      });
+    
+      stationEl.innerHTML = `<option value="">كل المحطات</option>`;
+    
+      branchEl.onchange = function () {
+    
+        const selected = this.value;
+    
+        const stations = waterData
+          .filter(r => !selected || r[2] === selected)
+          .map(r => r[3]);
+    
+        const unique = [...new Set(stations)];
+    
+        stationEl.innerHTML = `<option value="">كل المحطات</option>`;
+    
+        unique.forEach(s => {
+          stationEl.innerHTML += `<option value="${s}">${s}</option>`;
+        });
+      };
+    }
       
       /////////////////////////////
       // FILTER DATA
@@ -2950,8 +2963,10 @@
       /////////////////////////////
       
       function draw(id, label, data, color) {
+        const canvas = document.getElementById(id);
+        if (!canvas) return;
       
-        const ctx = document.getElementById(id).getContext("2d");
+        const ctx = canvas.getContext("2d");
       
         if (charts[id]) charts[id].destroy();
       
@@ -2973,8 +2988,12 @@
       /////////////////////////////
       // MAIN SWITCH
       /////////////////////////////
-      
       function generateDashboard() {
+
+        if (!waterData || waterData.length === 0) {
+          alert("Loading data... try again");
+          return;
+        }
       
         const type = document.getElementById("dash_viewType").value;
       
