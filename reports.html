@@ -79,12 +79,7 @@
             </div> 
             Intake Statistical Report
           </div>
-        <div class="card" onclick="openModal('modal8')">
-            <div class="icon">
-              <img src="water-quality-testing-rgb-color-icon-2WX6M5E.jpg">
-            </div> 
-            Dash
-          </div>
+        
           
       </div>
       
@@ -311,58 +306,8 @@
         
           </div>
         </div>
-        <div id="modal8" class="modal">
         
-          <div class="modal-content">
-        
-            <h2 style="text-align:center;">Water Quality Dashboard</h2>
-        
-            <!-- FILTERS -->
-            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:15px;">
-        
-              <select id="dash_viewType">
-                <option value="monthly">شهري</option>
-                <option value="survey">مسح بيئي</option>
-              </select>
-        
-              <select id="dash_branch">
-                <option selected disabled>Select Branch</option>
-                <option>العدوه</option>
-                <option>مغاغة</option>
-                <option>بنى مزار</option>
-                <option>مطاى</option>
-                <option>سمالوط</option>
-                <option>المنيا</option>
-                <option>ابوقرقاص</option>
-                <option>ملوى</option>
-                <option>ديرمواس</option>
-              </select>
-        
-              <select id="dash_station"></select>
-        
-              <input type="date" id="dash_from">
-              <input type="date" id="dash_to">
-        
-              <button onclick="generateDashboard()">Open</button>
-              <button onclick="closeDashboardModule8()">Close</button>
-        
-            </div>
-        
-            <!-- CHARTS -->
-            <div class="dashboard-grid">
-              
-              <canvas id="turbidityChart"></canvas>
-              <canvas id="phChart"></canvas>
-              <canvas id="tempChart"></canvas>
-              <canvas id="tdsChart"></canvas>
-              <canvas id="doChart"></canvas>
-              <canvas id="codChart"></canvas>
-              <canvas id="bodChart"></canvas>
-        
-            </div>
-        
-          </div>
-        </div>
+      
 
       
 
