@@ -342,7 +342,7 @@
               <input type="date" id="dash_from">
               <input type="date" id="dash_to">
         
-              <button onclick="generateDashboard()">Open</button>
+              <button onclick="openDashboard()">Open</button>
               <button onclick="closeDashboardModule8()">Close</button>
         
             </div>
@@ -3057,6 +3057,18 @@
         draw("doChart", "DO Profile", dox, "purple");
         draw("codChart", "COD Profile", cod, "red");
         draw("bodChart", "BOD Profile", bod, "brown");
+      }
+       function openDashboard() {
+        const data = {
+          branch: document.getElementById("dash_branch").value,
+          station: document.getElementById("dash_station").value,
+          from: document.getElementById("dash_from").value,
+          to: document.getElementById("dash_to").value,
+          type: document.getElementById("dash_viewType").value
+        };
+      
+        sessionStorage.setItem("dashboardFilters", JSON.stringify(data));
+        window.location.href = "dashboard.html"; // فتح صفحة الـ charts
       }
     
 
