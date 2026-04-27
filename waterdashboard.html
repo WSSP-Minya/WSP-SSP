@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>Water Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<h2 style="text-align:center;">Water Monitoring Dashboard</h2>
+
+<div class="dashboard-grid">
+  <canvas id="turbidityChart"></canvas>
+  <canvas id="phChart"></canvas>
+  <canvas id="tempChart"></canvas>
+  <canvas id="tdsChart"></canvas>
+  <canvas id="doChart"></canvas>
+  <canvas id="codChart"></canvas>
+  <canvas id="bodChart"></canvas>
+</div>
+
+
+
+</body>
+</html>
+<script>
+// =========================
+// GLOBAL STORAGE
+// =========================
+let charts = {};
+let waterData = [];  // يجب تحميلها من المصدر
+const monthlyStats = {};
+const surveyPointsOrder = [
+  "اعلى التيار 3000 م",
+  "اعلى التيار 2500 م",
+  "اعلى التيار 2000 م",
+  "اعلى التيار 1500 م",
+  "اعلى التيار 1000 م",
+  "اعلى التيار 500 م",
+  "المأخذ",
+  "اسفل التيار 500 م",
+  "اسفل التيار 1000 م"
+];
+
+// =========================
+// LOAD DATA (EXAMPLE)
+// =========================
+async function loadWaterData() {
+  
+  const url = "https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec";
+  try {
+    const res = await fetch(url);
+    const data = await res.json();
+    if(data.status === "success") {
+      waterData = data.records; 
+    } else {
+      alert("خطأ في جلب البيانات");
+    }
+  } catch(err) {
+    console.error(err);
+    alert("فشل الاتصال بالبيانات");
+  }
+}
+
+// =========================
+// FILTER DATA
+// =========================
+function getFilteredData() {
+  const { branch, station, from, to } = window.dashboardFilters;
+
+  let fromDate = from ? new Date(from) : null;
+  let toDate = to ? new Date(to) : null;
+  if (toDate) toDate.setHours(23,59,59,999);
+
+  return waterData.filter(r => {
+    const d = new Date(r[1]);
+    const b = r[2];
+    const s = r[3];
+
+    if(r[4] !== "المأخذ") return false;
+    if(branch && b !== branch) return false;
+    if(station && s !== station) return false;
+    if(fromDate && d < fromDate) return false;
+    if(toDate && d > toDate) return false;
+
+    return true;
+  });
+}
+
+// =========================
+// MONTHLY PROCESSING
+// =========================
+function resetMonthly() { Object.keys(monthlyStats).forEach(k => delete monthlyStats[k]); }
+function monthKey(date) {
+  const d = new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
+}
+function push(ind, date, val) {
+  if(val==="" || val==null) return;
+  const v = Number(val);
+  if(isNaN(v)) return;
+  const m = monthKey(date);
+  if(!monthlyStats[ind]) monthlyStats[ind] = {};
+  if(!monthlyStats[ind][m]) monthlyStats[ind][m] = [];
+  monthlyStats[ind][m].push(v);
+}
+function build(ind) {
+  const data = monthlyStats[ind] || {};
+  const labels = Object.keys(data).sort();
+  const values = labels.map(m => {
+    const arr = data[m];
+    return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
+  });
+  return { labels, values };
+}
+
+// =========================
+// SURVEY PROCESSING
+// =========================
+function buildSurveySeries(data, index) {
+  const map = {};
+  data.forEach(r => {
+    const point = r[4];
+    const val = Number(r[index]);
+    if(!surveyPointsOrder.includes(point)) return;
+    if(isNaN(val)) return;
+    if(!map[point]) map[point] = [];
+    map[point].push(val);
+  });
+  return surveyPointsOrder.map(p => {
+    const arr = map[p] || [];
+    if(!arr.length) return null;
+    return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
+  });
+}
+
+// =========================
+// DRAW CHART
+// =========================
+function draw(id,label,data,color) {
+  const canvas = document.getElementById(id);
+  if(!canvas) return;
+  const ctx = canvas.getContext("2d");
+  if(charts[id]) charts[id].destroy();
+
+  charts[id] = new Chart(ctx,{
+    type:"line",
+    data:{
+      labels: data.labels || surveyPointsOrder,
+      datasets:[{
+        label,
+        data: data.values || data,
+        borderColor: color,
+        tension:0.3,
+        fill:false
+      }]
+    }
+  });
+}
+
+// =========================
+// GENERATE DASHBOARD
+// =========================
+function generateDashboard() {
+  if(!waterData || waterData.length===0) {
+    alert("Loading data... try again");
+    return;
+  }
+
+  const type = window.dashboardFilters.type;
+
+  if(type==="survey") generateSurvey();
+  else generateMonthly();
+}
+
+function generateMonthly() {
+  const filtered = getFilteredData();
+  resetMonthly();
+
+  filtered.forEach(r=>{
+    const date = r[1];
+    push("Turbidity", date, r[9]);
+    push("pH", date, r[10]);
+    push("Temp", date, r[11]);
+    push("TDS", date, r[12]);
+  });
+
+  draw("turbidityChart","Turbidity",build("Turbidity"),"blue");
+  draw("phChart","pH",build("pH"),"blue");
+  draw("tempChart","Temp",build("Temp"),"orange");
+  draw("tdsChart","TDS",build("TDS"),"green");
+  draw("doChart","DO",build("DO"),"purple");
+  draw("codChart","COD",build("COD"),"red");
+  draw("bodChart","BOD",build("BOD"),"brown");
+}
+
+function generateSurvey() {
+  const filtered = getFilteredData();
+  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,9),"blue");
+  draw("phChart","pH",buildSurveySeries(filtered,10),"blue");
+  draw("tempChart","Temp",buildSurveySeries(filtered,11),"orange");
+  draw("tdsChart","TDS",buildSurveySeries(filtered,12),"green");
+  draw("doChart","DO",buildSurveySeries(filtered,19),"purple");
+  draw("codChart","COD",buildSurveySeries(filtered,20),"red");
+  draw("bodChart","BOD",buildSurveySeries(filtered,21),"brown");
+}
+
+// =========================
+// ON PAGE LOAD
+// =========================
+window.onload = async ()=>{
+  const filters = JSON.parse(sessionStorage.getItem("dashboardFilters"));
+  if(!filters) { alert("No filters selected"); return; }
+  window.dashboardFilters = filters;
+  await loadWaterData();
+  generateDashboard();
+};
+    
+
+</script>
