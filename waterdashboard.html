@@ -48,17 +48,24 @@ const surveyPointsOrder = [
 // =========================
 async function loadWaterData() {
   
-  const url = "https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec";
+  const url = "https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec?action=getWaterData";
+
   try {
     const res = await fetch(url);
-    const data = await res.json();
-    if(data.status === "success") {
-      waterData = data.records; 
+
+    const text = await res.text();
+    console.log("RAW RESPONSE:", text); // 👈 مهم جدًا
+
+    const data = JSON.parse(text);
+
+    if (data.status === "success") {
+      waterData = data.records;
     } else {
-      alert("خطأ في جلب البيانات");
+      alert("السيرفر رجع رد لكن مش success");
     }
+
   } catch(err) {
-    console.error(err);
+    console.error("ERROR:", err);
     alert("فشل الاتصال بالبيانات");
   }
 }
