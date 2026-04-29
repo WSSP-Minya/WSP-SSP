@@ -59,7 +59,7 @@ async function loadWaterData() {
     const data = JSON.parse(text);
 
     if (data.status === "success") {
-      waterData = data.records;
+      waterData = data.water_data;
     } else {
       alert("السيرفر رجع رد لكن مش success");
     }
