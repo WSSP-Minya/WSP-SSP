@@ -47,10 +47,17 @@ const surveyPointsOrder = [
 // LOAD DATA (EXAMPLE)
 // =========================
 async function loadWaterData() {
+
   const email = sessionStorage.getItem("email");
   const department = sessionStorage.getItem("department");
- 
-  const url = "https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec?action=getData";
+
+  if (!email || !department) {
+    alert("Session expired, please login again");
+    window.location.href = "index.html";
+    return;
+  }
+
+  const url = `https://script.google.com/macros/s/AKfycbzxkrJQQ6mArsWsFhpMtG19zpUXHudAg9nGR-wO4Tf_8XrzVdiD_68dEdkXYksUJHfY_A/exec?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`;
 
   try {
     const res = await fetch(url);
@@ -59,12 +66,13 @@ async function loadWaterData() {
     console.log("DATA:", data);
 
     if (data.status === "success") {
-      waterData = data.water_data; // ✅ التصحيح هنا
+      waterData = data.water_data; // مهم جدًا
+      generateDashboard(); // تشغيل الداشبورد بعد تحميل البيانات
     } else {
-      alert("خطأ في جلب البيانات");
+      alert("Unauthorized or invalid request");
     }
 
-  } catch(err) {
+  } catch (err) {
     console.error(err);
     alert("فشل الاتصال بالبيانات");
   }
