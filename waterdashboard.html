@@ -67,7 +67,7 @@ async function loadWaterData() {
 // FILTER DATA
 // =========================
 function getFilteredData() {
-  const { branch, station, from, to } = window.dashboardFilters;
+  const { branch, station, from, to, type } = window.dashboardFilters;
 
   let fromDate = from ? new Date(from) : null;
   let toDate = to ? new Date(to) : null;
@@ -77,17 +77,20 @@ function getFilteredData() {
     const d = new Date(r[1]);
     const b = r[2];
     const s = r[3];
+    const point = r[4];
 
-    if(r[4] !== "المأخذ") return false;
-    if(branch && b !== branch) return false;
-    if(station && s !== station) return false;
-    if(fromDate && d < fromDate) return false;
-    if(toDate && d > toDate) return false;
+    // 👇 هنا الحل
+    if (type === "monthly" && point !== "المأخذ") return false;
+    if (type === "survey" && point === "المأخذ") return false;
+
+    if (branch && b !== branch) return false;
+    if (station && s !== station) return false;
+    if (fromDate && d < fromDate) return false;
+    if (toDate && d > toDate) return false;
 
     return true;
   });
 }
-
 // =========================
 // MONTHLY PROCESSING
 // =========================
@@ -184,6 +187,9 @@ function generateMonthly() {
     push("pH", date, r[10]);
     push("Temp", date, r[11]);
     push("TDS", date, r[12]);
+    push("DO", date, r[19]);
+    push("COD", date, r[20]);
+    push("BOD", date, r[21]);
   });
 
   draw("turbidityChart","Turbidity",build("Turbidity"),"blue");
