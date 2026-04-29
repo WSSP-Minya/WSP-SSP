@@ -52,24 +52,21 @@ async function loadWaterData() {
 
   try {
     const res = await fetch(url);
+    const data = await res.json();
 
-    const text = await res.text();
-    console.log("RAW RESPONSE:", text); // 👈 مهم جدًا
-
-    const data = JSON.parse(text);
+    console.log("DATA:", data);
 
     if (data.status === "success") {
-      waterData = data.water_data;
+      waterData = data.water_data; // ✅ التصحيح هنا
     } else {
-      alert("السيرفر رجع رد لكن مش success");
+      alert("خطأ في جلب البيانات");
     }
 
   } catch(err) {
-    console.error("ERROR:", err);
+    console.error(err);
     alert("فشل الاتصال بالبيانات");
   }
 }
-
 // =========================
 // FILTER DATA
 // =========================
