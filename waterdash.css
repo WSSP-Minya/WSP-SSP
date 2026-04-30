@@ -5,14 +5,16 @@ body {
 }
 
 .dashboard-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr); /* 3 أعمدة */
-  gap: 20px; /* مسافة بين العناصر */
+  height: 320px;   /* التحكم في الحجم من هنا */
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 canvas {
   width: 100% !important;
-  height: 300px !important;
+  height: 100% !important;
   background: #ffffff;
   padding: 10px;
   border-radius: 10px;
