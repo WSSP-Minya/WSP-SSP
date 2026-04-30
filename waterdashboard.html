@@ -138,17 +138,27 @@ function build(ind) {
 // =========================
 function buildSurveySeries(data, index) {
   const map = {};
+
   data.forEach(r => {
-    const point = r[4];
+    const point = clean(r[4]);
     const val = Number(r[index]);
-    if(!surveyPointsOrder.includes(point)) return;
+
     if(isNaN(val)) return;
+
+    const normalizedPoints = surveyPointsOrder.map(p => clean(p));
+
+    if(!normalizedPoints.includes(point)) return;
+
     if(!map[point]) map[point] = [];
     map[point].push(val);
   });
+
   return surveyPointsOrder.map(p => {
-    const arr = map[p] || [];
+    const key = clean(p);
+    const arr = map[key] || [];
+
     if(!arr.length) return null;
+
     return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
   });
 }
@@ -336,7 +346,9 @@ function generateSurvey() {
   draw("codChart","COD",buildSurveySeries(filtered,20),"blue","cod");
   draw("bodChart","BOD",buildSurveySeries(filtered,21),"blue","bod");
 }
-
+function clean(str){
+  return (str || "").toString().trim();
+}
 // =========================
 // ON PAGE LOAD
 // =========================
