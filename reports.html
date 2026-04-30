@@ -2814,12 +2814,12 @@
     
       const branches = [...new Set(waterData.map(r => r[2]))];
     
-      branchEl.innerHTML = `<option value="">كل الفروع</option>`;
+      branchEl.innerHTML = `<option value="" disabled selected>Select Branch</option>`;
       branches.forEach(b => {
         branchEl.innerHTML += `<option value="${b}">${b}</option>`;
       });
     
-      stationEl.innerHTML = `<option value="">كل المحطات</option>`;
+      stationEl.innerHTML = `<option value="" disabled selected>Select Station</option>`;
     
       branchEl.onchange = function () {
     
@@ -2831,7 +2831,7 @@
     
         const unique = [...new Set(stations)];
     
-        stationEl.innerHTML = `<option value="">كل المحطات</option>`;
+        stationEl.innerHTML = `<option value="">NO stations Found</option>`;
     
         unique.forEach(s => {
           stationEl.innerHTML += `<option value="${s}">${s}</option>`;
@@ -2839,212 +2839,9 @@
       };
     }
       
-      /////////////////////////////
-      // FILTER DATA
-      /////////////////////////////
-      
-      function getFilteredData() {
-      
-        const branch = document.getElementById("dash_branch").value;
-        const station = document.getElementById("dash_station").value;
-      
-        const from = document.getElementById("dash_from").value;
-        const to = document.getElementById("dash_to").value;
-      
-        let fromDate = from ? new Date(from) : null;
-        let toDate = to ? new Date(to) : null;
-      
-        if (toDate) toDate.setHours(23,59,59,999);
-      
-        return waterData.filter(r => {
-      
-          const d = new Date(r[1]);
-          const b = r[2];
-          const s = r[3];
-      
-          if (r[4] !== "المأخذ") return false;
-      
-          if (branch && b !== branch) return false;
-          if (station && s !== station) return false;
-      
-          if (fromDate && d < fromDate) return false;
-          if (toDate && d > toDate) return false;
-      
-          return true;
-        });
-      }
-      
-      /////////////////////////////
-      // MONTHLY PROCESSING
-      /////////////////////////////
-      
-      function resetMonthly() {
-        Object.keys(monthlyStats).forEach(k => delete monthlyStats[k]);
-      }
-      
-      function monthKey(date) {
-        const d = new Date(date);
-        return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}`;
-      }
-      
-      function push(ind, date, val) {
-      
-        if (val === "" || val == null) return;
-      
-        const v = Number(val);
-        if (isNaN(v)) return;
-      
-        const m = monthKey(date);
-      
-        if (!monthlyStats[ind]) monthlyStats[ind] = {};
-        if (!monthlyStats[ind][m]) monthlyStats[ind][m] = [];
-      
-        monthlyStats[ind][m].push(v);
-      }
-      
-      function build(ind) {
-      
-        const data = monthlyStats[ind] || {};
-        const labels = Object.keys(data).sort();
-      
-        const values = labels.map(m => {
-          const arr = data[m];
-          return (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
-        });
-      
-        return { labels, values };
-      }
-      
-      /////////////////////////////
-      // SURVEY PROCESSING
-      /////////////////////////////
-      
-      function buildSurveySeries(data, index) {
-      
-        const map = {};
-      
-        data.forEach(r => {
-      
-          const point = r[4];
-          const val = Number(r[index]);
-      
-          if (!surveyPointsOrder.includes(point)) return;
-          if (isNaN(val)) return;
-      
-          if (!map[point]) map[point] = [];
-      
-          map[point].push(val);
-        });
-      
-        return surveyPointsOrder.map(p => {
-      
-          const arr = map[p] || [];
-          if (!arr.length) return null;
-      
-          return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
-        });
-      }
-      
-      /////////////////////////////
-      // CHART DRAW
-      /////////////////////////////
-      
-      function draw(id, label, data, color) {
-        const canvas = document.getElementById(id);
-        if (!canvas) return;
-      
-        const ctx = canvas.getContext("2d");
-      
-        if (charts[id]) charts[id].destroy();
-      
-        charts[id] = new Chart(ctx, {
-          type: "line",
-          data: {
-            labels: data.labels || surveyPointsOrder,
-            datasets: [{
-              label,
-              data: data.values || data,
-              borderColor: color,
-              tension: 0.3,
-              fill: false
-            }]
-          }
-        });
-      }
-      
-      /////////////////////////////
-      // MAIN SWITCH
-      /////////////////////////////
-      function generateDashboard() {
-
-        if (!waterData || waterData.length === 0) {
-          alert("Loading data... try again");
-          return;
-        }
-      
-        const type = document.getElementById("dash_viewType").value;
-      
-        if (type === "survey") {
-          generateSurvey();
-        } else {
-          generateMonthly();
-        }
-      }
-      
-      /////////////////////////////
-      // MONTHLY MODE
-      /////////////////////////////
-      
-      function generateMonthly() {
-      
-        const filtered = getFilteredData();
-        resetMonthly();
-      
-        filtered.forEach(r => {
-      
-          const date = r[1];
-          
-          push("Turbidity", date, r[9]);
-          push("pH", date, r[10]);
-          push("Temp", date, r[11]);
-          push("TDS", date, r[12]);
-          
-         
-      
-        });
-        draw("turbidityChart", "Turbidity", build("Turbidity"), "blue");
-        draw("phChart", "pH", build("pH"), "blue");
-        draw("tempChart", "Temp", build("Temp"), "orange");
-        draw("tdsChart", "TDS", build("TDS"), "green");
-        draw("doChart", "DO", build("DO"), "purple");
-        draw("codChart", "COD", build("COD"), "red");
-        draw("bodChart", "BOD", build("BOD"), "brown");
-      }
-      
-      /////////////////////////////
-      // SURVEY MODE
-      /////////////////////////////
-      
-      function generateSurvey() {
-      
-        const filtered = getFilteredData();
-        const turbidity = buildSurveySeries(filtered, 9);
-        const pH = buildSurveySeries(filtered, 10);
-        const temp = buildSurveySeries(filtered, 11);
-        const tds = buildSurveySeries(filtered, 12);
-       
-        const dox = buildSurveySeries(filtered, 19);
-        const cod = buildSurveySeries(filtered, 20);
-        const bod = buildSurveySeries(filtered, 21);
-      
-        draw("turbidityChart", "turbidity Profile", turbidity, "blue");
-        draw("phChart", "pH Profile", pH, "blue");
-        draw("tdsChart", "TDS Profile", tds, "green");
-        draw("tempChart", "Temp Profile", temp, "orange");
-        draw("doChart", "DO Profile", dox, "purple");
-        draw("codChart", "COD Profile", cod, "red");
-        draw("bodChart", "BOD Profile", bod, "brown");
-      }
+    
+     
+     
        function openDashboard() {
         const data = {
           branch: document.getElementById("dash_branch").value,
