@@ -174,59 +174,61 @@ function draw(id, label, data, color) {
         borderColor: color,
         tension: 0.3,
         fill: false,
-        borderWidth: 4,          // خط أوضح
-        pointRadius: 5,          // نقاط أوضح
+        borderWidth: 4,
+        pointRadius: 5,
         pointHoverRadius: 6,
         pointBorderColor: "#fff",
         pointBorderWidth: 2
       }]
     },
     options: {
-  responsive: true,
-  maintainAspectRatio: false,
+      responsive: true,
+      maintainAspectRatio: false,
 
-  plugins: {
-    legend: {
-      labels: {
-        color: '#000',   // لون غامق
-        font: {
-          size: 16,
-          weight: 'bold'
+      plugins: {
+        legend: {
+          labels: {
+            color: '#000',
+            font: {
+              size: 16,
+              weight: 'bold'
+            }
+          }
+        }
+      },
+
+      scales: {
+        x: {
+          ticks: {
+            color: '#000',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            color: '#cccccc',
+            lineWidth: 1.2
+          }
+        },
+        y: {
+          ticks: {
+            color: '#000',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          },
+          grid: {
+            color: '#cccccc',
+            lineWidth: 1.2
+          }
         }
       }
     }
-  },
+  }); 
 
-  scales: {
-    x: {
-      ticks: {
-        color: '#000',
-        font: {
-          size: 14,
-          weight: 'bold'
-        }
-      },
-      grid: {
-        color: '#cccccc',  // أوضح
-        lineWidth: 1.2
-      }
-    },
-    y: {
-      ticks: {
-        color: '#000',
-        font: {
-          size: 14,
-          weight: 'bold'
-        }
-      },
-      grid: {
-        color: '#cccccc',
-        lineWidth: 1.2
-      }
-    }
-  }
-}
-
+} 
 // =========================
 // GENERATE DASHBOARD
 // =========================
