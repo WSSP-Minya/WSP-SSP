@@ -250,13 +250,13 @@ function generateMonthly() {
 
   filtered.forEach(r=>{
     const date = r[1];
-    push("Turbidity", date, r[7]);
-    push("pH", date, r[8]);
-    push("Temp", date, r[9]);
-    push("TDS", date, r[10]);
-    push("DO", date, r[18]);
-    push("COD", date, r[19]);
-    push("BOD", date, r[20]);
+    push("Turbidity", date, r[8]);
+    push("pH", date, r[9]);
+    push("Temp", date, r[10]);
+    push("TDS", date, r[11]);
+    push("DO", date, r[19]);
+    push("COD", date, r[20]);
+    push("BOD", date, r[21]);
   });
 
   draw("turbidityChart","Turbidity",build("Turbidity"),"blue");
@@ -270,13 +270,13 @@ function generateMonthly() {
 
 function generateSurvey() {
   const filtered = getFilteredData();
-  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,7),"blue");
-  draw("phChart","pH",buildSurveySeries(filtered,8),"blue");
-  draw("tempChart","Temp",buildSurveySeries(filtered,9),"blue");
-  draw("tdsChart","TDS",buildSurveySeries(filtered,10),"blue");
-  draw("doChart","DO",buildSurveySeries(filtered,18),"blue");
-  draw("codChart","COD",buildSurveySeries(filtered,19),"blue");
-  draw("bodChart","BOD",buildSurveySeries(filtered,20),"blue");
+  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,8),"blue");
+  draw("phChart","pH",buildSurveySeries(filtered,9),"blue");
+  draw("tempChart","Temp",buildSurveySeries(filtered,10),"blue");
+  draw("tdsChart","TDS",buildSurveySeries(filtered,11),"blue");
+  draw("doChart","DO",buildSurveySeries(filtered,19),"blue");
+  draw("codChart","COD",buildSurveySeries(filtered,20),"blue");
+  draw("bodChart","BOD",buildSurveySeries(filtered,21),"blue");
 }
 
 // =========================
