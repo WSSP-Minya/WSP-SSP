@@ -250,33 +250,33 @@ function generateMonthly() {
 
   filtered.forEach(r=>{
     const date = r[1];
-    push("Turbidity", date, r[9]);
-    push("pH", date, r[10]);
-    push("Temp", date, r[11]);
-    push("TDS", date, r[12]);
-    push("DO", date, r[19]);
-    push("COD", date, r[20]);
-    push("BOD", date, r[21]);
+    push("Turbidity", date, r[7]);
+    push("pH", date, r[8]);
+    push("Temp", date, r[9]);
+    push("TDS", date, r[10]);
+    push("DO", date, r[18]);
+    push("COD", date, r[19]);
+    push("BOD", date, r[20]);
   });
 
   draw("turbidityChart","Turbidity",build("Turbidity"),"blue");
   draw("phChart","pH",build("pH"),"blue");
-  draw("tempChart","Temp",build("Temp"),"orange");
-  draw("tdsChart","TDS",build("TDS"),"green");
-  draw("doChart","DO",build("DO"),"purple");
-  draw("codChart","COD",build("COD"),"red");
-  draw("bodChart","BOD",build("BOD"),"brown");
+  draw("tempChart","Temp",build("Temp"),"blue");
+  draw("tdsChart","TDS",build("TDS"),"blue");
+  draw("doChart","DO",build("DO"),"blue");
+  draw("codChart","COD",build("COD"),"blue");
+  draw("bodChart","BOD",build("BOD"),"blue");
 }
 
 function generateSurvey() {
   const filtered = getFilteredData();
-  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,9),"blue");
-  draw("phChart","pH",buildSurveySeries(filtered,10),"blue");
-  draw("tempChart","Temp",buildSurveySeries(filtered,11),"orange");
-  draw("tdsChart","TDS",buildSurveySeries(filtered,12),"green");
-  draw("doChart","DO",buildSurveySeries(filtered,19),"purple");
-  draw("codChart","COD",buildSurveySeries(filtered,20),"red");
-  draw("bodChart","BOD",buildSurveySeries(filtered,21),"brown");
+  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,7),"blue");
+  draw("phChart","pH",buildSurveySeries(filtered,8),"blue");
+  draw("tempChart","Temp",buildSurveySeries(filtered,9),"blue");
+  draw("tdsChart","TDS",buildSurveySeries(filtered,10),"blue");
+  draw("doChart","DO",buildSurveySeries(filtered,18),"blue");
+  draw("codChart","COD",buildSurveySeries(filtered,19),"blue");
+  draw("bodChart","BOD",buildSurveySeries(filtered,20),"blue");
 }
 
 // =========================
