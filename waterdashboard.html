@@ -153,38 +153,95 @@ function buildSurveySeries(data, index) {
     return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
   });
 }
-
+  //============
+  //الحدود
+  //============
+const limits = {
+  pH_min: 6.5,  pH_max: 8.5,
+  tds_max: 500,
+  sulf_max: 200,
+  fe_max: 0.5,
+  mn_max: 0.2,
+  nh3_max: 0.5,
+  no3_max: 2,
+  do_min: 6,
+  cod_max: 10,
+  bod_max: 6,
+  og_max: 0.1
+};
 // =========================
 // DRAW CHART
 // =========================
-function draw(id, label, data, color) {
+function draw(id, label, data, color, param) {
   const canvas = document.getElementById(id);
   if (!canvas) return;
   const ctx = canvas.getContext("2d");
 
   if (charts[id]) charts[id].destroy();
 
+  const values = data.values || data;
+  const length = values.length;
+
+  // =========================
+  // BUILD LIMIT LINES
+  // =========================
+  const limitLines = [];
+
+  const minKey = param + "_min";
+  const maxKey = param + "_max";
+
+  if (limits[minKey] !== undefined) {
+    limitLines.push({
+      label: param + " Min",
+      data: new Array(length).fill(limits[minKey]),
+      borderColor: "green",
+      borderWidth: 2,
+      borderDash: [6, 6],
+      pointRadius: 0,
+      fill: false
+    });
+  }
+
+  if (limits[maxKey] !== undefined) {
+    limitLines.push({
+      label: param + " Max",
+      data: new Array(length).fill(limits[maxKey]),
+      borderColor: "red",
+      borderWidth: 2,
+      borderDash: [6, 6],
+      pointRadius: 0,
+      fill: false
+    });
+  }
+
+  // =========================
+  // CREATE CHART
+  // =========================
   charts[id] = new Chart(ctx, {
     type: "line",
     data: {
       labels: data.labels || surveyPointsOrder,
-      datasets: [{
-        label: label,
-        data: data.values || data,
-        borderColor: color,
-        tension: 0.3,
-        fill: false,
-        borderWidth: 6,
-        pointRadius: 7,
-        pointHoverRadius: 8,
-        pointBorderColor: "#fff",
-        pointBorderWidth: 2
-      }]
+      datasets: [
+        {
+          label: label,
+          data: values,
+          borderColor: color,
+          tension: 0.3,
+          fill: false,
+          borderWidth: 6,
+          pointRadius: 7,
+          pointHoverRadius: 8,
+          pointBorderColor: "#fff",
+          pointBorderWidth: 2
+        },
+        ...limitLines // 🔥 إضافة خطوط الـ limits
+      ]
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      devicePixelRatio: 2, // 🔥 ده بيخليها HD
+      devicePixelRatio: 2,
+
       plugins: {
         legend: {
           labels: {
@@ -226,9 +283,8 @@ function draw(id, label, data, color) {
         }
       }
     }
-  }); 
-
-} 
+  });
+}
 // =========================
 // GENERATE DASHBOARD
 // =========================
