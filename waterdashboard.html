@@ -174,55 +174,57 @@ function draw(id, label, data, color) {
         borderColor: color,
         tension: 0.3,
         fill: false,
-        borderWidth: 3,          // خط أوضح
-        pointRadius: 4,          // نقاط أوضح
-        pointHoverRadius: 6
+        borderWidth: 4,          // خط أوضح
+        pointRadius: 5,          // نقاط أوضح
+        pointHoverRadius: 6,
+        pointBorderColor: "#fff",
+        pointBorderWidth: 2
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+  responsive: true,
+  maintainAspectRatio: false,
 
-      plugins: {
-        legend: {
-          display: true,
-          labels: {
-            font: {
-              size: 20,
-              weight: 'bold'
-            },
-            color: '#222',
-            boxWidth: 20
-          }
-        }
-      },
-
-      scales: {
-        x: {
-          ticks: {
-            font: {
-              size: 16
-            },
-            color: '#000'
-          },
-          grid: {
-            color: '#e0e0e0'
-          }
-        },
-        y: {
-          ticks: {
-            font: {
-              size: 16
-            },
-            color: '#000'
-          },
-          grid: {
-            color: '#e0e0e0'
-          }
+  plugins: {
+    legend: {
+      labels: {
+        color: '#000',   // لون غامق
+        font: {
+          size: 16,
+          weight: 'bold'
         }
       }
     }
-  });
+  },
+
+  scales: {
+    x: {
+      ticks: {
+        color: '#000',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      },
+      grid: {
+        color: '#cccccc',  // أوضح
+        lineWidth: 1.2
+      }
+    },
+    y: {
+      ticks: {
+        color: '#000',
+        font: {
+          size: 14,
+          weight: 'bold'
+        }
+      },
+      grid: {
+        color: '#cccccc',
+        lineWidth: 1.2
+      }
+    }
+  }
 }
 
 // =========================
