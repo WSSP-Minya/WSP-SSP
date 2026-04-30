@@ -136,27 +136,36 @@ function build(ind) {
 // =========================
 // SURVEY PROCESSING
 // =========================
+function normalize(str){
+  return (str || "")
+    .toString()
+    .trim()
+    .replace(/\s+/g,' ')
+    .replace(/\u200f|\u200e/g,''); // removes hidden RTL/LTR marks
+}
+
 function buildSurveySeries(data, index) {
   const map = {};
 
+  const normalizedPoints = surveyPointsOrder.map(normalize);
+
   data.forEach(r => {
-    const point = clean(r[4]);
+    const point = normalize(r[4]);
     const val = Number(r[index]);
 
     if(isNaN(val)) return;
 
-    const normalizedPoints = surveyPointsOrder.map(p => clean(p));
+    const idx = normalizedPoints.indexOf(point);
+    if(idx === -1) return;
 
-    if(!normalizedPoints.includes(point)) return;
+    const key = surveyPointsOrder[idx];
 
-    if(!map[point]) map[point] = [];
-    map[point].push(val);
+    if(!map[key]) map[key] = [];
+    map[key].push(val);
   });
 
   return surveyPointsOrder.map(p => {
-    const key = clean(p);
-    const arr = map[key] || [];
-
+    const arr = map[p] || [];
     if(!arr.length) return null;
 
     return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
