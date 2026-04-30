@@ -96,8 +96,7 @@ function getFilteredData() {
     const point = r[4];
 
     // 👇 هنا الحل
-    if (type === "monthly" && point !== "المأخذ") return false;
-    if (type === "survey" && point === "المأخذ") return false;
+    
 
     if (branch && b !== branch) return false;
     if (station && s !== station) return false;
