@@ -269,6 +269,9 @@ function draw(id, label, data, color, param) {
           }
         },
         y: {
+           min: (param === "pH") ? 0 : undefined,
+           max: (param === "pH") ? 14 : undefined,
+           max: (param === "TDS") ? 1000 : undefined,
           ticks: {
             color: '#000',
             font: {
