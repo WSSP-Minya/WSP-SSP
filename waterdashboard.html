@@ -184,13 +184,13 @@ function draw(id, label, data, color) {
     options: {
       responsive: true,
       maintainAspectRatio: false,
-
+      devicePixelRatio: 2, // 🔥 ده بيخليها HD
       plugins: {
         legend: {
           labels: {
             color: '#000',
             font: {
-              size: 30,
+              size: 16,
               weight: 'bold'
             }
           }
@@ -202,7 +202,7 @@ function draw(id, label, data, color) {
           ticks: {
             color: '#000',
             font: {
-              size: 25,
+              size: 14,
               weight: 'bold'
             }
           },
@@ -215,7 +215,7 @@ function draw(id, label, data, color) {
           ticks: {
             color: '#000',
             font: {
-              size: 25,
+              size: 14,
               weight: 'bold'
             }
           },
