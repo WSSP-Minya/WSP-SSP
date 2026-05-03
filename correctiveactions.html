@@ -572,31 +572,46 @@
       const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
       // إعداد الفرع حسب القسم
      
-      if (department !== "WSP") {
-        branchSelect.value = department;
-        branchSelect.disabled = true;     
-        branchcomment.disabled = false;
-        wspcomment.disabled = true;
-        wspbuttons.forEach(btn => btn.disabled = true);
-        addStationBtn.style.display = "none";
-        addCorrectiveBtn.style.display = "none";
-        fetchStations(department);
-      } else if (department === "WSP"){
+     if (department === "WSP") {
+
         branchSelect.disabled = false;
         branchcomment.disabled = true;
         wspcomment.disabled = false;
         branchbuttons.forEach(btn => btn.disabled = true);
+      
         branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
-       } else if (department === "التوعية"){
-       
+      
+      } 
+      else if (department === "التوعية") {
+      
         branchSelect.disabled = false;     
         branchcomment.disabled = false;
         wspcomment.disabled = true;
+      
         wspbuttons.forEach(btn => btn.disabled = true);
+      
         addStationBtn.style.display = "none";
         addCorrectiveBtn.style.display = "none";
+      
         branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
-       }
+      
+      } 
+      else {
+      
+        // باقي الفروع
+        branchSelect.value = department;
+        branchSelect.disabled = true;
+      
+        branchcomment.disabled = false;
+        wspcomment.disabled = true;
+      
+        wspbuttons.forEach(btn => btn.disabled = true);
+      
+        addStationBtn.style.display = "none";
+        addCorrectiveBtn.style.display = "none";
+      
+        fetchStations(department);
+      }
 
       // عند تغيير المحطة
       stationSelect.addEventListener("change", () => {
