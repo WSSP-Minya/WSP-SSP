@@ -581,12 +581,11 @@
         addCorrectiveBtn.style.display = "none";
         fetchStations(department);
       } else {
-        if (department === "WSP" || department === "التوعية"){
         branchSelect.disabled = false;
         branchcomment.disabled = true;
         wspcomment.disabled = false;
         branchbuttons.forEach(btn => btn.disabled = true);
-        branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));}
+        branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
        }
 
       // عند تغيير المحطة
