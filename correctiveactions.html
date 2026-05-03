@@ -571,7 +571,7 @@
       const addStationBtn = document.getElementById("addstation-button");
       const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
       // إعداد الفرع حسب القسم
-      if (department !== "WSP") {
+      if (department !== "WSP" || department !== "التوعية") {
         branchSelect.value = department;
         branchSelect.disabled = true;
         branchcomment.disabled = false;
