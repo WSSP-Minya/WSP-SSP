@@ -571,17 +571,10 @@
       const addStationBtn = document.getElementById("addstation-button");
       const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
       // إعداد الفرع حسب القسم
-      const externalExecutor = ["التوعية"];
+     
       if (department !== "WSP") {
         branchSelect.value = department;
-        if (externalExecutor.includes(department)) {
-          branchSelect.disabled = false;
-        } else {
-          branchSelect.disabled = true;
-        }
-
-        
-       
+        branchSelect.disabled = true;     
         branchcomment.disabled = false;
         wspcomment.disabled = true;
         wspbuttons.forEach(btn => btn.disabled = true);
