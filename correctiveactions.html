@@ -571,7 +571,7 @@
       const addStationBtn = document.getElementById("addstation-button");
       const addCorrectiveBtn = document.getElementById("addcorrectiveactions-button");
       // إعداد الفرع حسب القسم
-      if (department !== "WSP" || department !== "التوعية") {
+      if (department !== "WSP") {
         branchSelect.value = department;
         branchSelect.disabled = true;
         branchcomment.disabled = false;
@@ -581,11 +581,12 @@
         addCorrectiveBtn.style.display = "none";
         fetchStations(department);
       } else {
+        if (department == "WSP" || department == "التوعية"){
         branchSelect.disabled = false;
         branchcomment.disabled = true;
         wspcomment.disabled = false;
         branchbuttons.forEach(btn => btn.disabled = true);
-        branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
+        branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));}
        }
 
       // عند تغيير المحطة
