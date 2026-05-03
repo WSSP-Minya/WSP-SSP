@@ -595,6 +595,7 @@
         wspbuttons.forEach(btn => btn.disabled = true);
         addStationBtn.style.display = "none";
         addCorrectiveBtn.style.display = "none";
+        branchSelect.addEventListener("change", () => fetchStations(branchSelect.value));
        }
 
       // عند تغيير المحطة
