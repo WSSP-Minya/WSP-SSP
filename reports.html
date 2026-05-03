@@ -247,10 +247,10 @@
         <div class="form-buttons">
           <div class="generalinfo">
             <label>From</label>
-            <input type="date" id="fromDate">
+            <input type="date" id="fromDate_water">
           
             <label>To</label>
-            <input type="date" id="toDate">
+            <input type="date" id="toDate_water">
           </div>
           <button type="button" onclick="generateFullWaterReport()">
              Report
@@ -1701,7 +1701,7 @@
                ***********************/
               
               // -------- تعريف الشهور --------
-              const KPI_MONTHS = ["يناير", "فبراير", "مارس", "ابريل"];
+              const KPI_MONTHS = ["يناير", "فبراير", "مارس", "ابريل", "مايو", "يونيو", "يوليو", "اغسطس", "سبتمبر" ,"اكتوبر"];
               
               // -------- حساب KPI لكل فرع --------
               const kpiPerBranch = branches.map(branch => {
@@ -1798,7 +1798,15 @@
                 "يناير": "rgba(75,192,192,1)",
                 "فبراير": "rgba(153,102,255,1)",
                 "مارس": "rgba(255,159,64,1)",
-                "ابريل": "rgba(54,162,235,1)"
+                "ابريل": "rgba(54,162,235,1)",
+                "مايو": "rgba(255,99,132,1)",
+                "يونيو": "rgba(255,206,86,1)",
+                "يوليو": "rgba(75,192,192,1)",
+                "أغسطس": "rgba(153,102,255,1)",
+                "سبتمبر": "rgba(255,159,64,1)",
+                "أكتوبر": "rgba(54,162,235,1)",
+                "نوفمبر": "rgba(201,203,207,1)",
+                "ديسمبر": "rgba(255,99,71,1)"
               };
               
               // -------- datasets --------
