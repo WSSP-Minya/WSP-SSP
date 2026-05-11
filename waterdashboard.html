@@ -187,58 +187,39 @@ function buildSurveyMap(data) {
 // =========================
 function buildSurveySeries(groupedMap, index) {
 
-  const surveyMap = {};
-
-  const normalizedPoints = surveyPointsOrder.map(normalize);
-
-  // =========================
-  // GROUP BY DATE + POINT
-  // =========================
-  Object.keys(groupedMap).forEach(point => {
-
-    const rows = groupedMap[point];
-
-    rows.forEach(r => {
-
-      const date = r[1]; // 👈 المسح البيئي
-
-      const idx = normalizedPoints.indexOf(normalize(r[4]));
-      if (idx === -1) return;
-
-      const keyPoint = surveyPointsOrder[idx];
-      const val = Number(r[index]);
-
-      if (isNaN(val)) return;
-
-      if (!surveyMap[date]) surveyMap[date] = {};
-      if (!surveyMap[date][keyPoint]) surveyMap[date][keyPoint] = [];
-
-      surveyMap[date][keyPoint].push(val);
-    });
-  });
-
-  // =========================
-  // CONVERT TO SERIES
-  // =========================
   const datasets = [];
 
-  Object.keys(surveyMap).forEach(date => {
+  Object.keys(groupedMap).forEach(point => {
 
-    const values = surveyPointsOrder.map(p => {
+    const surveys = groupedMap[point];
 
-      const arr = surveyMap[date][p] || [];
-      if (!arr.length) return null;
+    Object.keys(surveys).forEach(date => {
 
-      return +(
-        arr.reduce((a,b)=>a+b,0) / arr.length
-      ).toFixed(2);
+      const rows = surveys[date];
+
+      const value = rows
+        .map(r => Number(r[index]))
+        .filter(v => !isNaN(v));
+
+      if (!value.length) return;
+
+      const avg = value.reduce((a,b)=>a+b,0) / value.length;
+
+      let ds = datasets.find(d => d.label === date);
+
+      if (!ds) {
+        ds = {
+          label: date,
+          data: new Array(surveyPointsOrder.length).fill(null)
+        };
+        datasets.push(ds);
+      }
+
+      const idx = surveyPointsOrder.indexOf(point);
+      if (idx !== -1) {
+        ds.data[idx] = +avg.toFixed(2);
+      }
     });
-
-    datasets.push({
-      label: date,
-      data: values
-    });
-
   });
 
   return datasets;
