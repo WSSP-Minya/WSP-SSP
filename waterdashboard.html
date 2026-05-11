@@ -347,6 +347,7 @@ function generateMonthly() {
 
 function generateSurvey() {
   const filtered = getFilteredData();
+  console.log(filtered);
   draw("turbidityChart","Turbidity",buildSurveySeries(filtered,8),"blue","turbidity");
   draw("phChart","pH",buildSurveySeries(filtered,9),"blue","pH");
   draw("tempChart","Temp",buildSurveySeries(filtered,10),"blue","temp");
