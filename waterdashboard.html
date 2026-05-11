@@ -346,15 +346,17 @@ function generateMonthly() {
 }
 
 function generateSurvey() {
+
   const filtered = getFilteredData();
-  console.log(filtered);
+  console.log("SURVEY FILTERED:", filtered);
+
   draw("turbidityChart","Turbidity",buildSurveySeries(filtered,8),"blue","turbidity");
   draw("phChart","pH",buildSurveySeries(filtered,9),"blue","pH");
   draw("tempChart","Temp",buildSurveySeries(filtered,10),"blue","temp");
   draw("tdsChart","TDS",buildSurveySeries(filtered,11),"blue","tds");
-  draw("doChart","DO",buildSurveySeries(filtered,19),"blue","do");
-  draw("codChart","COD",buildSurveySeries(filtered,20),"blue","cod");
-  draw("bodChart","BOD",buildSurveySeries(filtered,21),"blue","bod");
+  // الصحيح
+  draw("doChart","DO",buildSurveySeries(filtered,18),"blue","do");
+
 }
 function clean(str){
   return (str || "").toString().trim();
@@ -367,7 +369,7 @@ window.onload = async ()=>{
   if(!filters) { alert("No filters selected"); return; }
   window.dashboardFilters = filters;
   await loadWaterData();
-  generateDashboard();
+ 
 };
     
 
