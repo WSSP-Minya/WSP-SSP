@@ -197,13 +197,13 @@ function buildSurveySeries(groupedMap, index) {
 
       const rows = surveys[date];
 
-      const value = rows
+      const values = rows
         .map(r => Number(r[index]))
         .filter(v => !isNaN(v));
 
-      if (!value.length) return;
+      if (!values.length) return;
 
-      const avg = value.reduce((a,b)=>a+b,0) / value.length;
+      const avg = values.reduce((a,b)=>a+b,0) / values.length;
 
       let ds = datasets.find(d => d.label === date);
 
@@ -216,6 +216,7 @@ function buildSurveySeries(groupedMap, index) {
       }
 
       const idx = surveyPointsOrder.indexOf(point);
+
       if (idx !== -1) {
         ds.data[idx] = +avg.toFixed(2);
       }
@@ -259,28 +260,53 @@ function draw(id, label, data, color, param) {
   // =========================
   if (isMulti) {
 
-    charts[id] = new Chart(ctx, {
-      type: "line",
-      data: {
-        labels: surveyPointsOrder,
-        datasets: data.map((ds, i) => ({
-          label: ds.label,
-          data: ds.data,
-          borderColor: i === 0 ? color : getRandomColor(i),
-          tension: 0.3,
-          fill: false,
-          borderWidth: 4,
-          pointRadius: 5
-        }))
-      },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false
-      }
-    });
+  // تنظيف أي datasets فاضية
+  const cleanDatasets = data.filter(d =>
+    d.data && d.data.some(v => v !== null)
+  );
 
-    return;
-  }
+  charts[id] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: surveyPointsOrder,
+      datasets: cleanDatasets.map((ds, i) => ({
+        label: ds.label,
+        data: ds.data,
+        borderColor: getColorByIndex(i),
+        tension: 0.3,
+        fill: false,
+        borderWidth: 4,
+        pointRadius: 5
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          labels: {
+            color: "#000",
+            font: {
+              size: 14,
+              weight: "bold"
+            }
+          }
+        }
+      }
+    }
+  });
+
+  return;
+}
+  ///ضبط الوان curves
+  function getColorByIndex(i) {
+  const colors = [
+    "#1f77b4", "#ff7f0e", "#2ca02c",
+    "#d62728", "#9467bd", "#8c564b",
+    "#e377c2", "#7f7f7f", "#bcbd22"
+  ];
+  return colors[i % colors.length];
+}
 
   // =========================
   // SINGLE MODE (monthly)
