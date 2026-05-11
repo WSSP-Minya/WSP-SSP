@@ -229,10 +229,12 @@ function draw(id, label, data, color, param) {
   const ctx = canvas.getContext("2d");
 
   if (charts[id]) charts[id].destroy();
+  const isArray = Array.isArray(data);
 
-  const values = data.values || data;
+  const values = isArray ? data : data.values;
+  const labels = isArray ? surveyPointsOrder : data.labels;
+
   const length = values.length;
-
   // =========================
   // BUILD LIMIT LINES
   // =========================
