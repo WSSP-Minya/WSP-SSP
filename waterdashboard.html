@@ -152,29 +152,32 @@ function buildSurveySeries(data, index) {
   data.forEach(r => {
     const point = normalize(r[4]);
     const val = Number(r[index]);
-    console.log("POINT =", point);
 
-    if(isNaN(val)) return;
+    if (isNaN(val)) return;
 
     const idx = normalizedPoints.indexOf(point);
-    console.log("INDEX =", idx);
-    if(idx === -1) return;
+    if (idx === -1) return;
 
     const key = surveyPointsOrder[idx];
 
-    if(!map[key]) map[key] = [];
-    map[key].push(val);
-    console.log("FINAL MAP =", map);
+    if (!map[key]) map[key] = [];
 
+    map[key].push(val);
+
+    console.log("POINT =", point);
+    console.log("INDEX =", idx);
+    console.log("FINAL MAP =", map);
   });
 
   return surveyPointsOrder.map(p => {
     const arr = map[p] || [];
-    if(!arr.length) return null;
 
-    return +(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2);
-    
-    
+    if (!arr.length) return null;
+
+    const avg =
+      arr.reduce((a, b) => a + b, 0) / arr.length;
+
+    return +avg.toFixed(2);
   });
 }
   //============
