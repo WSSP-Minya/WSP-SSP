@@ -167,9 +167,18 @@ function buildSurveyMap(data) {
       map[key] = [];
     }
 
-    map[key].push(r);
+    const surveyId = r[1]; // التاريخ نفسه كهوية مسح
 
-  });
+    if (!map[key]) {
+      map[key] = {};
+    }
+    
+    if (!map[key][surveyId]) {
+      map[key][surveyId] = [];
+    }
+    
+    map[key][surveyId].push(r);
+      });
 
   console.log("FINAL GROUPED MAP =", map);
 
@@ -183,8 +192,8 @@ function buildSurveySeries(groupedMap, index) {
 
   const result = surveyPointsOrder.map(point => {
 
-    const rows = groupedMap[point] || [];
-
+    const surveys = groupedMap[point] || {};
+    const rows = Object.values(surveys).flat();
     if (!rows.length) return null;
 
     const values = rows
