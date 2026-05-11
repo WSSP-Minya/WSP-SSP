@@ -2840,7 +2840,7 @@
     
         const unique = [...new Set(stations)];
     
-        stationEl.innerHTML = `<option value="">NO stations Found</option>`;
+        stationEl.innerHTML = `<option value="">Loading Stations..</option>`;
     
         unique.forEach(s => {
           stationEl.innerHTML += `<option value="${s}">${s}</option>`;
