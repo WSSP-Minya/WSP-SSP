@@ -263,51 +263,54 @@ const limits = {
 // DRAW CHART
 // =========================
 function draw(id, label, data, color, param) {
+
   const canvas = document.getElementById(id);
   if (!canvas) return;
+
   const ctx = canvas.getContext("2d");
 
   if (charts[id]) charts[id].destroy();
-  const isArray = Array.isArray(data);
 
-const isMulti = Array.isArray(data) && data[0]?.data;
+  const isMulti = Array.isArray(data) && data[0]?.data;
 
-if (isMulti) {
-  // multi survey mode
-  charts[id] = new Chart(ctx, {
-    type: "line",
-    data: {
-      labels: surveyPointsOrder,
-      datasets: data.map((ds, i) => ({
-        label: ds.label,
-        data: ds.data,
-        borderColor: i === 0 ? color : getRandomColor(i),
-        tension: 0.3,
-        fill: false,
-        borderWidth: 4,
-        pointRadius: 5
-      }))
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false
-    }
-  });
+  // =========================
+  // MULTI SURVEY MODE
+  // =========================
+  if (isMulti) {
 
-  return;
-}
-  const labels = isArray ? surveyPointsOrder : data.labels;
+    charts[id] = new Chart(ctx, {
+      type: "line",
+      data: {
+        labels: surveyPointsOrder,
+        datasets: data.map((ds, i) => ({
+          label: ds.label,
+          data: ds.data,
+          borderColor: i === 0 ? color : getRandomColor(i),
+          tension: 0.3,
+          fill: false,
+          borderWidth: 4,
+          pointRadius: 5
+        }))
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false
+      }
+    });
 
-  let values = [];
-  let labels = surveyPointsOrder;
-  
-  if (!isMulti) {
-    values = data.values;
+    return;
   }
 
-  const length = values.length;
   // =========================
-  // BUILD LIMIT LINES
+  // SINGLE MODE (monthly)
+  // =========================
+  const values = data.values;
+  const labels = data.labels || surveyPointsOrder;
+
+  const length = values.length;
+
+  // =========================
+  // LIMIT LINES
   // =========================
   const limitLines = [];
 
@@ -344,7 +347,7 @@ if (isMulti) {
   charts[id] = new Chart(ctx, {
     type: "line",
     data: {
-      labels: data.labels || surveyPointsOrder,
+      labels: labels,
       datasets: [
         {
           label: label,
@@ -358,7 +361,7 @@ if (isMulti) {
           pointBorderColor: "#fff",
           pointBorderWidth: 2
         },
-        ...limitLines // 🔥 إضافة خطوط الـ limits
+        ...limitLines
       ]
     },
     options: {
@@ -393,9 +396,8 @@ if (isMulti) {
           }
         },
         y: {
-           min: (param === "pH") ? 5 : undefined,
-           max: (param === "pH") ? 10 : undefined,
-           max: (param === "TDS") ? 1000 : undefined,
+          min: (param === "pH") ? 5 : undefined,
+          max: (param === "pH") ? 10 : undefined,
           ticks: {
             color: '#000',
             font: {
