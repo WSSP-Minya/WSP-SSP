@@ -158,29 +158,26 @@ function buildSurveyMap(data) {
     const point = normalize(r[4]);
 
     const idx = normalizedPoints.indexOf(point);
-
     if (idx === -1) return;
 
     const key = surveyPointsOrder[idx];
 
-    if (!map[key]) {
-      map[key] = [];
-    }
+    const surveyId = r[1]; // التاريخ
 
-    const surveyId = r[1]; // التاريخ نفسه كهوية مسح
+    const val = Number(r[8]); // مش ضروري هنا بس للتوضيح
+
+    if (isNaN(val)) return;
 
     if (!map[key]) {
       map[key] = {};
     }
-    
+
     if (!map[key][surveyId]) {
       map[key][surveyId] = [];
     }
-    
-    map[key][surveyId].push(r);
-      });
 
-  console.log("FINAL GROUPED MAP =", map);
+    map[key][surveyId].push(r);
+  });
 
   return map;
 }
@@ -190,28 +187,61 @@ function buildSurveyMap(data) {
 // =========================
 function buildSurveySeries(groupedMap, index) {
 
-  const result = surveyPointsOrder.map(point => {
+  const surveyMap = {};
 
-    const surveys = groupedMap[point] || {};
-    const rows = Object.values(surveys).flat();
-    if (!rows.length) return null;
+  const normalizedPoints = surveyPointsOrder.map(normalize);
 
-    const values = rows
-      .map(r => Number(r[index]))
-      .filter(v => !isNaN(v));
+  // =========================
+  // GROUP BY DATE + POINT
+  // =========================
+  Object.keys(groupedMap).forEach(point => {
 
-    if (!values.length) return null;
+    const rows = groupedMap[point];
 
-    const avg =
-      values.reduce((a, b) => a + b, 0) / values.length;
+    rows.forEach(r => {
 
-    return +avg.toFixed(2);
+      const date = r[1]; // 👈 المسح البيئي
+
+      const idx = normalizedPoints.indexOf(normalize(r[4]));
+      if (idx === -1) return;
+
+      const keyPoint = surveyPointsOrder[idx];
+      const val = Number(r[index]);
+
+      if (isNaN(val)) return;
+
+      if (!surveyMap[date]) surveyMap[date] = {};
+      if (!surveyMap[date][keyPoint]) surveyMap[date][keyPoint] = [];
+
+      surveyMap[date][keyPoint].push(val);
+    });
+  });
+
+  // =========================
+  // CONVERT TO SERIES
+  // =========================
+  const datasets = [];
+
+  Object.keys(surveyMap).forEach(date => {
+
+    const values = surveyPointsOrder.map(p => {
+
+      const arr = surveyMap[date][p] || [];
+      if (!arr.length) return null;
+
+      return +(
+        arr.reduce((a,b)=>a+b,0) / arr.length
+      ).toFixed(2);
+    });
+
+    datasets.push({
+      label: date,
+      data: values
+    });
 
   });
 
-  console.log("FINAL SERIES =", result);
-
-  return result;
+  return datasets;
 }
   //============
   //الحدود
@@ -240,8 +270,41 @@ function draw(id, label, data, color, param) {
   if (charts[id]) charts[id].destroy();
   const isArray = Array.isArray(data);
 
-  const values = isArray ? data : data.values;
+const isMulti = Array.isArray(data) && data[0]?.data;
+
+if (isMulti) {
+  // multi survey mode
+  charts[id] = new Chart(ctx, {
+    type: "line",
+    data: {
+      labels: surveyPointsOrder,
+      datasets: data.map((ds, i) => ({
+        label: ds.label,
+        data: ds.data,
+        borderColor: i === 0 ? color : getRandomColor(i),
+        tension: 0.3,
+        fill: false,
+        borderWidth: 4,
+        pointRadius: 5
+      }))
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false
+    }
+  });
+
+  return;
+}
   const labels = isArray ? surveyPointsOrder : data.labels;
+  const isMulti = Array.isArray(data) && data[0]?.data;
+
+  let values = [];
+  let labels = surveyPointsOrder;
+  
+  if (!isMulti) {
+    values = data.values;
+  }
 
   const length = values.length;
   // =========================
@@ -393,49 +456,31 @@ function generateSurvey() {
 
   const filtered = getFilteredData();
 
-  console.log("SURVEY FILTERED:", filtered);
-
-  // BUILD ONCE
   const groupedMap = buildSurveyMap(filtered);
 
-  draw(
-    "turbidityChart",
-    "Turbidity",
+  draw("turbidityChart","Turbidity",
     buildSurveySeries(groupedMap, 8),
-    "blue",
-    "turbidity"
+    "blue","turbidity"
   );
 
-  draw(
-    "phChart",
-    "pH",
+  draw("phChart","pH",
     buildSurveySeries(groupedMap, 9),
-    "blue",
-    "pH"
+    "blue","pH"
   );
 
-  draw(
-    "tempChart",
-    "Temp",
+  draw("tempChart","Temp",
     buildSurveySeries(groupedMap, 10),
-    "blue",
-    "temp"
+    "blue","temp"
   );
 
-  draw(
-    "tdsChart",
-    "TDS",
+  draw("tdsChart","TDS",
     buildSurveySeries(groupedMap, 11),
-    "blue",
-    "tds"
+    "blue","tds"
   );
 
-  draw(
-    "doChart",
-    "DO",
+  draw("doChart","DO",
     buildSurveySeries(groupedMap, 18),
-    "blue",
-    "do"
+    "blue","do"
   );
 }
 function clean(str){
