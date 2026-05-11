@@ -144,7 +144,11 @@ function normalize(str){
     .replace(/\u200f|\u200e/g,''); // removes hidden RTL/LTR marks
 }
 
-function buildSurveySeries(data, index) {
+// =========================
+// BUILD GROUPS ONCE
+// =========================
+function buildSurveyMap(data) {
+
   const map = {};
 
   const normalizedPoints = surveyPointsOrder.map(normalize);
@@ -152,14 +156,8 @@ function buildSurveySeries(data, index) {
   data.forEach(r => {
 
     const point = normalize(r[4]);
-    const val = Number(r[index]);
-
-    if (isNaN(val)) return;
 
     const idx = normalizedPoints.indexOf(point);
-
-    console.log("POINT =", point);
-    console.log("INDEX =", idx);
 
     if (idx === -1) return;
 
@@ -169,20 +167,37 @@ function buildSurveySeries(data, index) {
       map[key] = [];
     }
 
-    map[key].push(val);
+    map[key].push(r);
 
-    console.log("FINAL MAP =", map);
   });
 
-  // النتيجة النهائية
-  const result = surveyPointsOrder.map(p => {
-    const arr = map[p] || [];
+  console.log("FINAL GROUPED MAP =", map);
 
-    if (!arr.length) return null;
+  return map;
+}
 
-    return +(
-      arr.reduce((a, b) => a + b, 0) / arr.length
-    ).toFixed(2);
+// =========================
+// BUILD SERIES
+// =========================
+function buildSurveySeries(groupedMap, index) {
+
+  const result = surveyPointsOrder.map(point => {
+
+    const rows = groupedMap[point] || [];
+
+    if (!rows.length) return null;
+
+    const values = rows
+      .map(r => Number(r[index]))
+      .filter(v => !isNaN(v));
+
+    if (!values.length) return null;
+
+    const avg =
+      values.reduce((a, b) => a + b, 0) / values.length;
+
+    return +avg.toFixed(2);
+
   });
 
   console.log("FINAL SERIES =", result);
@@ -366,15 +381,51 @@ function generateMonthly() {
 function generateSurvey() {
 
   const filtered = getFilteredData();
+
   console.log("SURVEY FILTERED:", filtered);
 
-  draw("turbidityChart","Turbidity",buildSurveySeries(filtered,8),"blue","turbidity");
-  draw("phChart","pH",buildSurveySeries(filtered,9),"blue","pH");
-  draw("tempChart","Temp",buildSurveySeries(filtered,10),"blue","temp");
-  draw("tdsChart","TDS",buildSurveySeries(filtered,11),"blue","tds");
-  // الصحيح
-  draw("doChart","DO",buildSurveySeries(filtered,18),"blue","do");
+  // BUILD ONCE
+  const groupedMap = buildSurveyMap(filtered);
 
+  draw(
+    "turbidityChart",
+    "Turbidity",
+    buildSurveySeries(groupedMap, 8),
+    "blue",
+    "turbidity"
+  );
+
+  draw(
+    "phChart",
+    "pH",
+    buildSurveySeries(groupedMap, 9),
+    "blue",
+    "pH"
+  );
+
+  draw(
+    "tempChart",
+    "Temp",
+    buildSurveySeries(groupedMap, 10),
+    "blue",
+    "temp"
+  );
+
+  draw(
+    "tdsChart",
+    "TDS",
+    buildSurveySeries(groupedMap, 11),
+    "blue",
+    "tds"
+  );
+
+  draw(
+    "doChart",
+    "DO",
+    buildSurveySeries(groupedMap, 18),
+    "blue",
+    "do"
+  );
 }
 function clean(str){
   return (str || "").toString().trim();
