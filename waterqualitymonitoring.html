@@ -849,6 +849,8 @@
               const locationsInGroup = group.map(r =>
                 normalize(r.children[3].textContent)
               );
+
+              console.log(locationsInGroup);
         
               const hasSurvey = survey.every(loc =>
                 locationsInGroup.includes(normalize(loc))
