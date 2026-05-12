@@ -347,6 +347,7 @@ function draw(id, label, data, color, param) {
         borderWidth: 4,
         pointRadius: 5
       }))
+      
     },
     options: {
       responsive: true,
@@ -397,8 +398,8 @@ function draw(id, label, data, color, param) {
     limitLines.push({
       label: param + " Min",
       data: new Array(length).fill(limits[minKey]),
-      borderColor: "green",
-      borderWidth: 2,
+      borderColor: "red",
+      borderWidth: 3,
       borderDash: [6, 6],
       pointRadius: 0,
       fill: false
@@ -410,7 +411,7 @@ function draw(id, label, data, color, param) {
       label: param + " Max",
       data: new Array(length).fill(limits[maxKey]),
       borderColor: "red",
-      borderWidth: 2,
+      borderWidth: 3,
       borderDash: [6, 6],
       pointRadius: 0,
       fill: false
