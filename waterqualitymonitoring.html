@@ -852,7 +852,7 @@
 
               console.log(locationsInGroup);
         
-              const hasSurvey = survey.every(loc =>
+              const hasSurvey = survey.some(loc =>
                 locationsInGroup.includes(normalize(loc))
               );
         
