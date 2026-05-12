@@ -147,36 +147,105 @@ function normalize(str){
 // =========================
 // BUILD GROUPS ONCE
 // =========================
-function buildSurveyMap(data) {
+//function buildSurveyMap(data) {
+
+  //const map = {};
+
+ // const normalizedPoints = surveyPointsOrder.map(normalize);
+
+ // data.forEach(r => {
+
+ //   const point = normalize(r[4]);
+
+  //  const idx = normalizedPoints.indexOf(point);
+ //   if (idx === -1) return;
+
+  //  const key = surveyPointsOrder[idx];
+
+  //  const surveyId = r[1]; // التاريخ
+
+  //  const val = Number(r[8]); // مش ضروري هنا بس للتوضيح
+
+ //   if (isNaN(val)) return;
+
+  //  if (!map[key]) {
+ //     map[key] = {};
+  //  }
+
+  //  if (!map[key][surveyId]) {
+  //    map[key][surveyId] = [];
+   // }
+
+  //  map[key][surveyId].push(r);
+ // });
+
+//  return map;
+//}
+  function buildSurveyMap(data) {
 
   const map = {};
-
   const normalizedPoints = surveyPointsOrder.map(normalize);
 
+  // تجميع أولي حسب:
+  // التاريخ + الفرع + المحطة
+  const grouped = {};
+
   data.forEach(r => {
+
+    const date = r[1];
+    const branch = r[2];
+    const station = r[3];
 
     const point = normalize(r[4]);
 
     const idx = normalizedPoints.indexOf(point);
+
     if (idx === -1) return;
 
-    const key = surveyPointsOrder[idx];
+    const key = `${date}|${branch}|${station}`;
 
-    const surveyId = r[1]; // التاريخ
-
-    const val = Number(r[8]); // مش ضروري هنا بس للتوضيح
-
-    if (isNaN(val)) return;
-
-    if (!map[key]) {
-      map[key] = {};
+    if (!grouped[key]) {
+      grouped[key] = [];
     }
 
-    if (!map[key][surveyId]) {
-      map[key][surveyId] = [];
-    }
+    grouped[key].push(r);
 
-    map[key][surveyId].push(r);
+  });
+
+  // نحتفظ فقط بالمجموعات التى بها أكثر من نقطة
+  Object.values(grouped).forEach(group => {
+
+    const uniquePoints = [
+      ...new Set(group.map(r => normalize(r[4])))
+    ];
+
+    // استبعاد المأخذ فقط
+    if (uniquePoints.length <= 1) return;
+
+    group.forEach(r => {
+
+      const point = normalize(r[4]);
+
+      const idx = normalizedPoints.indexOf(point);
+
+      if (idx === -1) return;
+
+      const pointName = surveyPointsOrder[idx];
+
+      const surveyId = `${r[1]} - ${r[3]}`;
+
+      if (!map[pointName]) {
+        map[pointName] = {};
+      }
+
+      if (!map[pointName][surveyId]) {
+        map[pointName][surveyId] = [];
+      }
+
+      map[pointName][surveyId].push(r);
+
+    });
+
   });
 
   return map;
