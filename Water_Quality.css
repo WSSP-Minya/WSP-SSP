@@ -205,6 +205,20 @@ h1 {
 /* Radios */
 input[type="radio"] { display: none; }
 
+.parameters-section{
+    width: calc(100% - 40px);
+    margin: 15px auto;
+
+    padding: 15px;
+
+    background: rgba(255,255,255,0.65);
+
+    border: 2px groove gray;
+    border-radius: 10px;
+
+    box-sizing: border-box;
+}
+
 .para-label{
     display:inline-block;
     font-size:18px;
@@ -231,16 +245,20 @@ input[type="radio"]:checked + label{
 /* Content Card */
 .card{
     display:none;
-    padding:20px;
-    margin-bottom:25px;
-    background:#fff;
-    border-radius:15px;
-    box-shadow:0 4px 12px rgba(0,0,0,0.15);
 
-    width: 95%;
-    max-width: 1400px;
-    margin-inline: auto;
-    overflow-x: hidden;
+    width:100%;
+    box-sizing:border-box;
+
+    padding:20px;
+    margin:0;
+
+    background:#fff;
+
+    border-radius:15px;
+
+    box-shadow:0 4px 12px rgba(0,0,0,0.12);
+
+    overflow:hidden;
 }
 
 /* Grid Layouts */
