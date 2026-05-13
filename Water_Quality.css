@@ -236,6 +236,11 @@ input[type="radio"]:checked + label{
     background:#fff;
     border-radius:15px;
     box-shadow:0 4px 12px rgba(0,0,0,0.15);
+
+    width: 95%;
+    max-width: 1400px;
+    margin-inline: auto;
+    overflow-x: hidden;
 }
 
 /* Grid Layouts */
@@ -261,12 +266,17 @@ input[type="radio"]:checked + label{
     text-align:center;
 }
 
-.physical-grid{ grid-template-columns: repeat(3, 1fr); }
+.physical-grid{
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 
-.chemical-grid{ grid-template-columns: repeat(6,1fr); }
+.chemical-grid{
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 
-.bio-grid{ grid-template-columns: repeat(2,1fr); }
-
+.bio-grid{
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
 .grid div{
     background:#f7fbff;
     padding:15px;
@@ -276,6 +286,7 @@ input[type="radio"]:checked + label{
     display:flex;      /* خلي كل div flex */
     align-items:center; /* عمودي */
     gap:10px;           /* مسافة بين label و input */
+    min-width: 0;
 }
 
 /* Label and Input inline */
@@ -287,7 +298,8 @@ input[type="radio"]:checked + label{
 }
 
 .grid input{
-    width:70px;
+    width:100%;
+    max-width:90px;
     height:35px;
     font-size:16px;
     font-weight:bold;
