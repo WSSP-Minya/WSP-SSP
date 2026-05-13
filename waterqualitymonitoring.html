@@ -933,7 +933,7 @@
       const table = document.getElementById(tableId);
       let rows = Array.from(table.querySelectorAll("tbody tr"));
     
-      // ترتيب حسب التاريخ
+      // ترتيب حسب التاريخ (نفس الطباعة)
       rows.sort((a, b) => {
         const getDate = (row) => {
           const text = row.children[0].textContent.trim();
@@ -944,43 +944,75 @@
         return getDate(a) - getDate(b);
       });
     
-      // 🧠 تجميع حسب (تاريخ + فرع + محطة)
+      // تجميع (نفس الطباعة)
       let grouped = {};
     
       rows.forEach(row => {
         const cells = row.querySelectorAll("td");
         if (cells.length < 4) return;
     
-        const date = cells[0].textContent.trim();
-        const branchVal = cells[1].textContent.trim();
-        const stationVal = cells[2].textContent.trim();
-    
-        const key = `${date}|${branchVal}|${stationVal}`;
+        const key = `${cells[0].textContent.trim()}|${cells[1].textContent.trim()}|${cells[2].textContent.trim()}`;
     
         if (!grouped[key]) grouped[key] = [];
         grouped[key].push(row);
       });
     
       let filteredHTML = `
-        <table border="1">
-          ${table.querySelector("thead").outerHTML}
-          <tbody>
-      `;
+    <html xmlns:o="urn:schemas-microsoft-com:office:office"
+          xmlns:x="urn:schemas-microsoft-com:office:excel"
+          xmlns="http://www.w3.org/TR/REC-html40">
+    
+    <head>
+    <meta charset="UTF-8">
+    
+    <style>
+      body { font-family: Arial; direction: rtl; }
+    
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+      }
+    
+      th, td {
+        border: 1px solid #000;
+        padding: 6px;
+        text-align: center;
+        font-size: 12px;
+      }
+    
+      th {
+        background-color: #d9e8f5;
+      }
+    </style>
+    
+    </head>
+    
+    <body>
+    
+    <h3 style="text-align:center;">تقرير جودة المياه</h3>
+    
+    <table>
+    
+    ${table.querySelector("thead").outerHTML}
+    
+    <tbody>
+    `;
     
       Object.values(grouped).forEach(group => {
     
         let matchGroup = true;
     
-        const firstCells = group[0].querySelectorAll("td");
+        const first = group[0].children;
     
-        const rowDateText = firstCells[0].textContent.trim();
-        const rowBranch = firstCells[1].textContent.trim();
-        const rowStation = firstCells[2].textContent.trim();
+        const rowDateText = first[0].textContent.trim();
+        const rowBranch = first[1].textContent.trim();
+        const rowStation = first[2].textContent.trim();
     
         let rowDate = null;
         if (rowDateText.includes("/")) {
-          const [day, month, year] = rowDateText.split("/");
-          rowDate = new Date(`${year}-${month}-${day}`);
+          const [d, m, y] = rowDateText.split("/");
+          rowDate = new Date(`${y}-${m}-${d}`);
         }
     
         const from = fromDate ? new Date(fromDate) : null;
@@ -991,27 +1023,18 @@
         if (from && rowDate && rowDate < from) matchGroup = false;
         if (to && rowDate && rowDate > to) matchGroup = false;
     
+        // ✅ نفس منطق الطباعة (المهم هنا)
         if (location === "المسح البيئى") {
     
           const locationsInGroup = group.map(r =>
             normalize(r.children[3].textContent)
           );
     
-          // ✔️ لازم كل نقاط المسح موجودة
           const hasSurvey = survey.every(loc =>
             locationsInGroup.includes(normalize(loc))
           );
     
           if (!hasSurvey) matchGroup = false;
-    
-          // ✔️ ترتيب النقاط
-          group.sort((a, b) => {
-            const locA = normalize(a.children[3].textContent);
-            const locB = normalize(b.children[3].textContent);
-    
-            return survey.findIndex(s => normalize(s) === locA) -
-                   survey.findIndex(s => normalize(s) === locB);
-          });
     
         } else {
     
@@ -1034,23 +1057,28 @@
     
       });
     
-      filteredHTML += "</tbody></table>";
+      filteredHTML += `
+    </tbody>
+    </table>
     
-      // 📥 تحميل Excel
+    </body>
+    </html>
+    `;
+    
       const BOM = "\uFEFF";
-
-        const blob = new Blob(
-          [BOM + filteredHTML],
-          { type: "application/vnd.ms-excel;charset=utf-8;" }
-        );
-        
-        const link = document.createElement("a");
-        link.href = URL.createObjectURL(blob);
-        link.download = filename ? filename + ".xls" : "filtered_data.xls";
-        
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+    
+      const blob = new Blob(
+        [BOM + filteredHTML],
+        { type: "application/vnd.ms-excel;charset=utf-8;" }
+      );
+    
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = filename ? filename + ".xls" : "filtered_data.xls";
+    
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
     }
 
     //  تسجيل الخروج
