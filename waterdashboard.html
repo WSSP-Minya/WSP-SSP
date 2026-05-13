@@ -345,15 +345,15 @@ function draw(id, label, data, color, param) {
     sulf: { title: "Sulfates", unit: "mg/L" },
     fe: { title: "Fe", unit: "mg/L" },
     mn: { title: "Mn", unit: "mg/L" },
-    nh3: { title: "NH"<sub>"3"<\sub>, unit: "mg/L" },
-    no2: { title: "NO"<sub>"2"<\sub>, unit: "mg/L" },
-    no3: { title: "NO"<sub>"3"<\sub>, unit: "mg/L" },
+    nh3: { title: "NH3", unit: "mg/L" },
+    no2: { title: "NO2", unit: "mg/L" },
+    no3: { title: "NO3", unit: "mg/L" },
     do: { title: "DO", unit: "mg/L" },
     cod: { title: "COD", unit: "mg/L" },  
     bod: { title: "BOD", unit: "mg/L" },
     og: { title: "Oil & Grease", unit: "mg/L" },
     tc: { title: "Total Coliform", unit: "C.F.U/100 ml" },
-    bod: { title: "Total Algae", unit: "Colony/ml" }
+    ta: { title: "Total Algae", unit: "Colony/ml" }
   };
 
   // =========================
@@ -552,19 +552,19 @@ function generateMonthly() {
     push("pH", date, r[9]);
     push("Temp", date, r[10]);
     push("TDS", date, r[11]);
-    push("Chlorides", date, r[12]);
-    push("Sulfates", date, r[13]);
-    push("Fe", date, r[14]);
-    push("Mn", date, r[15]);
-    push("NH3", date, r[16]);
-    push("NO2", date, r[17]);
-    push("NO3", date, r[18]);    
+    push("ch", date, r[12]);
+    push("Sulf", date, r[13]);
+    push("fe", date, r[14]);
+    push("mn", date, r[15]);
+    push("nh3", date, r[16]);
+    push("no2", date, r[17]);
+    push("no3", date, r[18]);    
     push("DO", date, r[19]);
-    push("COD", date, r[20]);
-    push("BOD", date, r[21]);
-    push("Oil & Grease", date, r[22]);
-    push("Total Coliform", date, r[23]);
-    push("Total Algae", date, r[24]);
+    push("cod", date, r[20]);
+    push("bod", date, r[21]);
+    push("og", date, r[22]);
+    push("tc", date, r[23]);
+    push("ta", date, r[24]);
   });
 
   draw("turbidityChart","Turbidity",build("Turbidity"),"blue","turbidity");
@@ -611,31 +611,31 @@ function generateSurvey() {
     buildSurveySeries(groupedMap, 11),
     "blue","tds"
   );
-  draw("chChart","Chlorides",
+  draw("chChart","ch",
     buildSurveySeries(groupedMap, 12),
     "blue","ch"
   );
-  draw("sulfChart","Sulfates",
+  draw("sulfChart","sulf",
     buildSurveySeries(groupedMap, 13),
     "blue","sulf"
   );
-  draw("feChart","Fe",
+  draw("feChart","fe",
     buildSurveySeries(groupedMap, 14),
     "blue","fe"
   );
-  draw("mnChart","Mn",
+  draw("mnChart","mn",
     buildSurveySeries(groupedMap, 15),
     "blue","mn"
   );
-  draw("nh3Chart","NH3",
+  draw("nh3Chart","nh3",
     buildSurveySeries(groupedMap, 16),
     "blue","nh3"
   );
-  draw("no2Chart","NO2",
+  draw("no2Chart","no2",
     buildSurveySeries(groupedMap, 17),
     "blue","no2"
   );
-  draw("no3Chart","NO3",
+  draw("no3Chart","no3",
     buildSurveySeries(groupedMap, 18),
     "blue","no3"
   );
@@ -651,15 +651,15 @@ function generateSurvey() {
     buildSurveySeries(groupedMap, 21),
     "blue","bod"
   );
-   draw("ogChart","Oil & Grease",
+   draw("ogChart","og",
     buildSurveySeries(groupedMap, 22),
     "blue","og"
   );
-   draw("tcChart","Total Coliform",
+   draw("tcChart","tc",
     buildSurveySeries(groupedMap, 23),
     "blue","tc"
   );
-   draw("taChart","Total Algae",
+   draw("taChart","ta",
     buildSurveySeries(groupedMap, 24),
     "blue","ta"
   );
