@@ -44,7 +44,7 @@ const surveyPointsOrder = [
   "اسفل التيار 500 م",
   "اسفل التيار 1000 م"
 ];
-
+  
 // =========================
 // LOAD DATA (EXAMPLE)
 // =========================
@@ -310,6 +310,8 @@ const limits = {
   bod_max: 6,
   og_max: 0.1
 };
+  
+
 // =========================
 // DRAW CHART
 // =========================
@@ -323,6 +325,15 @@ function draw(id, label, data, color, param) {
   if (charts[id]) charts[id].destroy();
 
   const isMulti = Array.isArray(data) && data[0]?.data;
+  const chartMeta = {
+    turbidity: { title: "Turbidity", unit: "NTU" },
+    pH: { title: "pH", unit: "" },
+    temp: { title: "Temperature", unit: "°C" },
+    tds: { title: "TDS", unit: "mg/L" },
+    do: { title: "Dissolved Oxygen", unit: "mg/L" },
+    cod: { title: "COD", unit: "mg/L" },
+    bod: { title: "BOD", unit: "mg/L" }
+  };
 
   // =========================
   // MULTI SURVEY MODE
@@ -349,25 +360,28 @@ function draw(id, label, data, color, param) {
       }))
       
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          labels: {
-            color: "#000",
-            font: {
-              size: 14,
-              weight: "bold"
+     options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          title: {
+            display: true,
+            text: chartMeta[param]?.title || label,
+            font: { size: 18, weight: "bold" },
+            color: "#000"
+          },
+          legend: {
+            labels: {
+              color: "#000",
+              font: { size: 14, weight: "bold" }
             }
           }
         }
       }
-    }
-  });
+    });
 
-  return;
-}
+    return;
+  }
   ///ضبط الوان curves
   function getColorByIndex(i) {
   const colors = [
@@ -447,12 +461,21 @@ function draw(id, label, data, color, param) {
       devicePixelRatio: 2,
 
       plugins: {
+        title: {
+          display: true,
+          text: chartMeta[param]?.title || label,
+          font: {
+            size: 18,
+            weight: "bold"
+          },
+          color: "#000"
+        },
         legend: {
           labels: {
-            color: '#000',
+            color: "#000",
             font: {
-              size: 16,
-              weight: 'bold'
+              size: 14,
+              weight: "bold"
             }
           }
         }
@@ -462,29 +485,21 @@ function draw(id, label, data, color, param) {
         x: {
           ticks: {
             color: '#000',
-            font: {
-              size: 14,
-              weight: 'bold'
-            }
-          },
-          grid: {
-            color: '#cccccc',
-            lineWidth: 1.2
+            font: { size: 14, weight: 'bold' }
           }
         },
         y: {
+          title: {
+            display: true,
+            text: chartMeta[param]?.unit || "",
+            font: { size: 14, weight: "bold" },
+            color: "#000"
+          },
           min: (param === "pH") ? 5 : undefined,
           max: (param === "pH") ? 10 : undefined,
           ticks: {
             color: '#000',
-            font: {
-              size: 14,
-              weight: 'bold'
-            }
-          },
-          grid: {
-            color: '#cccccc',
-            lineWidth: 1.2
+            font: { size: 14, weight: 'bold' }
           }
         }
       }
