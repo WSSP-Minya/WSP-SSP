@@ -1030,20 +1030,30 @@
             normalize(r.children[3].textContent)
           );
     
-          const hasSurvey = survey.every(loc =>
-            locationsInGroup.includes(normalize(loc))
-          );
-    
+          //const hasSurvey = survey.every(loc =>
+           // locationsInGroup.includes(normalize(loc))
+          //);
+          const hasSurvey = [...new Set(locationsInGroup)].length > 1;
+
           if (!hasSurvey) matchGroup = false;
+             // ترتيب
+              group.sort((a, b) => {
+                const locA = normalize(a.children[3].textContent);
+                const locB = normalize(b.children[3].textContent);
+        
+                return survey.findIndex(s => normalize(s) === locA) -
+                       survey.findIndex(s => normalize(s) === locB);
+              });
+        
+            } else {
+              group = group.filter(row =>
+                normalize(row.children[3].textContent) === normalize(location)
+              );
+        
+              if (group.length === 0) matchGroup = false;
+            }
+            
     
-        } else {
-    
-          group = group.filter(row =>
-            normalize(row.children[3].textContent) === normalize(location)
-          );
-    
-          if (group.length === 0) matchGroup = false;
-        }
     
         if (matchGroup) {
           group.forEach(row => {
