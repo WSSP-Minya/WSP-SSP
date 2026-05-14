@@ -551,10 +551,10 @@ function generateMonthly() {
 
   filtered.forEach(r=>{
     const date = r[1];
-    push("Turbidity", date, r[8]);
+    push("turbidity", date, r[8]);
     push("pH", date, r[9]);
-    push("Temp", date, r[10]);
-    push("TDS", date, r[11]);
+    push("temp", date, r[10]);
+    push("tds", date, r[11]);
     push("ch", date, r[12]);
     push("sulf", date, r[13]);
     push("fe", date, r[14]);
