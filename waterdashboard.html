@@ -379,6 +379,9 @@ function draw(id, label, data, color, param) {
         pointHoverRadius: (ctx) => {
           return ctx.raw == null ? 0 : 6;
         },
+        pointHitRadius: (ctx) => {
+          return ctx.raw == null ? 0 : 10;
+        },
         showLine: true,
         spanGaps: false
       })),
