@@ -331,20 +331,59 @@ function draw(id, label, data, color, param) {
   const cleanDatasets = data.filter(d =>
     d.data && d.data.some(v => v !== null)
   );
+   const limitLines = [];
+
+  const minKey = param + "_min";
+  const maxKey = param + "_max";
+  
+  if (limits[minKey] !== undefined) {
+    limitLines.push({
+      label: param + " Min",
+      data: new Array(surveyPointsOrder.length).fill(limits[minKey]),
+      borderColor: "red",
+      borderWidth: 3,
+      borderDash: [6,6],
+      pointRadius: 0,
+      fill: false
+    });
+  }
+  
+  if (limits[maxKey] !== undefined) {
+    limitLines.push({
+      label: param + " Max",
+      data: new Array(surveyPointsOrder.length).fill(limits[maxKey]),
+      borderColor: "red",
+      borderWidth: 3,
+      borderDash: [6,6],
+      pointRadius: 0,
+      fill: false
+    });
+  }
 
   charts[id] = new Chart(ctx, {
     type: "line",
     data: {
       labels: surveyPointsOrder,
-      datasets: cleanDatasets.map((ds, i) => ({
+      datasets:[
+        ...cleanDatasets.map((ds, i) => ({
         label: ds.label,
         data: ds.data,
         borderColor: getColorByIndex(i),
         tension: 0.3,
         fill: false,
         borderWidth: 4,
-        pointRadius: 5
-      }))
+        pointRadius: (ctx) => {
+          return ctx.raw == null ? 0 : 5;
+        },
+      
+        pointHoverRadius: (ctx) => {
+          return ctx.raw == null ? 0 : 6;
+        },
+      
+        spanGaps: false
+      })),
+            ...limitLines
+                ]
     },
 
     options: {
@@ -574,7 +613,7 @@ function generateMonthly() {
   draw("phChart","pH",build("pH"),"blue","pH");
   draw("tempChart","Temp",build("temp"),"blue","temp");
   draw("tdsChart","TDS",build("tds"),"blue","tds");
-  draw("chChart","TDS",build("ch"),"blue","ch");
+  draw("chChart","Chlorides",build("ch"),"blue","ch");
   draw("sulfChart","Sulfates",build("sulf"),"blue","sulf");
   draw("feChart","Fe",build("fe"),"blue","fe");
   draw("mnChart","Mn",build("mn"),"blue","mn");
