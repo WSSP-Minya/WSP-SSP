@@ -421,6 +421,9 @@ function draw(id, label, data, color, param) {
         },
 
         y: {
+          beginAtZero: true,
+          min: 0,
+
           title: {
             display: true,
             text: chartMeta[param]?.unit || "",
@@ -555,6 +558,9 @@ function draw(id, label, data, color, param) {
           }
         },
         y: {
+          beginAtZero: true,
+          min: 0,
+
           title: {
             display: true,
             text: chartMeta[param]?.unit || "",
