@@ -527,7 +527,13 @@
           wspcomment.value = detail.wspcomment || "";
 
           if (detail.attachment) {
-            document.getElementById("filename").innerHTML = `<a href="${detail.attachment}" target="_blank">Show File</a>`;
+
+            const files = detail.attachment.split(" | ");
+          
+            document.getElementById("filename").innerHTML = files.map(url => {
+              return `<div><a href="${url}" target="_blank">Show File</a></div>`;
+            }).join("");
+          
           } else {
             document.getElementById("filename").textContent = "No File";
           }
