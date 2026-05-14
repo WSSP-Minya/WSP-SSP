@@ -476,7 +476,7 @@ function draw(id, label, data, color, param) {
           pointBorderColor: "#fff",
           pointBorderWidth: 2
         },
-        limitLines
+        ...limitLines
       ]
     },
     options: {
@@ -556,13 +556,13 @@ function generateMonthly() {
     push("Temp", date, r[10]);
     push("TDS", date, r[11]);
     push("ch", date, r[12]);
-    push("Sulf", date, r[13]);
+    push("sulf", date, r[13]);
     push("fe", date, r[14]);
     push("mn", date, r[15]);
     push("nh3", date, r[16]);
     push("no2", date, r[17]);
     push("no3", date, r[18]);    
-    push("DO", date, r[19]);
+    push("do", date, r[19]);
     push("cod", date, r[20]);
     push("bod", date, r[21]);
     push("og", date, r[22]);
@@ -570,10 +570,10 @@ function generateMonthly() {
     push("ta", date, r[24]);
   });
 
-  draw("turbidityChart","Turbidity",build("Turbidity"),"blue","turbidity");
+  draw("turbidityChart","Turbidity",build("turbidity"),"blue","turbidity");
   draw("phChart","pH",build("pH"),"blue","pH");
-  draw("tempChart","Temp",build("Temp"),"blue","temp");
-  draw("tdsChart","TDS",build("TDS"),"blue","tds");
+  draw("tempChart","Temp",build("temp"),"blue","temp");
+  draw("tdsChart","TDS",build("tds"),"blue","tds");
   draw("chChart","TDS",build("ch"),"blue","ch");
   draw("sulfChart","Sulfates",build("sulf"),"blue","sulf");
   draw("feChart","Fe",build("fe"),"blue","fe");
@@ -581,7 +581,7 @@ function generateMonthly() {
   draw("nh3Chart","NH3",build("nh3"),"blue","nh3");
   draw("no2Chart","NO2",build("no2"),"blue","no2");
   draw("no3Chart","NO3",build("no3"),"blue","no3"); 
-  draw("doChart","DO",build("DO"),"blue","do");
+  draw("doChart","DO",build("do"),"blue","do");
   draw("codChart","COD",build("cod"),"blue","cod");
   draw("bodChart","BOD",build("bod"),"blue","bod");
   draw("ogChart","Oil & Grease",build("og"),"blue","og");
