@@ -345,30 +345,67 @@ function draw(id, label, data, color, param) {
         borderWidth: 4,
         pointRadius: 5
       }))
-      
     },
-     options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
+
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+
+      plugins: {
+        title: {
+          display: true,
+          text: chartMeta[param]?.title || label,
+          font: { size: 18, weight: "bold" },
+          color: "#000"
+        },
+
+        legend: {
+          labels: {
+            color: "#000",
+            font: { size: 14, weight: "bold" }
+          }
+        }
+      },
+
+      scales: {
+        x: {
+          ticks: {
+            color: '#000',
+            font: {
+              size: 14,
+              weight: 'bold'
+            }
+          }
+        },
+
+        y: {
           title: {
             display: true,
-            text: chartMeta[param]?.title || label,
-            font: { size: 18, weight: "bold" },
+            text: chartMeta[param]?.unit || "",
+            font: {
+              size: 14,
+              weight: "bold"
+            },
             color: "#000"
           },
-          legend: {
-            labels: {
-              color: "#000",
-              font: { size: 14, weight: "bold" }
+
+          min: (param === "pH") ? 5 : undefined,
+          max: (param === "pH") ? 10 : undefined,
+
+          ticks: {
+            color: '#000',
+            font: {
+              size: 14,
+              weight: 'bold'
             }
           }
         }
       }
-    });
+    }
+  });
 
-    return;
-  }
+  return;
+}
   ///ضبط الوان curves
   function getColorByIndex(i) {
   const colors = [
