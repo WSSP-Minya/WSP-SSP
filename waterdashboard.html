@@ -158,40 +158,6 @@ function normalize(str){
 // =========================
 // BUILD GROUPS ONCE
 // =========================
-//function buildSurveyMap(data) {
-
-  //const map = {};
-
- // const normalizedPoints = surveyPointsOrder.map(normalize);
-
- // data.forEach(r => {
-
- //   const point = normalize(r[4]);
-
-  //  const idx = normalizedPoints.indexOf(point);
- //   if (idx === -1) return;
-
-  //  const key = surveyPointsOrder[idx];
-
-  //  const surveyId = r[1]; // التاريخ
-
-  //  const val = Number(r[8]); // مش ضروري هنا بس للتوضيح
-
- //   if (isNaN(val)) return;
-
-  //  if (!map[key]) {
- //     map[key] = {};
-  //  }
-
-  //  if (!map[key][surveyId]) {
-  //    map[key][surveyId] = [];
-   // }
-
-  //  map[key][surveyId].push(r);
- // });
-
-//  return map;
-//}
   function buildSurveyMap(data) {
 
   const map = {};
@@ -571,19 +537,19 @@ function generateMonthly() {
   draw("phChart","pH",build("pH"),"blue","pH");
   draw("tempChart","Temp",build("Temp"),"blue","temp");
   draw("tdsChart","TDS",build("TDS"),"blue","tds");
-  draw("chChart","TDS",build("Chlorides"),"blue","ch");
-  draw("sulfChart","Sulfates",build("Sulfates"),"blue","sulf");
-  draw("feChart","Fe",build("Fe"),"blue","fe");
-  draw("mnChart","Mn",build("Mn"),"blue","mn");
-  draw("nh3Chart","NH3",build("NH3"),"blue","nh3");
-  draw("no2Chart","NO2",build("NO2"),"blue","no2");
-  draw("no3Chart","NO3",build("NO3"),"blue","no3"); 
+  draw("chChart","TDS",build("ch"),"blue","ch");
+  draw("sulfChart","Sulfates",build("sulf"),"blue","sulf");
+  draw("feChart","Fe",build("fe"),"blue","fe");
+  draw("mnChart","Mn",build("mn"),"blue","mn");
+  draw("nh3Chart","NH3",build("nh3"),"blue","nh3");
+  draw("no2Chart","NO2",build("no2"),"blue","no2");
+  draw("no3Chart","NO3",build("no3"),"blue","no3"); 
   draw("doChart","DO",build("DO"),"blue","do");
-  draw("codChart","COD",build("COD"),"blue","cod");
-  draw("bodChart","BOD",build("BOD"),"blue","bod");
-  draw("ogChart","Oil & Grease",build("Oil & Grease"),"blue","og");
-  draw("tcChart","Total Coliform",build("Total Coliform"),"blue","tc");
-  draw("taChart","Total Algae",build("Total Algae"),"blue","ta");
+  draw("codChart","COD",build("cod"),"blue","cod");
+  draw("bodChart","BOD",build("bod"),"blue","bod");
+  draw("ogChart","Oil & Grease",build("og"),"blue","og");
+  draw("tcChart","Total Coliform",build("tc"),"blue","tc");
+  draw("taChart","Total Algae",build("ta"),"blue","ta");
 }
 
 function generateSurvey() {
