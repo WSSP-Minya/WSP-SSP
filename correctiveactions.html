@@ -111,11 +111,21 @@
             </select>
         </div>
 
-        <div>
-            <label>Attachment</label>
-            <input type="file" id="attachment" name="attachment" accept="image/*,.pdf,.doc,.docx">
-            <div id="filename">No File</div>
-        </div>
+       <div>
+          <label>Attachment</label>
+      
+          <input type="file"
+                 id="attachment"
+                 name="attachment"
+                 accept="image/*,.pdf,.doc,.docx">
+      
+          <!-- link -->
+          <input type="url"
+                 id="attachmentUrl"
+                 placeholder="Paste URL here"
+                 style="margin-top:8px; width:100%;">
+      
+          <div id="filename">No File</div>
         </div>
 
         <div class="branchremark">
@@ -530,9 +540,29 @@
 
             const files = detail.attachment.split(" | ");
           
-            document.getElementById("filename").innerHTML = files.map(url => {
-              return `<div><a href="${url}" target="_blank">Show File</a></div>`;
-            }).join("");
+           document.getElementById("filename").innerHTML = files.map(url => {
+
+            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+          
+            if (isImage) {
+              return `
+                <div style="margin-bottom:10px">
+                  <a href="${url}" target="_blank">🖼️ Open Image</a><br>
+                  <img src="${url}"
+                       style="max-width:120px;
+                              margin-top:5px;
+                              border-radius:6px;">
+                </div>
+              `;
+            }
+          
+            return `
+              <div>
+                <a href="${url}" target="_blank">📎 Open Attachment</a>
+              </div>
+            `;
+          
+          }).join("");
           
           } else {
             document.getElementById("filename").textContent = "No File";
@@ -829,6 +859,10 @@
       formData.append("sendEmail", "true");
       formData.append("fileBase64", base64File);
       formData.append("fileName", fileName);
+      formData.append(
+        "attachmentUrl",
+        document.getElementById("attachmentUrl").value
+      );
         
       console.log("📤 Sending form data:", formData.toString());
   
@@ -945,6 +979,7 @@
         document.getElementById("branchcomment").value = "";
         document.getElementById("wspcomment").value = "";
         document.getElementById("filename").textContent = "";
+        document.getElementById("attachmentUrl").value = "";
       }
       function fetchData(email, department) {
         fetch(`${scriptURL}?action=getStationDetails&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}`)
