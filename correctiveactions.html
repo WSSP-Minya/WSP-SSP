@@ -1220,10 +1220,12 @@
     const branchSelectModal = document.getElementById("branchmodalselect");
     const stationSelectModal = document.getElementById("stationmodalselect");
     const certifiedDateModal = document.getElementById("certifieddatemodal");
+    const capacityInputModal = document.getElementById("capacity");
     
     // مصفوفات لحفظ بيانات الفرع
     let modalStations = [];
     let modalDates = [];
+    let modalCapacity = [];
     
     // --- جلب المحطات عند اختيار الفرع ---
     function fetchStationsModal(branch) {
@@ -1245,7 +1247,8 @@
     
             modalStations = data.stations;      // حفظ أسماء المحطات
             modalDates = data.certifiedDates;   // حفظ التواريخ
-    
+            modalCapacity = data.capacity;
+            
             data.stations.forEach(station => {
               const option = document.createElement("option");
               option.value = station;
@@ -1268,6 +1271,8 @@
       certifiedDateModal.value = ""; // تفريغ التاريخ
       modalStations = [];
       modalDates = [];
+      modalCapacity = [];
+      
       stationSelectModal.innerHTML = `
             <option value="" disabled selected>Select Station</option>
             <option value="__new__">إضافة محطة</option>
