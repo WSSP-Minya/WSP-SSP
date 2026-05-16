@@ -540,37 +540,31 @@
 
             const files = detail.attachment.split(" | ");
           
-           document.getElementById("filename").innerHTML = files.map(url => {
+       document.getElementById("filename").innerHTML = files.map(url => {
 
-            const isImage = (() => {
-              const imgExt = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
-              const isDriveImage =
-                url.includes("drive.google.com") ||
-                url.includes("googleusercontent.com");
-            
-              return imgExt || isDriveImage;
-            })();
-          
-            if (isImage) {
-              return `
-                <div style="margin-bottom:10px">
-                  <a href="${url}" target="_blank">🖼️ Open Image</a><br>
-                  <img src="${url}"
-                       style="max-width:120px;
-                              margin-top:5px;
-                              border-radius:6px;">
-                </div>
-              `;
+          let fileName = "Open Attachment";
+        
+          try {
+            // Google Drive
+            if (url.includes("drive.google.com")) {
+              const match = url.match(/\/d\/(.*?)\//);
+              if (match) {
+                fileName = "Drive File";
+              }
+            } 
+            // ملفات عادية
+            else {
+              fileName = url.split("/").pop().split("?")[0];
             }
-          
-            return `
-              <div>
-                <a href="${url}" target="_blank">📎 Open Attachment</a>
-              </div>
-            `;
-          
-          }).join("");
-          
+          } catch (e) {}
+        
+          return `
+            <div>
+              <a href="${url}" target="_blank">📎 ${fileName}</a>
+            </div>
+          `;
+        }).join("");
+            
           } else {
             document.getElementById("filename").textContent = "No File";
           }
