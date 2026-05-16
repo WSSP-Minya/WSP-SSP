@@ -1324,12 +1324,13 @@
       const stationSelect = document.getElementById("stationmodalselect");
       const newStationInput = document.getElementById("newstationmodal");
       const certifiedDateInput = document.getElementById("certifieddatemodal").value;
+      const capacityInput = document.getElementById("capacity").value;
     
       const branch = branchSelect.value;
       const station = stationSelect.value === "__new__" ? newStationInput.value.trim() : stationSelect.value;
     
       // التحقق من اكتمال الحقول
-      if (!branch || !station || !certifiedDateInput) {
+      if (!branch || !station || !certifiedDateInput || !capacityInput) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
@@ -1343,7 +1344,8 @@
         action: "saveCertifiedStation",
         branch: branch,
         station: station,
-        certifiedDate: certifiedDateInput // أو certifiedDate إذا السيرفر يريد DD/MM/YYYY
+        certifiedDate: certifiedDateInput, // أو certifiedDate إذا السيرفر يريد DD/MM/YYYY
+        capacity: capacityInput
       });
     
       // إرسال البيانات إلى السيرفر
@@ -1365,6 +1367,7 @@
       document.getElementById("stationmodalselect").selectedIndex = 0;
       document.getElementById("newstationmodal").value = "";
       document.getElementById("certifieddatemodal").value = "";  
+      document.getElementById("capacity").value = "";  
     }
 
 
