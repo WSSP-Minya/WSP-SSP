@@ -122,7 +122,7 @@
           <!-- link -->
           <input type="url"
                  id="attachmentUrl"
-                 placeholder="Paste URL here"
+                 placeholder="Link (optional)"
                  style="margin-top:8px; width:100%;">
       
           <div id="filename">No File</div>
@@ -542,7 +542,14 @@
           
            document.getElementById("filename").innerHTML = files.map(url => {
 
-            const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+            const isImage = (() => {
+              const imgExt = /\.(jpg|jpeg|png|gif|webp)$/i.test(url);
+              const isDriveImage =
+                url.includes("drive.google.com") ||
+                url.includes("googleusercontent.com");
+            
+              return imgExt || isDriveImage;
+            })();
           
             if (isImage) {
               return `
