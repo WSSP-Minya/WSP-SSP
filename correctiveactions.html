@@ -1297,11 +1297,19 @@
       } else {
         certifiedDateModal.value = "";
       }
+       // تحديث السعة
+      if (index !== -1 && modalCapacity[index] != null) {
+        capacityInputModal.value = modalCapacity[index];
+      } else {
+        capacityInputModal.value = "";
+      }
+
       // --- إظهار أو إخفاء حقل إضافة محطة جديدة ---
       const newStationInput = document.getElementById("newstationmodal");
       if (selectedStation === "__new__") { 
         newStationInput.style.display = "block"; // إظهار الحقل
         newStationInput.value = "";              // تفريغ أي قيمة سابقة
+        capacityInputModal.value = "";  // تفريغ السعة عند اضافة محطة جديدة      
       } else {
         newStationInput.style.display = "none"; // إخفاء الحقل
         newStationInput.value = "";              // تفريغ القيمة
