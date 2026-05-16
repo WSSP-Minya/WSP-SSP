@@ -325,7 +325,7 @@
  
   <script>
     
-    const scriptURL = "https://script.google.com/macros/s/AKfycbzSIgDJQRQRX_nRsWUe6XbXq1kh7a91eX-8FNLHAdBcGvLNiD-UtiPRjVZFzML6DZ88JQ/exec";
+    const scriptURL = "https://script.google.com/macros/s/AKfycbz2JDrlIoJZoFGc6Hp67QBkxphHc-LE0ddkzVOrWLl_rZQ54TYd6TkYy_7gwBwZHAlckQ/exec";
 
     document.getElementById("addstation-button").onclick = () => {
       document.getElementById("stationModal").style.display = "flex";
@@ -1324,7 +1324,7 @@
       const stationSelect = document.getElementById("stationmodalselect");
       const newStationInput = document.getElementById("newstationmodal");
       const certifiedDateInput = document.getElementById("certifieddatemodal").value;
-      const capacityInput = document.getElementById("capacity").value;
+      const capacityInput = document.getElementById("capacity").value.trim();
     
       const branch = branchSelect.value;
       const station = stationSelect.value === "__new__" ? newStationInput.value.trim() : stationSelect.value;
