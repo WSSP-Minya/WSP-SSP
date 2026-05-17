@@ -1525,6 +1525,10 @@
             alert("جميع الإجراءات مكتملة 100%");
             return;
         }
+         // هل يوجد أي ملاحظات WSP؟
+        const hasWSPComments = filteredData.some(detail =>
+            (detail.wspcomment || "").trim() !== ""
+        );
     
         let rowsHtml = filteredData.map(detail => `
             <tr>
@@ -1532,7 +1536,11 @@
                 <td>${detail.risk || ""}</td>
                 <td>${detail.corraction || ""}</td>
                 <td>${detail.status || ""}</td>
+                
+                     ${hasWSPComments ? `
                 <td>${detail.wspcomment || ""}</td>
+            ` : ""}
+                <td>${detail.notes || ""}</td>
             </tr>
         `).join("");
     
@@ -1570,7 +1578,10 @@
                             <th>الخطر</th>
                             <th>الإجراء التصحيحي</th>
                              <th>الموقف التنفيذى</th>
-                            <th>ملاحظات WSP</th>
+                              ${hasWSPComments ? `
+                             <th>ملاحظات WSP</th>
+                          ` : ""}
+                             <th>ملاحظات</th>
                         </tr>
                     </thead>
                     <tbody>
