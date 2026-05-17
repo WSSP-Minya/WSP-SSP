@@ -1398,16 +1398,38 @@
           return;
       }
   
-      // جميع المواقع (بدون فلترة)
+      // جميع المواقع
       const allLocations = Object.values(detailsMap) || [];
-  
+      
       // إذا لم توجد بيانات
       if (allLocations.length === 0) {
           alert("لا توجد بيانات للطباعة!");
           return;
       }
-  
-      let rowsHtml = allLocations.map(detail => `
+      
+      // القسم الحالي
+      const department =
+          sessionStorage.getItem("department");
+      
+      // فلترة حسب القسم فقط
+      const filteredLocations = allLocations.filter(detail => {
+      
+          const executors = (detail.executor || "")
+              .split(",")
+              .map(v => v.trim());
+      
+          // WSP يرى الجميع
+          if (department === "WSP") {
+              return true;
+          }
+      
+          // باقي الأقسام ترى ما يخصها فقط
+          return executors.includes(department);
+      
+      });
+      
+      // إنشاء الصفوف
+      let rowsHtml = filteredLocations.map(detail => `
           <tr>
               <td>${detail.location || ""}</td>
               <td>${detail.risk || ""}</td>
