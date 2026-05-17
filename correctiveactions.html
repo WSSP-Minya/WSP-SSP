@@ -1390,16 +1390,28 @@
       const station = document.getElementById("station").value || "----";
       const certifiedDate = document.getElementById("certifieddate").value || "----";
   
-      const locationSelect = document.getElementById("location");
-      const detailsMap = locationSelect.detailsMap;
-  
-      if (!detailsMap || Object.keys(detailsMap).length === 0) {
+      
+
+      if (!station) {
+          alert("اختار محطة أولاً");
+          return;
+      }
+      
+      // جلب البيانات الأصلية من السيرفر
+      const res = await fetch(
+          scriptURL +
+          "?action=getStationDetails&station=" +
+          encodeURIComponent(station)
+      );
+      
+      const data = await res.json();
+      
+      if (data.status !== "success") {
           alert("No Data for Print!");
           return;
       }
-  
-      // جميع المواقع
-      const allLocations = Object.values(detailsMap) || [];
+      
+      const allLocations = data.details || [];
       
       // إذا لم توجد بيانات
       if (allLocations.length === 0) {
