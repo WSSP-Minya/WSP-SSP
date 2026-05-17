@@ -1385,7 +1385,7 @@
 
     
       // طباعة الاجراءات التصحيحة 
-      document.getElementById("printReport").addEventListener("click", () => {
+      document.getElementById("printReport").addEventListener("click", async () => {
       const branch = document.getElementById("branch").value || "----";
       const station = document.getElementById("station").value || "----";
       const certifiedDate = document.getElementById("certifieddate").value || "----";
