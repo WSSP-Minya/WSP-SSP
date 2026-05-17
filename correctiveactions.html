@@ -501,7 +501,7 @@
           // إذا المستخدم ليس WSP، يجب أن يحتوي executor على الفرع فقط
           if (department !== "WSP" && !executors.includes(department)) { return;}
           // 2️⃣ تجاهل الصفوف التي checkbox = true إذا المستخدم ليس WSP
-          if (department === "WSP" && detail.checkbox === true) { return;}
+          if (detail.checkbox === true) { return;}
 
           const option = document.createElement("option");
           option.value = index;  // أرسل نص الموقع
