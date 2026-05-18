@@ -475,24 +475,18 @@ tbody td{
 .filter-input{
   width: 95%;
   height: 28px;
-
   padding: 4px;
-
   border: 1px solid #777;
   border-radius: 5px;
-
   font-size: 12px;
   text-align: center;
-
   box-sizing: border-box;
 }
 
 /* عند الضغط */
 .filter-input:focus{
   outline: none;
-
   border-color: #0d6efd;
-
   background-color: #f1f7ff;
 }
 
