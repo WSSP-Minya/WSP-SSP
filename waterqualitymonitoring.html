@@ -229,7 +229,7 @@
              <!-- صف الفلاتر -->
             <tr class="filter-row">
 
-                <th><input class="filter-input" type="date" placeholder="Date"></th>
+                <th><input class="filter-input" type="text" placeholder="Date"></th>
                 <th><input class="filter-input" type="text" placeholder="Branch"></th>
                 <th><input class="filter-input" type="text" placeholder="Station"></th>
                 <th><input class="filter-input" type="text" placeholder="Location"></th>
@@ -433,15 +433,13 @@
       }
     
       fetchData(email, department);
-        const filters = document.querySelectorAll(".filter-input");
 
-filters.forEach(input => {
-
-    input.addEventListener("keyup", filterTable);
-
-});
         ///فلترة الجدول نفسه
-
+        const filters = document.querySelectorAll(".filter-input");
+        filters.forEach(input => {
+            input.addEventListener("keyup", filterTable);
+        });
+        
         function filterTable() {
         
             const table = document.getElementById("waterqualitytable");        
