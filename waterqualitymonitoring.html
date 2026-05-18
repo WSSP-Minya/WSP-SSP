@@ -229,7 +229,7 @@
              <!-- صف الفلاتر -->
             <tr class="filter-row">
 
-                <th><input class="filter-input" type="text" placeholder="Date"></th>
+                <th><input class="filter-input" type="date" placeholder="Date"></th>
                 <th><input class="filter-input" type="text" placeholder="Branch"></th>
                 <th><input class="filter-input" type="text" placeholder="Station"></th>
                 <th><input class="filter-input" type="text" placeholder="Location"></th>
@@ -433,6 +433,36 @@
       }
     
       fetchData(email, department);
+        const filters = document.querySelectorAll(".filter-input");
+
+filters.forEach(input => {
+
+    input.addEventListener("keyup", filterTable);
+
+});
+        ///فلترة الجدول نفسه
+
+        function filterTable() {
+        
+            const table = document.getElementById("waterqualitytable");        
+            const rows = table.querySelectorAll("tbody tr");
+        
+            rows.forEach(row => {      
+                let visible = true;      
+                filters.forEach((input, index) => {    
+                    const filterValue = input.value.toLowerCase();
+                    const cell = row.cells[index];
+                    if (cell) {
+                        const text = cell.textContent.toLowerCase();
+                        if (!text.includes(filterValue)) {
+                            visible = false;
+                        }
+                    }
+                });
+                row.style.display = visible ? "" : "none";
+            });
+        }
+
       
       
     
