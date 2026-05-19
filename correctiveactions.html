@@ -33,7 +33,7 @@
          <div class="container">
           
           <button type="button" id="attachmentshow">
-            <img src="checklist_report.webp" alt="attachment report" title = "Attachment Report" hidden>
+            <img src="checklist_report.webp" alt="attachment report" title = "Attachment Report">
           </button>
           <button type="button" onclick="openCorrectiveModal()" id="addcorrectiveactions-button">
             <img src="Risk management.png" alt="Add Corrective Actions" title = "Add Corrective Actions">
@@ -1387,7 +1387,7 @@
 
     
       // طباعة الاجراءات التصحيحة 
-    //  document.getElementById("printReport").addEventListener("click", async () => {
+      document.getElementById("printReport").addEventListener("click", async () => {
       const branch = document.getElementById("branch").value || "----";
       const station = document.getElementById("station").value || "----";
       const certifiedDate = document.getElementById("certifieddate").value || "----";
