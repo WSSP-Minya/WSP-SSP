@@ -1374,6 +1374,160 @@
       document.getElementById("capacity").value = "";  
     }
 
+    //عرض جميع المرفقات
+    document.getElementById("attachmentshow").addEventListener("click", () => {
+
+    const branch = document.getElementById("branch").value || "----";
+    const station = document.getElementById("station").value || "----";
+    const certifiedDate = document.getElementById("certifieddate").value || "----";
+    const locationSelect = document.getElementById("location");
+    const detailsMap = locationSelect.detailsMap;
+
+    if (!detailsMap || Object.keys(detailsMap).length === 0) {
+        alert("لا توجد بيانات للطباعة!");
+        return;
+    }
+
+    const allData = Object.values(detailsMap);
+    let rowsHtml = allData.map(detail => {
+
+        let attachmentsHtml = "";
+        if (detail.attachments && detail.attachments.length > 0) {
+            attachmentsHtml = detail.attachments.map(file => {
+
+                // Link
+                if (file.type === "link" || (file.url && file.url.startsWith("http"))) {
+                    return `
+                        <div>
+                            🔗 <a href="${file.url}" target="_blank">${file.name}</a>
+                        </div>
+                    `;
+                }
+
+                // Image
+                if (file.type === "image" || (file.url && file.url.match(/\.(jpg|jpeg|png|gif)$/i))) {
+                    return `
+                        <div>
+                            📷 <a href="${file.url}" target="_blank">${file.name}</a>
+                        </div>
+                    `;
+                }
+
+                // File (default)
+                return `
+                    <div>
+                        📎 <a href="${file.url}" target="_blank">${file.name}</a>
+                    </div>
+                `;
+
+            }).join("");
+
+        } else {
+            attachmentsHtml = "لا يوجد مرفقات";
+        }
+        return `
+            <tr>
+                <td>${detail.location || ""}</td>
+                <td>${detail.risk || ""}</td>
+                <td>${detail.corraction || ""}</td>
+                <td>${detail.status || ""}</td>
+                <td>${attachmentsHtml}</td>
+            </tr>
+        `;
+    }).join("");
+
+    const htmlContent = `
+        <html>
+        <head>
+            <title>تقرير الإجراءات التصحيحية</title>
+
+            <style>
+                body{
+                    font-family: Arial, sans-serif;
+                    direction: rtl;
+                    padding: 20px;
+                }
+                h2{
+                    text-align: center;
+                }
+                .header-info{
+                    margin-bottom: 20px;
+                    font-size: 18px;
+                }
+                table{
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin-top: 20px;
+                }
+                th, td{
+                    border: 1px solid black;
+                    padding: 8px;
+                    text-align: center;
+                    vertical-align: top;
+                }
+
+                th{
+                    background-color: #dfe6e9;
+                }
+                th:nth-child(1), td:nth-child(1){ width: 15%; }
+                th:nth-child(2), td:nth-child(2){ width: 25%; }
+                th:nth-child(3), td:nth-child(3){ width: 30%; }
+                th:nth-child(4), td:nth-child(4){ width: 10%; }
+                th:nth-child(5), td:nth-child(5){ width: 20%; }
+                a{
+                    display: block;
+                    margin: 2px 0;
+                    color: #0d6efd;
+                    text-decoration: none;
+                }
+                a:hover{
+                    text-decoration: underline;
+                }
+            </style>
+        </head>
+
+        <body>
+            <h2>تقرير الإجراءات التصحيحية</h2>
+            <div class="header-info">
+
+                <strong>الفرع:</strong> ${branch}
+                &nbsp;&nbsp;&nbsp;
+
+                <strong>النظام:</strong> ${station}
+                &nbsp;&nbsp;&nbsp;
+
+                <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
+            </div>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>الموقع</th>
+                        <th>الخطر</th>
+                        <th>الإجراء التصحيحي</th>
+                        <th>الموقف التنفيذي</th>
+                        <th>المرفقات</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    ${rowsHtml}
+                </tbody>
+
+            </table>
+
+        </body>
+        </html>
+    `;
+
+    const printWindow =
+    window.open('', '', 'width=1000,height=700');
+    printWindow.document.write(htmlContent);
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+});
+
 
 
 
@@ -1602,159 +1756,7 @@
         printWindow.print();
 });
 
-    //عرض جميع المرفقات
-    document.getElementById("attachmentshow").addEventListener("click", () => {
-
-    const branch = document.getElementById("branch").value || "----";
-    const station = document.getElementById("station").value || "----";
-    const certifiedDate = document.getElementById("certifieddate").value || "----";
-    const locationSelect = document.getElementById("location");
-    const detailsMap = locationSelect.detailsMap;
-
-    if (!detailsMap || Object.keys(detailsMap).length === 0) {
-        alert("لا توجد بيانات للطباعة!");
-        return;
-    }
-
-    const allData = Object.values(detailsMap);
-    let rowsHtml = allData.map(detail => {
-
-        let attachmentsHtml = "";
-        if (detail.attachments && detail.attachments.length > 0) {
-            attachmentsHtml = detail.attachments.map(file => {
-
-                // Link
-                if (file.type === "link" || (file.url && file.url.startsWith("http"))) {
-                    return `
-                        <div>
-                            🔗 <a href="${file.url}" target="_blank">${file.name}</a>
-                        </div>
-                    `;
-                }
-
-                // Image
-                if (file.type === "image" || (file.url && file.url.match(/\.(jpg|jpeg|png|gif)$/i))) {
-                    return `
-                        <div>
-                            📷 <a href="${file.url}" target="_blank">${file.name}</a>
-                        </div>
-                    `;
-                }
-
-                // File (default)
-                return `
-                    <div>
-                        📎 <a href="${file.url}" target="_blank">${file.name}</a>
-                    </div>
-                `;
-
-            }).join("");
-
-        } else {
-            attachmentsHtml = "لا يوجد مرفقات";
-        }
-        return `
-            <tr>
-                <td>${detail.location || ""}</td>
-                <td>${detail.risk || ""}</td>
-                <td>${detail.corraction || ""}</td>
-                <td>${detail.status || ""}</td>
-                <td>${attachmentsHtml}</td>
-            </tr>
-        `;
-    }).join("");
-
-    const htmlContent = `
-        <html>
-        <head>
-            <title>تقرير الإجراءات التصحيحية</title>
-
-            <style>
-                body{
-                    font-family: Arial, sans-serif;
-                    direction: rtl;
-                    padding: 20px;
-                }
-                h2{
-                    text-align: center;
-                }
-                .header-info{
-                    margin-bottom: 20px;
-                    font-size: 18px;
-                }
-                table{
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin-top: 20px;
-                }
-                th, td{
-                    border: 1px solid black;
-                    padding: 8px;
-                    text-align: center;
-                    vertical-align: top;
-                }
-
-                th{
-                    background-color: #dfe6e9;
-                }
-                th:nth-child(1), td:nth-child(1){ width: 15%; }
-                th:nth-child(2), td:nth-child(2){ width: 25%; }
-                th:nth-child(3), td:nth-child(3){ width: 30%; }
-                th:nth-child(4), td:nth-child(4){ width: 10%; }
-                th:nth-child(5), td:nth-child(5){ width: 20%; }
-                a{
-                    display: block;
-                    margin: 2px 0;
-                    color: #0d6efd;
-                    text-decoration: none;
-                }
-                a:hover{
-                    text-decoration: underline;
-                }
-            </style>
-        </head>
-
-        <body>
-            <h2>تقرير الإجراءات التصحيحية</h2>
-            <div class="header-info">
-
-                <strong>الفرع:</strong> ${branch}
-                &nbsp;&nbsp;&nbsp;
-
-                <strong>النظام:</strong> ${station}
-                &nbsp;&nbsp;&nbsp;
-
-                <strong>تاريخ الاعتماد:</strong> ${certifiedDate}
-            </div>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>الموقع</th>
-                        <th>الخطر</th>
-                        <th>الإجراء التصحيحي</th>
-                        <th>الموقف التنفيذي</th>
-                        <th>المرفقات</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${rowsHtml}
-                </tbody>
-
-            </table>
-
-        </body>
-        </html>
-    `;
-
-    const printWindow =
-    window.open('', '', 'width=1000,height=700');
-    printWindow.document.write(htmlContent);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-});
+    
 
 
 
