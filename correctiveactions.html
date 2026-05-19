@@ -33,7 +33,7 @@
          <div class="container">
           
           <button type="button" id="attachmentshow">
-            <img src="checklist_report.webp" alt="attachment report" title = "Attachment Report">
+            <img src="https://images.icon-icons.com/4279/PNG/512/sheet_documents_attachment_file_attached_icon_266164.png" alt="attachment report" title = "Attachment Report">
           </button>
           <button type="button" onclick="openCorrectiveModal()" id="addcorrectiveactions-button">
             <img src="Risk management.png" alt="Add Corrective Actions" title = "Add Corrective Actions">
@@ -1378,9 +1378,7 @@
     document.getElementById("attachmentshow").addEventListener("click", async () => {
     
         const branch = document.getElementById("branch").value || "----";
-    
         const station = document.getElementById("station").value || "----";
-    
         const certifiedDate = document.getElementById("certifieddate").value || "----";
     
         if (!station) {
@@ -1391,7 +1389,6 @@
         try {
              // جلب البيانات من السيرفر
             const res = await fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(station));
-    
             const data = await res.json();
     
             if (data.status !== "success") {
@@ -1408,9 +1405,7 @@
     
             let rowsHtml = allData.map(detail => {
     
-                let attachmentsHtml = "";
-    
-                // ✔️ التعامل الصحيح مع attachment (رابط واحد فقط)
+                let attachmentsHtml = "";            
                 if (detail.attachment && detail.attachment.trim() !== "") {
     
                      // تحويل النص إلى قائمة روابط
@@ -1423,7 +1418,7 @@
                         <div>
                             📎
                             <a href="${file}" target="_blank">
-                                Attachment
+                                File
                             </a>
                         </div>
                     `).join("");
@@ -1447,14 +1442,14 @@
             const htmlContent = `
                 <html>
                 <head>
-                    <title>تقرير الإجراءات التصحيحية</title>
+                    <title>تقرير بمرفقات الإجراءات التصحيحية</title>
     
                     <style>
                     body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
                     table { width: 100%; border-collapse: collapse; margin-top: 20px; }
                     th, td { border: 1px solid #000; padding: 6px; }
                     th { background-color: #f0f0f0; }
-                    h2, p { text-align: center; }
+                    h2, p, .header-info { text-align: center; }
                     th:nth-child(1), td:nth-child(1) { width: 14%; }
                     th:nth-child(2), td:nth-child(2) { width: 24%; }
                     th:nth-child(3), td:nth-child(3) { width: 24%; }
@@ -1465,7 +1460,7 @@
     
                 <body>
     
-                    <h2>تقرير الإجراءات التصحيحية</h2>
+                    <h2>تقرير بمرفقات الإجراءات التصحيحية</h2>
     
                     <div class="header-info">
                         <strong>الفرع:</strong> ${branch}
@@ -1495,146 +1490,15 @@
                 </html>
             `;
     
-            const printWindow = window.open('', '', 'width=1000,height=700');
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
-            printWindow.focus();
-            printWindow.print();
-    
-        } catch (error) {
-            console.error(error);
-            alert("حدث خطأ أثناء تحميل البيانات");
-        }
-    
-    });
-
-
-
-
-
-
-
-
-
-
-    
-      // طباعة الاجراءات التصحيحة 
-      document.getElementById("printReport").addEventListener("click", async () => {
-      const branch = document.getElementById("branch").value || "----";
-      const station = document.getElementById("station").value || "----";
-      const certifiedDate = document.getElementById("certifieddate").value || "----";
-  
-      
-
-      if (!station) {
-          alert("اختار محطة أولاً");
-          return;
-      }
-      
-      // جلب البيانات الأصلية من السيرفر
-      const res = await fetch(
-          scriptURL +
-          "?action=getStationDetails&station=" +
-          encodeURIComponent(station)
-      );
-      
-      const data = await res.json();
-      
-      if (data.status !== "success") {
-          alert("No Data for Print!");
-          return;
-      }
-      
-      const allLocations = data.details || [];
-      
-      // إذا لم توجد بيانات
-      if (allLocations.length === 0) {
-          alert("لا توجد بيانات للطباعة!");
-          return;
-      }
-      
-      // القسم الحالي
-      const department =
-          sessionStorage.getItem("department");
-      
-      // فلترة حسب القسم فقط
-      const filteredLocations = allLocations.filter(detail => {
-      
-          const executors = (detail.executor || "")
-              .split(",")
-              .map(v => v.trim());
-      
-          // WSP يرى الجميع
-          if (department === "WSP") {
-              return true;
-          }
-      
-          // باقي الأقسام ترى ما يخصها فقط
-          return executors.includes(department);
-      
-      });
-      
-      // إنشاء الصفوف
-      let rowsHtml = filteredLocations.map(detail => `
-          <tr>
-              <td>${detail.location || ""}</td>
-              <td>${detail.risk || ""}</td>
-              <td>${detail.corraction || ""}</td>
-              <td>${detail.duration || ""}</td>
-              <td>${detail.status || ""}</td>
-              <td>${detail.notes || ""}</td>
-          </tr>
-      `).join("");
-  
-      const htmlContent = `
-          <html>
-          <head>
-              <title>تقرير الاعتماد</title>
-              <style>
-                  body { font-family: Arial, sans-serif; direction: rtl; text-align: right; }
-                  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                  th, td { border: 1px solid #000; padding: 5px; word-wrap: break-word; }
-                  th { background-color: #f0f0f0; }
-                  h2 { text-align: center; }
-                  p { text-align: center; }
-                  th:nth-child(1), td:nth-child(1) { width: 10%; }
-                  th:nth-child(2), td:nth-child(2) { width: 15%; }
-                  th:nth-child(3), td:nth-child(3) { width: 25%; }
-                  th:nth-child(4), td:nth-child(4) { width: 10%; }
-                  th:nth-child(5), td:nth-child(5) { width: 10%; }
-                  th:nth-child(6), td:nth-child(6) { width: 25%; }
-              </style>
-          </head>
-          <body>
-              <h2>تقرير الموقف من تنفيذ الاجراءات التصحيحية</h2>
-              <p><strong>الفرع:</strong> ${branch} &nbsp;&nbsp;<strong>النظام:</strong> ${station} &nbsp;&nbsp;<strong>تاريخ الاعتماد:</strong> ${certifiedDate}</p>
-  
-              <table>
-                  <thead>
-                      <tr>
-                          <th>الموقع</th>
-                          <th>الخطر</th>
-                          <th>الإجراء التصحيحي</th>
-                          <th>المدة الزمنية</th>
-                          <th>الموقف التنفيذي</th>
-                          <th>ملاحظات</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      ${rowsHtml}
-                  </tbody>
-              </table>
-          </body>
-          </html>
-      `;
-  
       const printWindow = window.open('', '', 'height=600,width=800');
       printWindow.document.write(htmlContent);
       printWindow.document.close();
       printWindow.focus();
       printWindow.print();
-  });
+    });
     
+   
+ 
        // طباعة الاجراءات التصحيحية وملاحظات WSP طبقاً لنسبة تنفيذ اقل من (100%)
        document.getElementById("printCommentsReport").addEventListener("click", () => {
     
