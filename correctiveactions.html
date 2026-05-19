@@ -1381,9 +1381,16 @@
     const station = document.getElementById("station").value || "----";
     const certifiedDate = document.getElementById("certifieddate").value || "----";
     const locationSelect = document.getElementById("location");
-    const detailsMap = locationSelect.detailsMap;
+       // جلب البيانات من السيرفر
+    const res = await fetch(
+        scriptURL +
+        "?action=getStationDetails&station=" +
+        encodeURIComponent(station)
+    );
 
-    if (!detailsMap || Object.keys(detailsMap).length === 0) {
+    const data = await res.json();
+
+    if (data.status !== "success") {
         alert("لا توجد بيانات للطباعة!");
         return;
     }
