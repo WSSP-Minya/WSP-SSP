@@ -1377,22 +1377,16 @@
     //عرض جميع المرفقات
     document.getElementById("attachmentshow").addEventListener("click", async () => {
     
-        const branch =
-            document.getElementById("branch").value || "----";
-    
-        const station =
-            document.getElementById("station").value || "----";
-    
-        const certifiedDate =
-            document.getElementById("certifieddate").value || "----";
+        const branch = document.getElementById("branch").value || "----";
+        const station = document.getElementById("station").value || "----";
+        const certifiedDate = document.getElementById("certifieddate").value || "----";
     
         // التأكد من اختيار النظام
         if (!station) {
             alert("اختار محطة أولاً");
             return;
         }
-    
-        try {
+         try {
     
             // جلب البيانات من السيرفر
             const res = await fetch(
@@ -1424,18 +1418,18 @@
             let rowsHtml = allData.map(detail => {
     
                 console.log("DETAIL:", detail);
-                console.log("ATTACHMENTS:", detail.attachments);
+                console.log("ATTACHMENT:", detail.attachment);
     
-                let attachmentsHtml = "";
+                let attachmentHtml = "";
     
                 // التحقق من وجود مرفقات
                 if (
-                    detail.attachments &&
-                    Array.isArray(detail.attachments) &&
-                    detail.attachments.length > 0
+                    detail.attachment &&
+                    Array.isArray(detail.attachment) &&
+                    detail.attachment.length > 0
                 ) {
     
-                    attachmentsHtml = detail.attachments.map(file => {
+                    attachmentHtml = detail.attachment.map(file => {
     
                         // Link
                         if (
@@ -1484,7 +1478,7 @@
     
                 } else {
     
-                    attachmentsHtml = "لا يوجد مرفقات";
+                    attachmentHtml = "لا يوجد مرفقات";
     
                 }
     
@@ -1494,7 +1488,7 @@
                         <td>${detail.risk || ""}</td>
                         <td>${detail.corraction || ""}</td>
                         <td>${detail.status || ""}</td>
-                        <td>${attachmentsHtml}</td>
+                        <td>${attachmentHtml}</td>
                     </tr>
                 `;
     
@@ -1625,20 +1619,13 @@
             `;
     
             // فتح نافذة الطباعة
-            const printWindow =
-                window.open('', '', 'width=1000,height=700');
-    
+            const printWindow = window.open('', '', 'width=1000,height=700');
             printWindow.document.write(htmlContent);
             printWindow.document.close();
-    
             printWindow.focus();
-    
             printWindow.print();
-    
         } catch (error) {
-    
             console.error(error);
-    
             alert("حدث خطأ أثناء تحميل البيانات");
     
         }
