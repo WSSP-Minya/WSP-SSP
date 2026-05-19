@@ -1413,14 +1413,20 @@
                 // ✔️ التعامل الصحيح مع attachment (رابط واحد فقط)
                 if (detail.attachment && detail.attachment.trim() !== "") {
     
-                    attachmentsHtml = `
+                     // تحويل النص إلى قائمة روابط
+                    let files = detail.attachment
+                        .split(/,|\n/)   // يفصل بالـ comma أو newline
+                        .map(f => f.trim())
+                        .filter(f => f !== "");
+                
+                    attachmentsHtml = files.map(file => `
                         <div>
                             📎
-                            <a href="${detail.attachment}" target="_blank">
+                            <a href="${file}" target="_blank">
                                 Attachment
                             </a>
                         </div>
-                    `;
+                    `).join("");
     
                 } else {   
                     attachmentsHtml = "لا يوجد مرفقات";
