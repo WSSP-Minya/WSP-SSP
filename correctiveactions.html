@@ -1495,6 +1495,10 @@
       printWindow.document.close();
       printWindow.focus();
       printWindow.print();
+          } catch (error) {
+        console.error("Print error:", error);
+        alert("حدث خطأ أثناء الطباعة");
+    }
     });
     
    
