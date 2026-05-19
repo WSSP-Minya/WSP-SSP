@@ -1415,9 +1415,9 @@
     
                      // تحويل النص إلى قائمة روابط
                     let files = detail.attachment
-                        .split(/,|\n/)   // يفصل بالـ comma أو newline
-                        .map(f => f.trim())
-                        .filter(f => f !== "");
+                      .split("|")
+                      .map(f => f.trim())
+                      .filter(Boolean);
                 
                     attachmentsHtml = files.map(file => `
                         <div>
