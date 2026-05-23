@@ -54,6 +54,7 @@
                         <option value="user">user</option>
                         <option value="admin">admin</option>
                     </select>
+                    <input type="tel" id="phone" placeholder="Phone Number" pattern="^\+?[0-9]{10,15}$">
                     <div class = "control-button"> 
                         <button type="submit">Add</button>
                         <button type="button" onclick="deleteUserFromPopup()">Remove</button>
@@ -135,6 +136,7 @@
                 const password = document.getElementById("password").value;
                 const department = document.getElementById("branch").value;
                 const userRole = document.getElementById("role").value;
+                const phone = document.getElementById("phone").value;
                 console.log("User Role:", userRole);
             
                 fetch(scriptURL, {
@@ -148,7 +150,8 @@
                         email: newEmail,          // ✅ الاسم الصحيح
                         password: password,
                         role: userRole,
-                        department: department
+                        department: department,
+                        phone: phone
                     })
                 })
                 .then(res => res.json())
