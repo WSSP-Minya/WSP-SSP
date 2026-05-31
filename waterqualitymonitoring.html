@@ -777,9 +777,16 @@
       })
       .then(res => res.text())
       .then(result => {
+          console.log("POST Success");
+
+          console.log("before clearForm");
         alert(`تمت عملية ${action==='add'?'الإضافة':action==='update'?'التحديث':'الحذف'} بنجاح.`);
         clearForm();
+          console.log("after clearForm");
+
+          console.log("before fetchData");
         fetchData(email, department);
+          console.log("after fetchData");
       })
       .catch(error => { console.error("خطأ:", error); alert("حدث خطأ أثناء تنفيذ العملية."); });
     }
