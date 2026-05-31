@@ -126,8 +126,19 @@ body {
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-.popup-content input {
+.popup-content input,
+.popup-content select{
      width: 90%;
+     padding: 10px;
+     margin: 10px 0;
+     border: 1px solid #ddd;
+     border-radius: 5px;
+     font-weight: bold;
+     font-size: medium;
+}
+#branch,
+#userSelect{
+     width: 100%;
      padding: 10px;
      margin: 10px 0;
      border: 1px solid #ddd;
