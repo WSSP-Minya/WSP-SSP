@@ -34,9 +34,7 @@
             <div class="popup-content">
                 <span class="close-btn" onclick="closeAddUserPopup()">&times;</span>
                 <h2>Add and Remove User</h2>
-                <form id="addUserForm" onsubmit="submitUserForm(event)">
-                    <input type="email" id="email" placeholder="User Email" required>
-                    <input type="password" id="password" placeholder="Password" required>
+                <form id="addUserForm" onsubmit="submitUserForm(event)">            
                     <select id="branch">
                         <option value="" selected disabled>Select Branch</option>
                          <option value="WSP">WSP</option>
@@ -50,11 +48,20 @@
                         <option value="ملوى">ملوى</option>
                         <option value="ديرمواس">ديرمواس</option>
                     </select>
+                     <select id="userSelect">
+                        <option value="" selected disabled>Select User</option>
+                        <option value="__new__">Add New User</option>
+                    </select>
+                    <input type="email" id="email" placeholder="User Email">
+                    <input type="password" id="password" placeholder="Password">
+                   
+                   
                     <select id="role" required>
                         <option value="user">user</option>
                         <option value="admin">admin</option>
                     </select>
                     <input type="tel" id="phone" placeholder="Phone Number" pattern="^\+?[0-9]{10,15}$">
+                    <input type="number" id="apikey" placeholder="apiKey">
                     <div class = "control-button"> 
                         <button type="submit">Add</button>
                         <button type="button" onclick="deleteUserFromPopup()">Remove</button>
@@ -92,7 +99,7 @@
         </div>
         <script>
             
-            const scriptURL = "https://script.google.com/macros/s/AKfycbwX43KovGPE9Yc6yo8HNhWUU8QfawC6-oJ7dYt7wcf0rAA2s1tHHwcfcQS936oqt8f4Nw/exec";
+            const scriptURL = "https://script.google.com/macros/s/AKfycbwCZ7zBXO0zuxG4C06CCBVMvaaFCwUDIxbbHfPsKHApcLEAvNPLmVPUM7Tcr4xgDRaO_g/exec";
             const department = sessionStorage.getItem("department");
             document.getElementById("section").value = department || "";
             function AccessedToPage(pagename){
@@ -111,6 +118,143 @@
             waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
             reportsButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
         }
+            // ================= Users Management =================
+
+          let usersData = [];
+          document.getElementById("email").style.display = "none";
+          
+          // تحميل المستخدمين عند اختيار الفرع
+          document.getElementById("branch").addEventListener("change", () => {
+          
+              const branch =
+                  document.getElementById("branch").value;
+          
+              if (!branch) return;
+          
+              fetchUsers(branch);
+          
+          });
+          
+          
+          // جلب المستخدمين
+          function fetchUsers(branch) {
+          
+              const userSelect =
+                  document.getElementById("userSelect");
+          
+              userSelect.innerHTML = `
+                  <option value="" selected disabled>
+                      Loading Users...
+                  </option>
+              `;
+          
+              fetch(scriptURL, {
+                  method: "POST",
+                  headers: {
+                      "Content-Type":
+                      "application/x-www-form-urlencoded"
+                  },
+                  body: new URLSearchParams({
+                      action: "getUsersByBranch",
+                      department: branch
+                  })
+              })
+              .then(res => res.json())
+              .then(data => {
+          
+                  userSelect.innerHTML = `
+                      <option value="" selected disabled>
+                          Select User
+                      </option>
+          
+                      <option value="__new__">
+                          Add New User
+                      </option>
+                  `;
+          
+                  usersData = data.users || [];
+          
+                  usersData.forEach(user => {
+          
+                      const option =
+                          document.createElement("option");
+          
+                      option.value = user.email;
+          
+                      option.textContent =
+                          `${user.email} (${user.role})`;
+          
+                      userSelect.appendChild(option);
+          
+                  });
+          
+              })
+              .catch(err => {
+                  console.error(err);
+                  alert("Error Loading Users");
+              });
+          }
+          
+          // عند اختيار مستخدم
+          document.getElementById("userSelect")
+          .addEventListener("change", () => {
+          
+              const selected =
+                  document.getElementById("userSelect").value;
+          
+              // إظهار أو إخفاء email بشكل صحيح
+              const emailInput = document.getElementById("email");
+          
+              if (selected === "__new__") {
+                  emailInput.style.display = "block";
+              } else {
+                  emailInput.style.display = "none"; 
+                  // أو none لو عايز تخفيه في وضع التعديل
+              }
+          
+              // إضافة مستخدم جديد
+              if (selected === "__new__") {
+          
+                  document.getElementById("email").value = "";
+                  document.getElementById("password").value = "";
+                  document.getElementById("phone").value = "";
+                  document.getElementById("apikey").value = "";
+                  document.getElementById("role").value = "user";
+                  
+          
+                  document.getElementById("email")
+                  .removeAttribute("readonly");
+          
+                  return;
+              }
+          
+              const user =
+                  usersData.find(
+                      u => u.email === selected
+                  );
+          
+              if (!user) return;
+          
+              document.getElementById("email").value =
+                  user.email || "";
+          
+              document.getElementById("password").value =
+                  user.password || "";
+          
+              document.getElementById("phone").value =
+                  user.phone || "";
+          
+              document.getElementById("apikey").value =
+                  user.apikey || "";
+          
+              document.getElementById("role").value =
+                  user.role || "user";
+          
+              document.getElementById("email")
+              .setAttribute("readonly", true);
+          
+          });
+        
              // فتح نافذة إضافة مستخدم
             function openAddUserPopup() {
                 const userRole = sessionStorage.getItem("role");
@@ -165,6 +309,83 @@
                 .catch(err => alert(err.message));
 
             }
+             // معالجة إرسال نموذج إضافة المستخدم
+            function submitUserForm(event) {
+
+                event.preventDefault();
+            
+                const selectedUser =
+                    document.getElementById("userSelect").value;
+            
+                const action =
+                    selectedUser &&
+                    selectedUser !== "__new__"
+                    ? "updateUser"
+                    : "addUser";
+            
+                fetch(scriptURL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type":
+                        "application/x-www-form-urlencoded"
+                    },
+                    body: new URLSearchParams({
+            
+                        action: action,
+            
+                        adminEmail:
+                            sessionStorage.getItem("email"),
+            
+                        email:
+                            document.getElementById("email").value,
+            
+                        password:
+                            document.getElementById("password").value,
+            
+                        role:
+                            document.getElementById("role").value,
+            
+                        department:
+                            document.getElementById("branch").value,
+            
+                        phone:
+                            document.getElementById("phone").value,
+            
+                        apiKey:
+                            document.getElementById("apikey").value
+            
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+            
+                    alert(data.message);
+            
+                    if (data.status === "success") {
+            
+                        document.getElementById("addUserForm").reset();
+            
+                        document.getElementById("userSelect")
+                        .innerHTML = `
+                            <option value="" selected disabled>
+                                Select User
+                            </option>
+                            <option value="__new__">
+                                Add New User
+                            </option>
+                        `;
+            
+                        const branch =
+                            document.getElementById("branch").value;
+            
+                        if (branch)
+                            fetchUsers(branch);
+                    }
+            
+                })
+                .catch(err => alert(err.message));
+            
+            }
 
 
             // فتح نافذة حذف مستخدم
@@ -184,36 +405,43 @@
 
             // معالجة إرسال نموذج حذف المستخدم
             function deleteUserFromPopup() {
-                const email = document.getElementById("email").value;
-            
-                if (!email) {
-                    alert("من فضلك أدخل البريد الإلكتروني أولاً");
-                    return;
-                }
-            
-                if (!confirm(`هل أنت متأكد من حذف المستخدم:\n${email} ؟`)) return;
-            
-                fetch(scriptURL, {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/x-www-form-urlencoded"
-                    },
-                    body: new URLSearchParams({
-                        action: "deleteUser",
-                        adminEmail: sessionStorage.getItem("email"),
-                        email: email
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    alert(data.message);
-                    if (data.status === "success") {
-                        document.getElementById("addUserForm").reset();
-                        closeAddUserPopup();
-                    }
-                })
-                .catch(err => alert(err.message));
-            }
+              
+                  const email = document.getElementById("userSelect").value;
+              
+                  if (!email) {
+                      alert("من فضلك أختار البريد الإلكتروني أولاً");
+                      return;
+                  }              
+                  if (!confirm(`هل أنت متأكد من حذف المستخدم:\n${email} ؟`)) return;
+
+              
+                  fetch(scriptURL, {
+                      method: "POST",
+                      headers: {
+                          "Content-Type":
+                          "application/x-www-form-urlencoded"
+                      },
+                      body: new URLSearchParams({
+                          action: "deleteUser",
+                          adminEmail:
+                              sessionStorage.getItem("email"),
+                          email: email              
+                      })
+                  })
+                  .then(res => res.json())
+                  .then(data => {              
+                      alert(data.message);              
+                      if (data.status === "success") {             
+                          document.getElementById("addUserForm").reset();
+              
+                          const branch = document.getElementById("branch").value;
+              
+                          if (branch)
+                              fetchUsers(branch);
+                      }          
+                  })
+                  .catch(err => alert(err.message));         
+              }
             //  تسجيل الخروج
             function logout() {
                 sessionStorage.clear(); // مسح بيانات الجلسة
