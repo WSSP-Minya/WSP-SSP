@@ -281,6 +281,7 @@
                 const department = document.getElementById("branch").value;
                 const userRole = document.getElementById("role").value;
                 const phone = document.getElementById("phone").value;
+                const apikey = document.getElementById("apikey").value;
                 console.log("User Role:", userRole);
             
                 fetch(scriptURL, {
@@ -295,7 +296,8 @@
                         password: password,
                         role: userRole,
                         department: department,
-                        phone: phone
+                        phone: phone,
+                        apikey: apikey
                     })
                 })
                 .then(res => res.json())
@@ -351,7 +353,7 @@
                         phone:
                             document.getElementById("phone").value,
             
-                        apiKey:
+                        apikey:
                             document.getElementById("apikey").value
             
                     })
