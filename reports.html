@@ -2456,11 +2456,14 @@
       <div class="stationLink">
       
       
-      <a href="#"
-      onclick="openStationReport(
+     <a href="#"
+      onclick="
+      window.opener.openStationReport(
       '${encodeURIComponent(item.station)}',
       '${encodeURIComponent(item.branch)}'
-      )">
+      );
+      return false;
+      ">
       
       
       
@@ -2540,6 +2543,7 @@
       
       win.document.write(html);
       win.document.close();
+      win.openStationReport = window.openStationReport;
       
       
       
