@@ -2084,7 +2084,7 @@
       
       const today = new Date();
       today.setHours(0,0,0,0);
-      
+      const currentYear = today.getFullYear();
       
       
       let monthsNames=[
@@ -2218,7 +2218,7 @@
       
       
       
-      if(month>=0 && month<=5){
+      if(month>=0 && month<=5 && endDate.getFullYear() === currentYear){
       
       
       
