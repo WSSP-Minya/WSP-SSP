@@ -2383,9 +2383,23 @@
       // عمل صف لكل فرع
       
       
+      let allItems = [];
+
+
+      Object.keys(monthData).forEach(m=>{
+      
+          monthData[m].forEach(item=>{
+      
+              allItems.push(item);
+      
+          });
+      
+      });
+      
+      
       let branchesUsed =
       [...new Set(
-      monthData.flat().map(x=>x.branch)
+          allItems.map(x=>x.branch)
       )];
       
       
