@@ -2210,6 +2210,8 @@
       
       
       if(monthsLeft<=3){
+        let type =
+        monthsLeft <= 0 ? "expired" : "near";
       
       
       
@@ -2233,7 +2235,19 @@
       
       if(old){
       
-      old.count++;
+      
+      if(type==="expired"){
+      
+      old.expired++;
+      
+      }
+      else{
+      
+      old.near++;
+      
+      }
+      
+      
       
       }
       else{
@@ -2243,7 +2257,13 @@
       
       branch:branch,
       station:station,
-      count:1
+      
+      expired:
+      type==="expired"?1:0,
+      
+      near:
+      type==="near"?1:0
+      
       
       });
       
@@ -2468,8 +2488,18 @@
       
       
       ${item.station}
-      
-      (${item.count} إجراءات)
+
+        <br>
+        
+        <span style="color:red">
+        منتهية (${item.expired})
+        </span>
+        
+        <br>
+        
+        <span style="color:yellow">
+        قريبة (${item.near})
+        </span>
       
       
       
