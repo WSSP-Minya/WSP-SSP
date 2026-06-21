@@ -2057,211 +2057,242 @@
       
       // تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
    // =====================================================
-// تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
-// =====================================================
-
+      // =====================================================
+      // تقرير كل الفروع - الإجراءات المنتهية والقريبة من الانتهاء
+      // =====================================================
+      
+      
       document.getElementById("reportdeadlinebranch")
-      .addEventListener("click", async () => {
+      .addEventListener("click", async()=>{
       
       
-          const branch3 =
-          document.getElementById("branch_modal3").value;
+      const allBranches = [
       
+      "العدوه",
+      "مغاغة",
+      "بنى مزار",
+      "مطاى",
+      "سمالوط",
+      "المنيا",
+      "ابوقرقاص",
+      "ملوى",
+      "ديرمواس"
       
-          if(!branch3 || branch3==="----"){
+      ];
       
-              alert("يرجى اختيار فرع!");
-              return;
       
-          }
       
+      const today = new Date();
+      today.setHours(0,0,0,0);
       
       
-          const today = new Date();
-          today.setHours(0,0,0,0);
       
+      let monthsNames=[
+      "يناير",
+      "فبراير",
+      "مارس",
+      "ابريل",
+      "مايو",
+      "يونيو"
+      ];
       
       
-          let monthsNames=[
-              "يناير",
-              "فبراير",
-              "مارس",
-              "ابريل",
-              "مايو",
-              "يونيو"
-          ];
       
+      let monthData={
       
+      0:[],
+      1:[],
+      2:[],
+      3:[],
+      4:[],
+      5:[]
       
-          let monthData={
-              0:[],
-              1:[],
-              2:[],
-              3:[],
-              4:[],
-              5:[]
-          };
+      };
       
       
       
-          const resStations =
-          await fetch(
-          `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch3)}`
-          );
+      // =============================
+      // جلب كل الفروع
+      // =============================
       
       
-          const stationsData =
-          await resStations.json();
+      for(let branch of allBranches){
       
       
+      let resStations =
+      await fetch(
+      `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
+      );
       
-          if(stationsData.status==="success"){
       
+      let stationsData =
+      await resStations.json();
       
       
-              for(let i=0;i<stationsData.stations.length;i++){
       
+      if(stationsData.status!=="success")
+      continue;
       
       
-                  let station =
-                  stationsData.stations[i];
       
       
+      for(let i=0;i<stationsData.stations.length;i++){
       
-                  let certifiedDate =
-                  parseDateSmart(
-                  stationsData.certifiedDates[i]
-                  );
       
       
+      let station =
+      stationsData.stations[i];
       
-                  if(!certifiedDate || isNaN(certifiedDate))
-                      continue;
       
       
+      let certifiedDate =
+      parseDateSmart(
+      stationsData.certifiedDates[i]
+      );
       
-                  let res =
-                  await fetch(
-                  `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
-                  );
       
       
+      if(!certifiedDate || isNaN(certifiedDate))
+      continue;
       
-                  let data =
-                  await res.json();
       
       
+      let resDetails =
+      await fetch(
+      `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
+      );
       
-                  if(data.status!=="success")
-                      continue;
       
       
+      let detailsData =
+      await resDetails.json();
       
-                  data.details.forEach(detail=>{
       
       
+      if(detailsData.status!=="success")
+      continue;
       
-                      if(detail.checkbox===true)
-                          return;
       
       
+      detailsData.details.forEach(detail=>{
       
-                      let duration =
-                      parseInt(detail.duration);
       
+      if(detail.checkbox===true)
+      return;
       
       
-                      if(isNaN(duration))
-                          return;
       
+      let duration =
+      parseInt(detail.duration);
       
       
-                      let endDate =
-                      new Date(certifiedDate);
       
+      if(isNaN(duration))
+      return;
       
       
-                      endDate.setMonth(
-                          endDate.getMonth()+duration
-                      );
       
+      let endDate =
+      new Date(certifiedDate);
       
       
-                      let monthsLeft =
-                      (endDate.getFullYear()-today.getFullYear())*12+
-                      (endDate.getMonth()-today.getMonth());
       
+      endDate.setMonth(
+      endDate.getMonth()+duration
+      );
       
       
-                      if(monthsLeft<=3){
       
+      let monthsLeft =
+      (endDate.getFullYear()-today.getFullYear())*12+
+      (endDate.getMonth()-today.getMonth());
       
       
-                          let month =
-                          endDate.getMonth();
       
+      if(monthsLeft<=3){
       
       
-                          if(month>=0 && month<=5){
       
+      let month =
+      endDate.getMonth();
       
       
-                              let old =
-                              monthData[month]
-                              .find(x=>x.station===station);
       
+      if(month>=0 && month<=5){
       
       
-                              if(old){
       
-                                  old.count++;
+      let old =
+      monthData[month]
+      .find(x=>
+      x.station===station &&
+      x.branch===branch
+      );
       
-                              }
-                              else{
       
       
-                                  monthData[month].push({
+      if(old){
       
-                                      station:station,
-                                      count:1
+      old.count++;
       
-                                  });
+      }
+      else{
       
       
-                              }
+      monthData[month].push({
       
+      branch:branch,
+      station:station,
+      count:1
       
-                          }
+      });
       
-                      }
       
+      }
       
       
-                  });
+      }
       
       
+      }
       
-              }
       
-          }
       
+      });
       
       
+      }
       
       
-          let html=`
+      }
+      
+      
+      
+      
+      
+      // =============================
+      // بناء التقرير
+      // =============================
+      
+      
+      let html=`
       
       
       <html>
       
       <head>
       
+      
       <style>
       
+      
       body{
+      
       font-family:Arial;
       direction:rtl;
+      
       }
+      
       
       
       table{
@@ -2272,13 +2303,16 @@
       }
       
       
+      
       th,td{
       
       border:1px solid black;
       padding:8px;
       text-align:center;
+      vertical-align:top;
       
       }
+      
       
       
       th{
@@ -2286,6 +2320,7 @@
       background:#eee;
       
       }
+      
       
       
       .stationLink{
@@ -2298,33 +2333,29 @@
       }
       
       
+      
       .stationLink a{
       
       color:black;
-      text-decoration:none;
       font-weight:bold;
+      text-decoration:none;
       
       }
       
       
+      
       </style>
       
-      </head>
       
+      </head>
       
       
       <body>
       
       
-      
       <h2 align="center">
-      تقرير الإجراءات شارفت على انتهاء مدتها والمنتهية
+      تقرير الإجراءات المنتهية والقريبة من الانتهاء
       </h2>
-      
-      
-      <h3>
-      الفرع : ${branch3}
-      </h3>
       
       
       
@@ -2333,19 +2364,46 @@
       
       <tr>
       
-      <th>الفرع</th>
+      <th>
+      الفرع
+      </th>
       
-      ${
-      monthsNames.map(x=>`<th>${x}</th>`).join("")
-      }
+      
+      ${monthsNames.map(x=>`<th>${x}</th>`).join("")}
       
       
       </tr>
       
       
+      
+      `;
+      
+      
+      
+      // عمل صف لكل فرع
+      
+      
+      let branchesUsed =
+      [...new Set(
+      monthData.flat().map(x=>x.branch)
+      )];
+      
+      
+      
+      branchesUsed.forEach(branch=>{
+      
+      
+      
+      html+=`
+      
+      
       <tr>
       
-      <td>${branch3}</td>
+      
+      <td>
+      ${branch}
+      </td>
+      
       
       
       `;
@@ -2356,37 +2414,50 @@
       
       
       
-          if(monthData[m].length===0){
+      let data =
+      monthData[m]
+      .filter(x=>x.branch===branch);
       
       
-              html+=`<td>لا يوجد</td>`;
       
-          }
-          else{
+      if(data.length===0){
       
       
-              html+=`<td>`;
+      html+=`<td>لا يوجد</td>`;
+      
+      }
+      else{
       
       
-              monthData[m].forEach(item=>{
+      html+=`<td>`;
       
       
-                  html+=`
+      
+      data.forEach(item=>{
+      
+      
+      html+=`
+      
       
       <div class="stationLink">
       
+      
       <a href="#"
-      onclick="
-      openStationReport(
+      onclick="openStationReport(
       '${encodeURIComponent(item.station)}',
-      '${encodeURIComponent(branch3)}'
+      '${encodeURIComponent(item.branch)}'
       )">
       
       
+      
       ${item.station}
+      
       (${item.count} إجراءات)
       
+      
+      
       </a>
+      
       
       </div>
       
@@ -2394,13 +2465,15 @@
       `;
       
       
-              });
+      
+      });
       
       
       
-              html+=`</td>`;
+      html+=`</td>`;
       
-          }
+      }
+      
       
       }
       
@@ -2410,24 +2483,33 @@
       
       </tr>
       
-      </table>
+      `;
       
+      
+      
+      });
+      
+      
+      
+      html+=`
+      
+      </table>
       
       </body>
       
       </html>
-      
       
       `;
       
       
       
       
+      
       let win =
       window.open(
-      '',
-      '',
-      'width=1200,height=900'
+      "",
+      "",
+      "width=1200,height=900"
       );
       
       
@@ -2461,8 +2543,10 @@
       
       
       
+      
+      
       // =====================================================
-      // فتح تفاصيل محطة
+      // تقرير محطة بالتفصيل
       // =====================================================
       
       
@@ -2474,9 +2558,9 @@
       decodeURIComponent(encodedStation);
       
       
+      
       const branch =
       decodeURIComponent(encodedBranch);
-      
       
       
       
@@ -2488,15 +2572,18 @@
       
       
       
+      
       let html=`
       
       
       <html>
       
+      
       <head>
       
       
       <style>
+      
       
       body{
       
@@ -2514,7 +2601,7 @@
       }
       
       
-      td,th{
+      th,td{
       
       border:1px solid black;
       padding:6px;
@@ -2527,6 +2614,7 @@
       background:#eee;
       
       }
+      
       
       
       .red{
@@ -2549,18 +2637,29 @@
       </head>
       
       
+      
       <body>
       
       
       
       <h2 align="center">
+      
       الإجراءات المنتهية والقريبة من الانتهاء
+      
       </h2>
       
       
+      
       <h3>
-      المحطة : ${station}
+      
+      الفرع: ${branch}
+      
+      <br>
+      
+      المحطة: ${station}
+      
       </h3>
+      
       
       
       
@@ -2569,11 +2668,17 @@
       
       <tr>
       
+      
       <th>الموقع</th>
+      
       <th>الخطر</th>
+      
       <th>الإجراء التصحيحي</th>
+      
       <th>تاريخ الانتهاء</th>
+      
       <th>الموقف</th>
+      
       <th>ملاحظات WSP</th>
       
       
@@ -2584,10 +2689,12 @@
       
       
       
+      
       let res =
       await fetch(
       `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
       );
+      
       
       
       let data =
@@ -2595,11 +2702,13 @@
       
       
       
+      
+      
       if(data.status==="success"){
       
       
       
-      let rs =
+      let resStations =
       await fetch(
       `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
       );
@@ -2607,7 +2716,7 @@
       
       
       let stations =
-      await rs.json();
+      await resStations.json();
       
       
       
@@ -2620,6 +2729,7 @@
       parseDateSmart(
       stations.certifiedDates[index]
       );
+      
       
       
       
@@ -2661,6 +2771,7 @@
       
       
       
+      
       if(monthsLeft<=3){
       
       
@@ -2673,15 +2784,21 @@
       
       <td>${detail.location||""}</td>
       
+      
       <td>${detail.risk||""}</td>
+      
       
       <td>${detail.corraction||""}</td>
       
+      
       <td>${endDate.toISOString().slice(0,10)}</td>
+      
       
       <td>${detail.status||""}</td>
       
+      
       <td>${detail.wspcomment||""}</td>
+      
       
       
       </tr>
@@ -2694,8 +2811,8 @@
       }
       
       
-      
       });
+      
       
       
       }
@@ -2717,9 +2834,9 @@
       
       let win =
       window.open(
-      '',
-      '',
-      'width=1200,height=900'
+      "",
+      "",
+      "width=1200,height=900"
       );
       
       
@@ -2730,6 +2847,7 @@
       
       
       win.document.write(html);
+      
       win.document.close();
       
       
