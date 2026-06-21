@@ -2233,6 +2233,7 @@
               document.body.appendChild(script);
             }
        ///دالة انشاء تقرير مجمع وتفصيلى
+      ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
       
         const fromDate = document.getElementById("fromDate_water").value;
@@ -2290,9 +2291,6 @@
         const MIN_ENV_POINTS = 6; // حد ادنى لنقاط المسح البيئى
       
         const branches = {};
-
-         const monthlySummary={};
-        const stationMonthlySummary={};
       
         // =========================
         // 🔴 إضافة جديدة: تجميع نقاط المسح البيئي قبل الحساب النهائي
@@ -2307,8 +2305,6 @@
           const waterLevel = r[7];
           const screenBottom = r[6];
           const date = r[1];
-
-          const month = new Date(date).getMonth();
       
           if (!branches[branch]) {
             branches[branch] = {
@@ -2330,50 +2326,6 @@
               screenBottom: 0
             };
           }
-
-          if(!monthlySummary[branch])
-          monthlySummary[branch]={};
-          
-          
-          if(!monthlySummary[branch][month]){
-          
-          
-          monthlySummary[branch][month]={
-          
-          intakeSamples:0,
-          envVisits:new Set(),
-          waterLevel:0,
-          screenBottom:0
-          
-          };
-          
-          }
-          
-          
-          
-          if(!stationMonthlySummary[branch])
-          stationMonthlySummary[branch]={};
-          
-          
-          
-          if(!stationMonthlySummary[branch][station])
-          stationMonthlySummary[branch][station]={};
-          
-          
-          
-          if(!stationMonthlySummary[branch][station][month]){
-          
-          
-          stationMonthlySummary[branch][station][month]={
-          
-          intakeSamples:0,
-          envVisits:new Set(),
-          waterLevel:0,
-          screenBottom:0
-          
-          };
-          
-          }
       
           // =========================
           // 1) عينات المأخذ (🔴 تعديل: بناءً على وجود قياسات فعلية)
@@ -2391,21 +2343,12 @@
             branches[branch].summary.intakeSamples++;
             branches[branch].stations[station].intakeSamples++;
           }
-          monthlySummary[branch][month]
-          .intakeSamples++;
-          
-          
-          stationMonthlySummary[branch][station][month]
-          .intakeSamples++;
-          }
-
       
           // =========================
           // 2) المسح البيئي (🔴 تعديل: تجميع أولي فقط)
           // =========================
           const isEnv = envLocations.includes(location);
-          const key = branch+"|"+station+"|"+month+"|"+date;
-
+          const key = station + "_" + date;
       
           if (isEnv) {
             if (!envMap[key]) {
@@ -2420,12 +2363,6 @@
           if (waterLevel !== "" && waterLevel != null) {
             branches[branch].summary.waterLevel++;
             branches[branch].stations[station].waterLevel++;
-            
-            monthlySummary[branch][month]
-            .waterLevel++;
-            
-            stationMonthlySummary[branch][station][month]
-            .waterLevel++;
           }
       
           // =========================
@@ -2434,12 +2371,6 @@
           if (screenBottom !== "" && screenBottom != null) {
             branches[branch].summary.screenBottom++;
             branches[branch].stations[station].screenBottom++;
-            
-            monthlySummary[branch][month]
-            .screenBottom++;
-                       
-            stationMonthlySummary[branch][station][month]
-            .screenBottom++;
           }
         });
       
@@ -2465,12 +2396,6 @@
             if (branch) {
               branches[branch].summary.envVisits.add(key);
               branches[branch].stations[station].envVisits.add(key);
-              monthlySummary[branch][month]
-              .envVisits.add(key);
-              
-              
-              stationMonthlySummary[branch][station][month]
-              .envVisits.add(key);
             }
           }
         }
@@ -2484,506 +2409,121 @@
             الفترة من ${fromDate || "البداية"} إلى ${toDate || "الآن"}
           </p>`;
         }
-       
-       const monthNames=[
-        "يناير",
-        "فبراير",
-        "مارس",
-        "أبريل",
-        "مايو",
-        "يونيو",
-        "يوليو",
-        "أغسطس",
-        "سبتمبر",
-        "أكتوبر",
-        "نوفمبر",
-        "ديسمبر"      
-        ];
       
         let html = `
-        
         <html>
-        
         <head>
-        
-        <style>
-        
-        body{
-        font-family:Arial;
-        direction:rtl;
-        padding:20px;
-        font-size:15px;
-        }
-        
-        
-        h2{
-        font-size:25px;
-        }
-        
-        
-        h3{
-        font-size:22px;
-        margin-top:30px;
-        }
-        
-        
-        
-        table{
-        
-        width:100%;
-        border-collapse:collapse;
-        margin-bottom:25px;
-        
-        }
-        
-        
-        th,td{
-        
-        border:1px solid #000;
-        padding:6px;
-        text-align:center;
-        
-        }
-        
-        
-        th{
-        
-        background:#eee;
-        
-        }
-        
-        
-        .month{
-        
-        background:#d9ead3;
-        
-        }
-        
-        
-        </style>
-        
-        
+          <style>
+            body {font-family: Arial; direction: rtl; padding:20px; font-size: 17px;}
+            h2 {font-size: 26px;}
+            h3 {font-size: 22px;}
+            table {width:100%; border-collapse:collapse; margin-bottom:20px; font-size: 16px;}
+            th, td {border:1px solid #000; padding:8px; text-align:center;}
+            th {background:#eee; font-size: 16px;}         
+            p {font-size: 18px; font-weight: bold;}
+          </style>
+          
         </head>
-        
-        
         <body>
-        
-        
-        <h2>
-        تقرير متابعة مصدر المياه (شهري)
-        </h2>
-        
-        
+      
+        <h2>تقرير متابعة مصدر المياه</h2>
         ${periodText}
-        
         `;
-        
-        
-        
-        
-        
-        
-        //================================================
-        // التقرير المجمع للفروع
-        //================================================
-        
-        
+      
+        // =========================
+        // SUMMARY
+        // =========================
         html += `
-        
-        <h3>
-        التقرير المجمع للفروع
-        </h3>
-        
-        
         <table>
-        
-        
-        <tr>
-        
-        <th rowspan="2">
-        الفرع
-        </th>
-        
+          <tr>
+            <th>الفرع</th>
+            <th>عينات المأخذ</th>
+            <th>المسح البيئى</th>
+            <th>متابعة المناسيب</th>
+            <th>متابعة قاع المجرى المائى</th>
+          </tr>
         `;
+         
+         const branchOrder = [
+            "العدوه",
+            "مغاغة",
+            "بنى مزار",
+            "مطاى",
+            "سمالوط",
+            "المنيا",
+            "ابوقرقاص",
+            "ملوى",
+            "ديرمواس"
+          ];
+      
+        for (let b of branchOrder) {
+
+          if (!branches[b]) continue;
         
-        
-        
-        // صف الشهور
-        
-        for(let m=0;m<12;m++){
-        
-        
-        html += `
-        
-        <th colspan="4" class="month">
-        
-        ${monthNames[m]}
-        
-        </th>
-        
-        `;
-        
+          const s = branches[b].summary;
+      
+          html += `
+            <tr>
+              <td>${b}</td>
+              <td>${s.intakeSamples}</td>
+              <td>${s.envVisits.size}</td>
+              <td>${s.waterLevel}</td>
+              <td>${s.screenBottom}</td>
+            </tr>
+          `;
         }
-        
-        
-        
-        html += `
-        
-        </tr>
-        
-        
-        <tr>
-        
-        `;
-        
-        
-        
-        // المؤشرات
-        
-        for(let m=0;m<12;m++){
-        
-        
-        html += `
-        
-        
-        <th>عينات المأخذ</th>
-        
-        <th>المسح البيئى</th>
-        
-        <th>المناسيب</th>
-        
-        <th>قاع المجرى</th>
-        
-        
-        `;
-        
-        }
-        
-        
-        
-        html += `
-        
-        </tr>
-        
-        `;
-        
-        
-        
-        
-        
-        const branchOrder=[
-        
-        
-        "العدوه",
-        "مغاغة",
-        "بنى مزار",
-        "مطاى",
-        "سمالوط",
-        "المنيا",
-        "ابوقرقاص",
-        "ملوى",
-        "ديرمواس"
-        
-        
-        ];
-        
-        
-        
-        
-        
-        for(let b of branchOrder){
-        
-        
-        if(!monthlySummary[b])
-        continue;
-        
-        
-        
-        html += `
-        
-        <tr>
-        
-        <td>${b}</td>
-        
-        `;
-        
-        
-        
-        
-        for(let m=0;m<12;m++){
-        
-        
-        
-        const d =
-        monthlySummary[b][m] || {
-        
-        
-        intakeSamples:0,
-        envVisits:new Set(),
-        waterLevel:0,
-        screenBottom:0
-        
-        };
-        
-        
-        
-        html += `
-        
-        
-        <td>${d.intakeSamples}</td>
-        
-        <td>${d.envVisits.size}</td>
-        
-        <td>${d.waterLevel}</td>
-        
-        <td>${d.screenBottom}</td>
-        
-        
-        `;
-        
-        }
-        
-        
-        
-        html += `</tr>`;
-        
-        }
-        
-        
-        
-        
-        
+      
         html += `</table>`;
-       
-html += `
-
-<h3>
-التقرير التفصيلى للمحطات
-</h3>
-
-`;
-
-
-
-
-
-
-for(let b of branchOrder){
-
-
-
-if(!stationMonthlySummary[b])
-continue;
-
-
-
-
-html += `
-
-
-<h3>
-
-${b}
-
-</h3>
-
-
-<table>
-
-
-<tr>
-
-<th rowspan="2">
-المحطة
-</th>
-
-
-`;
-
-
-
-for(let m=0;m<12;m++){
-
-
-html += `
-
-
-<th colspan="4" class="month">
-
-${monthNames[m]}
-
-</th>
-
-
-`;
-
-}
-
-
-
-html += `
-
-</tr>
-
-
-<tr>
-
-`;
-
-
-
-for(let m=0;m<12;m++){
-
-
-html += `
-
-
-<th>عينات المأخذ</th>
-
-<th>المسح البيئى</th>
-
-<th>المناسيب</th>
-
-<th>قاع المجرى</th>
-
-
-`;
-
-}
-
-
-
-html += `
-
-</tr>
-
-`;
-
-
-
-
-
-
-for(let station in stationMonthlySummary[b]){
-
-
-html += `
-
-
-<tr>
-
-<td>
-${station}
-</td>
-
-
-`;
-
-
-
-
-
-for(let m=0;m<12;m++){
-
-
-
-const d =
-stationMonthlySummary[b][station][m] || {
-
-
-intakeSamples:0,
-envVisits:new Set(),
-waterLevel:0,
-screenBottom:0
-
-};
-
-
-
-
-
-html += `
-
-
-<td>${d.intakeSamples}</td>
-
-<td>${d.envVisits.size}</td>
-
-<td>${d.waterLevel}</td>
-
-<td>${d.screenBottom}</td>
-
-
-`;
-
-
-
-}
-
-
-
-html += `
-
-</tr>
-
-`;
-
-
-
-}
-
-
-
-html += `
-
-</table>
-
-`;
-
-
-
-}
-
-
-
-
-
-
-
-html += `
-
-</body>
-
-</html>
-
-`;
-
-
-
-
-
-
-//================================================
-// الطباعة
-//================================================
-
-
-const printWindow =
-window.open("","_blank");
-
-
-printWindow.document.write(html);
-
-
-printWindow.document.close();
-
-
-printWindow.print();
-
-
-
-}
-
+      
+        // =========================
+        // DETAILS
+        // =========================
+         
+        for (let b of branchOrder) {
+
+          if (!branches[b]) continue;
+        
+          
+      
+          html += `<h3>${b}</h3>`;
+      
+          html += `
+          <table>
+            <tr>
+              <th>المحطة</th>
+              <th>عينات المأخذ</th>
+              <th>المسح البيئى</th>
+              <th>متابعة المناسيب</th>
+              <th>متابعة قاع المجرى المائى</th>
+            </tr>
+          `;
+      
+          for (let station in branches[b].stations) {
+
+            const st = branches[b].stations[station];
+      
+            html += `
+              <tr>
+                <td>${station}</td>
+                <td>${st.intakeSamples}</td>
+                <td>${st.envVisits.size}</td>
+                <td>${st.waterLevel}</td>
+                <td>${st.screenBottom}</td>
+              </tr>
+            `;
+          }
+      
+          html += `</table>`;
+        }
+      
+        html += `</body></html>`;
+      
+        const printWindow = window.open("", "_blank");
+        printWindow.document.write(html);
+        printWindow.document.close();
+        printWindow.print();
+      }
+     
      
       
       ///////////////////////////////
