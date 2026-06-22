@@ -2057,17 +2057,10 @@
       
       // تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
    // =====================================================
-      // =====================================================
-      // تقرير كل الفروع - الإجراءات المنتهية والقريبة من الانتهاء
-      // =====================================================
-      
-      
       document.getElementById("reportdeadlinebranch")
       .addEventListener("click", async()=>{
       
-      
       const allBranches = [
-      
       "العدوه",
       "مغاغة",
       "بنى مزار",
@@ -2077,833 +2070,307 @@
       "ابوقرقاص",
       "ملوى",
       "ديرمواس"
-      
       ];
-      
-      
       
       const today = new Date();
       today.setHours(0,0,0,0);
       const currentYear = today.getFullYear();
       
-      
       let monthsNames=[
-      "يناير",
-      "فبراير",
-      "مارس",
-      "ابريل",
-      "مايو",
-      "يونيو",
-        "يوليو",
-        "اغسطس",
-        "سبتمبر",
-        "اكتوبر",
-        "نوفمبر",
-        "ديسمبر"
+      "يناير","فبراير","مارس","ابريل","مايو","يونيو",
+      "يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
       ];
       
-      
-      
+      // =============================
+      // بيانات الجدول الأول (الإجراءات)
+      // =============================
       let monthData={
-      
-      0:[],
-      1:[],
-      2:[],
-      3:[],
-      4:[],
-      5:[],
-        6:[],
-        7:[],
-        8:[],
-        9:[],
-        10:[],
-        11:[],
-        12:[]
-      
+      0:[],1:[],2:[],3:[],4:[],5:[],
+      6:[],7:[],8:[],9:[],10:[],11:[]
       };
       
-      
+      // =============================
+      // بيانات الجدول الثاني (الاعتماد)
+      // =============================
+      let certificationData={
+      0:[],1:[],2:[],3:[],4:[],5:[],
+      6:[],7:[],8:[],9:[],10:[],11:[]
+      };
       
       // =============================
-      // جلب كل الفروع
+      // جلب البيانات
       // =============================
-      
-      
       await Promise.all(
-
-     allBranches.map(async branch=>{
-  
-        let resStations =
-        await fetch(
-           `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
-        );
-  
-        let stationsData =
-        await resStations.json();
-  
-        if(stationsData.status!=="success")
-        return;
-  
-        const stationsResults =
-        await Promise.all(
-  
-           stationsData.stations.map(async(station,i)=>{
-  
-              let certifiedDate =
-              parseDateSmart(
-                 stationsData.certifiedDates[i]
-              );
-  
-              if(!certifiedDate || isNaN(certifiedDate))
-              return null;
-  
-              let resDetails =
-              await fetch(
-                 `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
-              );
-  
-              let detailsData =
-              await resDetails.json();
-  
-              return {
-  
-                 station,
-                 branch,
-                 certifiedDate,
-                 detailsData
-  
-              };
-  
-           })
-  
-        );
-  
-        stationsResults.forEach(result=>{
-  
-           if(!result)
-           return;
-  
-           const {
-              station,
-              branch,
-              certifiedDate,
-              detailsData
-           } = result;
-  
-           if(detailsData.status!=="success")
-           return;
-  
-           detailsData.details.forEach(detail=>{
-  
-              if(detail.checkbox===true)
-              return;
-  
-              let duration =
-              parseInt(detail.duration);
-  
-              if(isNaN(duration))
-              return;
-  
-              let endDate =
-              new Date(certifiedDate);
-  
-              endDate.setMonth(
-                 endDate.getMonth()+duration
-              );
-  
-              let monthsLeft =
-              (endDate.getFullYear()-today.getFullYear())*12+
-              (endDate.getMonth()-today.getMonth());
-  
-              if(monthsLeft<=3){
-  
-                 let type =
-                 monthsLeft<=0
-                 ? "expired"
-                 : "near";
-  
-                 let month =
-                 endDate.getMonth();
-  
-                 if(
-                    month>=0 &&
-                    month<=11 &&
-                    endDate.getFullYear()===currentYear
-                 ){
-  
-                    let old =
-                    monthData[month].find(x=>
-  
-                       x.station===station &&
-                       x.branch===branch
-  
-                    );
-  
-                    if(old){
-  
-                       if(type==="expired"){
-  
-                          old.expired++;
-  
-                       }else{
-  
-                          old.near++;
-  
-                       }
-  
-                    }else{
-  
-                       monthData[month].push({
-  
-                          branch:branch,
-                          station:station,
-  
-                          expired:
-                          type==="expired"
-                          ? 1
-                          : 0,
-  
-                          near:
-                          type==="near"
-                          ? 1
-                          : 0
-  
-                       });
-  
-                    }
-  
-                 }
-  
-              }
-  
-           });
-  
-        });
-  
-     })
-  
-  );
       
-      
-      
-      
-      
-      // =============================
-      // بناء التقرير
-      // =============================
-      
-      
-      let html=`
-      
-      
-      <html>
-      
-      <head>
-      
-      
-      <style>
-      
-      
-      body{
-      
-      font-family:Arial;
-      direction:rtl;
-      
-      }
-      
-      
-      
-      table{
-      
-      width:100%;
-      border-collapse:collapse;
-      
-      }
-      
-      
-      
-      th,td{
-      
-      border:1px solid black;
-      padding:8px;
-      text-align:center;
-      vertical-align:top;
-      
-      }
-      
-      
-      
-      th{
-      
-      background:#eee;
-      
-      }
-      
-      
-      
-     .stationLink{
-
-      margin:5px;
-      padding:6px;
-      
-      }
-      
-      
-      
-      .stationLink a{
-      
-      color:blue;
-      font-weight:bold;
-      cursor:pointer;
-      
-      }
-      
-      
-      
-      </style>
-      
-      
-      </head>
-      
-      
-      <body>
-      
-      
-      <h2 align="center">
-      تقرير الإجراءات المنتهية والقريبة من الانتهاء
-      </h2>
-      
-      
-      
-      <table>
-      
-      
-      <tr>
-      
-      <th>
-      الفرع
-      </th>
-      
-      
-      ${monthsNames.map(x=>`<th>${x}</th>`).join("")}
-      
-      
-      </tr>
-      
-      
-      
-      `;
-      
-      
-      
-      // عمل صف لكل فرع
-      
-      
-      let allItems = [];
-
-
-      Object.keys(monthData).forEach(m=>{
-      
-          monthData[m].forEach(item=>{
-      
-              allItems.push(item);
-      
-          });
-      
-      });
-      
-      
-      let branchesUsed = allBranches.filter(branch =>
-         allItems.some(item => item.branch === branch)
-      );
-      
-      
-      branchesUsed.forEach(branch=>{
-      
-      
-      
-      html+=`
-      
-      
-      <tr>
-      
-      
-      <td>
-      ${branch}
-      </td>
-      
-      
-      
-      `;
-      
-      
-      
-      for(let m=0;m<12;m++){
-      
-      
-      
-      let data =
-      monthData[m]
-      .filter(x=>x.branch===branch);
-      
-      
-      
-      if(data.length===0){
-      
-      
-      html+=`<td>ـــــ</td>`;
-      
-      }
-      else{
-      
-      
-      html+=`<td>`;
-      
-      
-      
-      data.forEach(item=>{
-      
-      
-      html+=`
-      
-      
-      <div class="stationLink">
-      
-      
-     <a href="#"
-      onclick="
-      window.opener.openStationReport(
-      '${encodeURIComponent(item.station)}',
-      '${encodeURIComponent(item.branch)}'
-      );
-      return false;
-      ">
-      
-      
-      
-      ${item.station}
-
-        <br>
-        
-        <span style="color:red">
-        منتهية (${item.expired})
-        </span>
-        
-
-        
-        <span style="color:orange">
-        قريبة (${item.near})
-        </span>
-      
-      
-      
-      </a>
-      
-      
-      </div>
-      
-      
-      `;
-      
-      
-      
-      });
-      
-      
-      
-      html+=`</td>`;
-      
-      }
-      
-      
-      }
-      
-      
-      
-      html+=`
-      
-      </tr>
-      
-      `;
-      
-      
-      
-      });
-      
-      
-      
-      html+=`
-      
-      </table>
-      
-      </body>
-      
-      </html>
-      
-      `;
-      
-      
-      
-      
-      
-      let win =
-      window.open(
-      "",
-      "",
-      "width=1200,height=900"
-      );
-      
-      
-      
-      if(!win){
-      
-      alert("يرجى السماح بالنوافذ المنبثقة");
-      
-      return;
-      
-      }
-      
-      
-      
-      win.document.write(html);
-      win.document.close();
-      win.openStationReport = window.openStationReport;
-      
-      
-      
-      setTimeout(()=>{
-      
-      win.focus();
-      win.print();
-      
-      },300);
-      
-      
-      
-      });
-      
-      
-      
-      
-      
-      
-      // =====================================================
-      // تقرير محطة بالتفصيل
-      // =====================================================
-      
-      
-      async function openStationReport(encodedStation,encodedBranch){
-      
-      
-      
-      const station =
-      decodeURIComponent(encodedStation);
-      
-      
-      
-      const branch =
-      decodeURIComponent(encodedBranch);
-      
-      
-      
-      const today =
-      new Date();
-      
-      
-      today.setHours(0,0,0,0);
-      
-      
-      
-      
-      let html=`
-      
-      
-      <html>
-      
-      
-      <head>
-      
-      
-      <style>
-      
-      
-      body{
-      
-      font-family:Arial;
-      direction:rtl;
-      
-      }
-      
-      
-      table{
-      
-      width:100%;
-      border-collapse:collapse;
-      
-      }
-      
-      
-      th,td{
-      
-      border:1px solid black;
-      padding:6px;
-      
-      }
-      
-      
-      th{
-      
-      background:#eee;
-      
-      }
-      
-      
-      
-      .red{
-      
-      background:#ff9999;
-      
-      }
-      
-      
-      .orange{
-      
-      background:lightsalmon;
-      
-      }
-      
-      
-      </style>
-      
-      
-      </head>
-      
-      
-      
-      <body>
-      
-      
-      
-      <h2 align="center">
-      
-      الإجراءات المنتهية والقريبة من الانتهاء
-      
-      </h2>
-      
-      
-      
-      <h3>
-      
-      الفرع: ${branch}
-      
-      <br>
-      
-      المحطة: ${station}
-      
-      </h3>
-      
-      
-      
-      
-      <table>
-      
-      
-      <tr>
-      
-      
-      <th>الموقع</th>
-      
-      <th>الخطر</th>
-      
-      <th>الإجراء التصحيحي</th>
-      
-      <th>تاريخ الانتهاء</th>
-      
-      <th>الموقف</th>
-      
-      <th>ملاحظات WSP</th>
-      
-      
-      </tr>
-      
-      
-      `;
-      
-      
-      
-      
-      let res =
-      await fetch(
-      `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
-      );
-      
-      
-      
-      let data =
-      await res.json();
-      
-      
-      
-      
-      
-      if(data.status==="success"){
-      
-      
+      allBranches.map(async branch=>{
       
       let resStations =
-      await fetch(
-      `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
-      );
+      await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
       
+      let stationsData = await resStations.json();
       
+      if(stationsData.status!=="success")
+      return;
       
-      let stations =
-      await resStations.json();
+      const stationsResults =
+      await Promise.all(
       
-      
-      
-      let index =
-      stations.stations.indexOf(station);
-      
-      
+      stationsData.stations.map(async(station,i)=>{
       
       let certifiedDate =
-      parseDateSmart(
-      stations.certifiedDates[index]
-      );
+      parseDateSmart(stationsData.certifiedDates[i]);
       
+      if(!certifiedDate || isNaN(certifiedDate))
+      return null;
       
+      // =============================
+      // تفاصيل المحطة
+      // =============================
+      let resDetails =
+      await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
       
+      let detailsData = await resDetails.json();
       
+      // =============================
+      // 1) الجدول الأول
+      // =============================
+      if(detailsData.status==="success"){
       
-      data.details.forEach(detail=>{
+      detailsData.details.forEach(detail=>{
       
+      if(detail.checkbox===true) return;
       
-      if(detail.checkbox===true)
-      return;
+      let duration = parseInt(detail.duration);
+      if(isNaN(duration)) return;
       
-      
-      
-      let duration =
-      parseInt(detail.duration);
-      
-      
-      
-      if(isNaN(duration))
-      return;
-      
-      
-      
-      
-      let endDate =
-      new Date(certifiedDate);
-      
-      
-      
-      endDate.setMonth(
-      endDate.getMonth()+duration
-      );
-      
-      
-      
+      let endDate = new Date(certifiedDate);
+      endDate.setMonth(endDate.getMonth()+duration);
       
       let monthsLeft =
       (endDate.getFullYear()-today.getFullYear())*12+
       (endDate.getMonth()-today.getMonth());
       
-      
-      
-      
       if(monthsLeft<=3){
       
+      let type = monthsLeft<=0 ? "expired" : "near";
       
+      let month = endDate.getMonth();
       
-      html+=`
+      if(month>=0 && month<=11 && endDate.getFullYear()===currentYear){
       
+      let old = monthData[month].find(x=>
+      x.station===station && x.branch===branch
+      );
       
-      <tr class="${monthsLeft<=0?'red':'yellow'}">
+      if(old){
       
+      if(type==="expired") old.expired++;
+      else old.near++;
       
-      <td>${detail.location||""}</td>
+      }else{
       
-      
-      <td>${detail.risk||""}</td>
-      
-      
-      <td>${detail.corraction||""}</td>
-      
-      
-      <td>${endDate.toISOString().slice(0,10)}</td>
-      
-      
-      <td>${detail.status||""}</td>
-      
-      
-      <td>${detail.wspcomment||""}</td>
-      
-      
-      
-      </tr>
-      
-      
-      `;
-      
-      
-      
-      }
-      
-      
+      monthData[month].push({
+      branch,
+      station,
+      expired: type==="expired"?1:0,
+      near: type==="near"?1:0
       });
       
-      
+      }
       
       }
       
+      }
       
+      });
+      }
       
-      html+=`
+      // =============================
+      // 2) الجدول الثاني (انتهاء الاعتماد بعد سنتين)
+      // =============================
+      let certEnd = new Date(certifiedDate);
+      certEnd.setFullYear(certEnd.getFullYear()+2);
       
+      let certMonth = certEnd.getMonth();
+      
+      if(certEnd.getFullYear()===currentYear){
+      
+      let exist = certificationData[certMonth].find(x=>
+      x.station===station && x.branch===branch
+      );
+      
+      if(!exist){
+      
+      certificationData[certMonth].push({
+      branch,
+      station,
+      endDate: certEnd
+      });
+      
+      }
+      
+      }
+      
+      return true;
+      
+      })
+      
+      );
+      
+      })
+      
+      );
+      
+      // =============================
+      // استخراج الفروع
+      // =============================
+      let allItems = [];
+      
+      Object.keys(monthData).forEach(m=>{
+      monthData[m].forEach(item=>{
+      allItems.push(item);
+      });
+      });
+      
+      let branchesUsed = allBranches.filter(branch =>
+      allItems.some(item => item.branch === branch)
+      );
+      
+      // =============================
+      // بناء التقرير
+      // =============================
+      let html = `
+      <html>
+      <head>
+      <style>
+      body{font-family:Arial;direction:rtl;}
+      table{width:100%;border-collapse:collapse;margin-bottom:40px;}
+      th,td{border:1px solid black;padding:8px;text-align:center;}
+      th{background:#eee;}
+      .stationLink{margin:5px;padding:6px;}
+      .stationLink a{color:blue;font-weight:bold;}
+      </style>
+      </head>
+      <body>
+      
+      <h2 align="center">تقرير الإجراءات المنتهية والقريبة</h2>
+      
+      <table>
+      <tr>
+      <th>الفرع</th>
+      ${monthsNames.map(x=>`<th>${x}</th>`).join("")}
+      </tr>
+      `;
+      
+      branchesUsed.forEach(branch=>{
+      
+      html += `<tr><td>${branch}</td>`;
+      
+      for(let m=0;m<12;m++){
+      
+      let data = monthData[m].filter(x=>x.branch===branch);
+      
+      if(data.length===0){
+      html += `<td>ـــــ</td>`;
+      }else{
+      html += `<td>`;
+      
+      data.forEach(item=>{
+      html += `
+      <div class="stationLink">
+      <a href="#" onclick="
+      window.opener.openStationReport(
+      '${encodeURIComponent(item.station)}',
+      '${encodeURIComponent(item.branch)}'
+      );
+      return false;">
+      ${item.station}
+      <br>
+      <span style="color:red">منتهية (${item.expired})</span>
+      <span style="color:orange">قريبة (${item.near})</span>
+      </a>
+      </div>`;
+      });
+      
+      html += `</td>`;
+      }
+      
+      }
+      
+      html += `</tr>`;
+      });
+      
+      html += `
+      </table>
+      
+      <!-- ============================= -->
+      <!-- الجدول الثاني: انتهاء الاعتماد -->
+      <!-- ============================= -->
+      
+      <h2 align="center">المحطات التى ينتهى اعتمادها بعد سنتين</h2>
+      
+      <table>
+      <tr>
+      <th>الفرع</th>
+      ${monthsNames.map(x=>`<th>${x}</th>`).join("")}
+      </tr>
+      `;
+      
+      allBranches.forEach(branch=>{
+      
+      html += `<tr><td>${branch}</td>`;
+      
+      for(let m=0;m<12;m++){
+      
+      let data = certificationData[m].filter(x=>x.branch===branch);
+      
+      if(data.length===0){
+      html += `<td>ـــــ</td>`;
+      }else{
+      html += `<td>`;
+      
+      data.forEach(item=>{
+      html += `
+      <div class="stationLink">
+      ${item.station}
+      <br>
+      <span style="color:green">
+      ${item.endDate.toISOString().slice(0,10)}
+      </span>
+      </div>`;
+      });
+      
+      html += `</td>`;
+      }
+      
+      }
+      
+      html += `</tr>`;
+      });
+      
+      html += `
       </table>
       
       </body>
-      
       </html>
-      
       `;
       
+      let win = window.open("","","width=1200,height=900");
       
-      
-      
-      let win =
-      window.open(
-      "",
-      "",
-      "width=1200,height=900"
-      );
-      
-      
-      
-      if(!win)
+      if(!win){
+      alert("يرجى السماح بالنوافذ المنبثقة");
       return;
-      
-      
+      }
       
       win.document.write(html);
-      
       win.document.close();
       
-      
-      
       setTimeout(()=>{
-      
       win.focus();
       win.print();
-      
       },300);
       
-      
-      
-      }
+      });
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
       let waterData = [];
