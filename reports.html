@@ -2129,175 +2129,160 @@
       // =============================
       
       
-      for(let branch of allBranches){
-      
-      
-      let resStations =
-      await fetch(
-      `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
-      );
-      
-      
-      let stationsData =
-      await resStations.json();
-      
-      
-      
-      if(stationsData.status!=="success")
-      continue;
-      
-      
-      
-      
-      for(let i=0;i<stationsData.stations.length;i++){
-      
-      
-      
-      let station =
-      stationsData.stations[i];
-      
-      
-      
-      let certifiedDate =
-      parseDateSmart(
-      stationsData.certifiedDates[i]
-      );
-      
-      
-      
-      if(!certifiedDate || isNaN(certifiedDate))
-      continue;
-      
-      
-      
-      let resDetails =
-      await fetch(
-      `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
-      );
-      
-      
-      
-      let detailsData =
-      await resDetails.json();
-      
-      
-      
-      if(detailsData.status!=="success")
-      continue;
-      
-      
-      
-      detailsData.details.forEach(detail=>{
-      
-      
-      if(detail.checkbox===true)
-      return;
-      
-      
-      
-      let duration =
-      parseInt(detail.duration);
-      
-      
-      
-      if(isNaN(duration))
-      return;
-      
-      
-      
-      let endDate =
-      new Date(certifiedDate);
-      
-      
-      
-      endDate.setMonth(
-      endDate.getMonth()+duration
-      );
-      
-      
-      
-      let monthsLeft =
-      (endDate.getFullYear()-today.getFullYear())*12+
-      (endDate.getMonth()-today.getMonth());
-      
-      
-      
-      if(monthsLeft<=3){
-        let type =
-        monthsLeft <= 0 ? "expired" : "near";
-      
-      
-      
-      let month =
-      endDate.getMonth();
-      
-      
-      
-      if(month>=0 && month<=12 && endDate.getFullYear() === currentYear){
-      
-      
-      
-      let old =
-      monthData[month]
-      .find(x=>
-      x.station===station &&
-      x.branch===branch
-      );
-      
-      
-      
-      if(old){
-      
-      
-      if(type==="expired"){
-      
-      old.expired++;
-      
-      }
-      else{
-      
-      old.near++;
-      
-      }
-      
-      
-      
-      }
-      else{
-      
-      
-      monthData[month].push({
-      
-      branch:branch,
-      station:station,
-      
-      expired:
-      type==="expired"?1:0,
-      
-      near:
-      type==="near"?1:0
-      
-      
-      });
-      
-      
-      }
-      
-      
-      }
-      
-      
-      }
-      
-      
-      
-      });
-      
-      
-      }
-      
-      
-      }
+      await Promise.all(
+
+     allBranches.map(async branch=>{
+  
+        let resStations =
+        await fetch(
+           `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
+        );
+  
+        let stationsData =
+        await resStations.json();
+  
+        if(stationsData.status!=="success")
+        return;
+  
+        const stationsResults =
+        await Promise.all(
+  
+           stationsData.stations.map(async(station,i)=>{
+  
+              let certifiedDate =
+              parseDateSmart(
+                 stationsData.certifiedDates[i]
+              );
+  
+              if(!certifiedDate || isNaN(certifiedDate))
+              return null;
+  
+              let resDetails =
+              await fetch(
+                 `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
+              );
+  
+              let detailsData =
+              await resDetails.json();
+  
+              return {
+  
+                 station,
+                 branch,
+                 certifiedDate,
+                 detailsData
+  
+              };
+  
+           })
+  
+        );
+  
+        stationsResults.forEach(result=>{
+  
+           if(!result)
+           return;
+  
+           const {
+              station,
+              branch,
+              certifiedDate,
+              detailsData
+           } = result;
+  
+           if(detailsData.status!=="success")
+           return;
+  
+           detailsData.details.forEach(detail=>{
+  
+              if(detail.checkbox===true)
+              return;
+  
+              let duration =
+              parseInt(detail.duration);
+  
+              if(isNaN(duration))
+              return;
+  
+              let endDate =
+              new Date(certifiedDate);
+  
+              endDate.setMonth(
+                 endDate.getMonth()+duration
+              );
+  
+              let monthsLeft =
+              (endDate.getFullYear()-today.getFullYear())*12+
+              (endDate.getMonth()-today.getMonth());
+  
+              if(monthsLeft<=3){
+  
+                 let type =
+                 monthsLeft<=0
+                 ? "expired"
+                 : "near";
+  
+                 let month =
+                 endDate.getMonth();
+  
+                 if(
+                    month>=0 &&
+                    month<=11 &&
+                    endDate.getFullYear()===currentYear
+                 ){
+  
+                    let old =
+                    monthData[month].find(x=>
+  
+                       x.station===station &&
+                       x.branch===branch
+  
+                    );
+  
+                    if(old){
+  
+                       if(type==="expired"){
+  
+                          old.expired++;
+  
+                       }else{
+  
+                          old.near++;
+  
+                       }
+  
+                    }else{
+  
+                       monthData[month].push({
+  
+                          branch:branch,
+                          station:station,
+  
+                          expired:
+                          type==="expired"
+                          ? 1
+                          : 0,
+  
+                          near:
+                          type==="near"
+                          ? 1
+                          : 0
+  
+                       });
+  
+                    }
+  
+                 }
+  
+              }
+  
+           });
+  
+        });
+  
+     })
+  
+  );
       
       
       
