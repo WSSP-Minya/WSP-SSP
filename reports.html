@@ -2414,9 +2414,27 @@
       
       
       let branchesUsed =
-      [...new Set(
-          allItems.map(x=>x.branch)
-      )];
+        [...new Set(
+           allItems.map(x=>x.branch)
+        )];
+        
+        const branchOrder = [
+           "العدوه",
+           "مغاغة",
+           "بنى مزار",
+           "مطاى",
+           "سمالوط",
+           "المنيا",
+           "ابوقرقاص",
+           "ملوى",
+           "ديرمواس"
+        ];
+        
+        branchesUsed.sort(
+           (a,b)=>
+           branchOrder.indexOf(a) -
+           branchOrder.indexOf(b)
+        );
       
       
       
