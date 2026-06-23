@@ -2223,7 +2223,10 @@
         for (let m = 0; m < 12; m++) {
         
         let stations = (tableData[m][branch] || [])
-        .filter(s => s.certYear === selectedYear);
+          .filter(s => {
+            if (selectedYear === "all") return true;
+            return s.certYear === selectedYear;
+          })
         
         if (stations.length === 0) {
         html += `<td>ـــــ</td>`;
@@ -2268,23 +2271,25 @@
         setTimeout(() => {
         
         let select = win.document.getElementById("yearFilter");
-        
-        years.forEach(y => {
-        let opt = win.document.createElement("option");
-        opt.value = y;
-        opt.textContent = y;
-        select.appendChild(opt);
-        });
-        
-        /* default = current year */
-        select.value = currentYear;
-        
-        /* auto refresh */
-        select.addEventListener("change", () => {
-        buildReport(parseInt(select.value));
-        });
-        
-        }, 200);
+
+          select.innerHTML = "";
+          
+          // خيار كل السنوات
+          let allOpt = win.document.createElement("option");
+          allOpt.value = "all";
+          allOpt.textContent = "كل السنوات";
+          select.appendChild(allOpt);
+          
+          // السنوات
+          years.forEach(y => {
+          let opt = win.document.createElement("option");
+          opt.value = y;
+          opt.textContent = y;
+          select.appendChild(opt);
+          });
+          
+          // الافتراضي = الكل
+          select.value = "all";
         
         }
         
