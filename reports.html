@@ -2059,208 +2059,241 @@
       // تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
    // =====================================================
      document.getElementById("reportdeadlinebranch")
-      .addEventListener("click", async () => {
-      
-      const allBranches = [
-      "العدوه","مغاغة","بنى مزار","مطاى","سمالوط",
-      "المنيا","ابوقرقاص","ملوى","ديرمواس"
-      ];
-      
-      const monthsNames = [
-      "يناير","فبراير","مارس","ابريل","مايو","يونيو",
-      "يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
-      ];
-      
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      const currentYear = today.getFullYear();
-      
-      /* =============================
-         الجدول الرئيسي
-      ============================= */
-      let tableData = Array.from({ length: 12 }, () => ({}));
-      
-      /* =============================
-         جلب البيانات
-      ============================= */
-      await Promise.all(
-      allBranches.map(async (branch) => {
-      
-      let resStations =
-      await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
-      
-      let stationsData = await resStations.json();
-      if (stationsData.status !== "success") return;
-      
-      await Promise.all(
-      stationsData.stations.map(async (station, i) => {
-      
-      let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
-      if (!certifiedDate || isNaN(certifiedDate)) return;
-      
-      /* =============================
-         تفاصيل المحطة
-      ============================= */
-      let resDetails =
-      await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
-      
-      let detailsData = await resDetails.json();
-      if (detailsData.status !== "success") return;
-      
-      /* =============================
-         حساب انتهاء الاعتماد (سنتين)
-      ============================= */
-      let certEnd = new Date(certifiedDate);
-      certEnd.setFullYear(certEnd.getFullYear() + 2);
-      
-      let certMonth = certEnd.getMonth();
-      let certYear = certEnd.getFullYear();
-      
-      /* =============================
-         العدادات
-      ============================= */
-      let expired = 0;
-      let near = 0;
-      
-      detailsData.details.forEach(detail => {
-      
-      if (detail.checkbox === true) return;
-      
-      let duration = parseInt(detail.duration);
-      if (isNaN(duration)) return;
-      
-      let endDate = new Date(certifiedDate);
-      endDate.setMonth(endDate.getMonth() + duration);
-      
-      let monthsLeft =
-      (endDate.getFullYear() - today.getFullYear()) * 12 +
-      (endDate.getMonth() - today.getMonth());
-      
-      if (monthsLeft <= 3) {
-      if (monthsLeft <= 0) expired++;
-      else near++;
-      }
-      
-      });
-      
-      /* =============================
-         تخزين في الشهر المناسب
-         (نفس سنة انتهاء الاعتماد)
-      ============================= */
-      if (certYear === currentYear) {
-      
-      if (!tableData[certMonth][branch]) {
-      tableData[certMonth][branch] = [];
-      }
-      
-      tableData[certMonth][branch].push({
-      station,
-      certEnd,
-      expired,
-      near
-      });
-      
-      }
-      
-      })
-      );
-      
-      })
-      );
-      
-      /* =============================
-         بناء الجدول
-      ============================= */
-      let html = `
-      <html>
-      <head>
-      <style>
-      body{font-family:Arial;direction:rtl;}
-      table{width:100%;border-collapse:collapse;}
-      th,td{border:1px solid #000;padding:6px;vertical-align:top;text-align:center;}
-      th{background:#eee;}
-      .stationBox{
-      margin:6px 0;
-      padding:6px;
-      border-bottom:1px dashed #ccc;
-      }
-      </style>
-      </head>
-      <body>
-      
-      <h2 align="center">تقرير المحطات وانتهاء الاعتماد</h2>
-      
-      <table>
-      <tr>
-      <th>الفرع</th>
-      ${monthsNames.map(m => `<th>${m}</th>`).join("")}
-      </tr>
-      `;
-      
-      /* =============================
-         الصفوف
-      ============================= */
-      allBranches.forEach(branch => {
-      
-      html += `<tr><td>${branch}</td>`;
-      
-      for (let m = 0; m < 12; m++) {
-      
-      let stations = tableData[m][branch] || [];
-      
-      if (stations.length === 0) {
-      html += `<td>ـــــ</td>`;
-      } else {
-      
-      html += `<td>`;
-      
-      stations.forEach(st => {
-      
-      html += `
-      <div class="stationBox" title="انتهاء الاعتماد: ${st.certEnd.toISOString().slice(0,10)}">
-      
-      <b>${st.station}</b><br>
-      
-      <span style="color:red">🔴 منتهية: ${st.expired}</span><br>
-      <span style="color:orange">🟠 قريبة: ${st.near}</span>
-      
-      </div>
-      `;
-      });
-      
-      html += `</td>`;
-      }
-      
-      }
-      
-      html += `</tr>`;
-      });
-      
-      html += `
-      </table>
-      </body>
-      </html>
-      `;
-      
-      /* =============================
-         فتح الطباعة
-      ============================= */
-      let win = window.open("", "", "width=1200,height=900");
-      
-      if (!win) {
-      alert("يرجى السماح بالنوافذ المنبثقة");
-      return;
-      }
-      
-      win.document.write(html);
-      win.document.close();
-      
-      win.onload = () => {
-      win.focus();
-      win.print();
-      };
-      
-      });
+        .addEventListener("click", async () => {
+        
+        const allBranches = [
+        "العدوه","مغاغة","بنى مزار","مطاى","سمالوط",
+        "المنيا","ابوقرقاص","ملوى","ديرمواس"
+        ];
+        
+        const monthsNames = [
+        "يناير","فبراير","مارس","ابريل","مايو","يونيو",
+        "يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
+        ];
+        
+        const today = new Date();
+        today.setHours(0,0,0,0);
+        const currentYear = today.getFullYear();
+        
+        /* =============================
+           YEARS FILTER (RANGE)
+        ============================= */
+        let yearsSet = new Set();
+        
+        // Range (5 سنوات قبل وبعد الحالية)
+        for (let y = currentYear - 5; y <= currentYear + 5; y++) {
+        yearsSet.add(y);
+        }
+        
+        let years = Array.from(yearsSet).sort((a,b) => b - a);
+        
+        /* =============================
+           UI FILTER
+        ============================= */
+        let filterHtml = `
+        <div style="margin-bottom:10px;text-align:center">
+        <select id="yearFilter"></select>
+        </div>
+        `;
+        
+        let win = window.open("", "", "width=1200,height=900");
+        
+        if (!win) {
+        alert("يرجى السماح بالنوافذ المنبثقة");
+        return;
+        }
+        
+        /* =============================
+           DATA STRUCTURE
+        ============================= */
+        let tableData = Array.from({ length: 12 }, () => ({}));
+        
+        /* =============================
+           BUILD DATA
+        ============================= */
+        await Promise.all(
+        allBranches.map(async (branch) => {
+        
+        let resStations =
+        await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+        
+        let stationsData = await resStations.json();
+        if (stationsData.status !== "success") return;
+        
+        await Promise.all(
+        stationsData.stations.map(async (station, i) => {
+        
+        let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
+        if (!certifiedDate || isNaN(certifiedDate)) return;
+        
+        let resDetails =
+        await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+        
+        let detailsData = await resDetails.json();
+        if (detailsData.status !== "success") return;
+        
+        /* =============================
+           CERT END (2 YEARS)
+        ============================= */
+        let certEnd = new Date(certifiedDate);
+        certEnd.setFullYear(certEnd.getFullYear() + 2);
+        
+        let certYear = certEnd.getFullYear();
+        let certMonth = certEnd.getMonth();
+        
+        /* =============================
+           ACTION COUNTS
+        ============================= */
+        let expired = 0;
+        let near = 0;
+        
+        detailsData.details.forEach(detail => {
+        
+        if (detail.checkbox === true) return;
+        
+        let duration = parseInt(detail.duration);
+        if (isNaN(duration)) return;
+        
+        let endDate = new Date(certifiedDate);
+        endDate.setMonth(endDate.getMonth() + duration);
+        
+        let monthsLeft =
+        (endDate.getFullYear() - today.getFullYear()) * 12 +
+        (endDate.getMonth() - today.getMonth());
+        
+        if (monthsLeft <= 3) {
+        if (monthsLeft <= 0) expired++;
+        else near++;
+        }
+        
+        });
+        
+        /* =============================
+           STORE (YEAR RANGE SUPPORT)
+        ============================= */
+        if (!tableData[certMonth][branch]) {
+        tableData[certMonth][branch] = [];
+        }
+        
+        tableData[certMonth][branch].push({
+        station,
+        certEnd,
+        certYear,
+        expired,
+        near
+        });
+        
+        })
+        );
+        
+        })
+        );
+        
+        /* =============================
+           BUILD REPORT FUNCTION
+        ============================= */
+        function buildReport(selectedYear) {
+        
+        let html = `
+        <html>
+        <head>
+        <style>
+        body{font-family:Arial;direction:rtl;}
+        table{width:100%;border-collapse:collapse;}
+        th,td{border:1px solid #000;padding:6px;vertical-align:top;text-align:center;}
+        th{background:#eee;}
+        .stationBox{margin:6px 0;padding:6px;border-bottom:1px dashed #ccc;}
+        </style>
+        </head>
+        <body>
+        
+        <h2 align="center">تقرير المحطات وانتهاء الاعتماد</h2>
+        
+        <table>
+        <tr>
+        <th>الفرع</th>
+        ${monthsNames.map(m => `<th>${m}</th>`).join("")}
+        </tr>
+        `;
+        
+        allBranches.forEach(branch => {
+        
+        html += `<tr><td>${branch}</td>`;
+        
+        for (let m = 0; m < 12; m++) {
+        
+        let stations = (tableData[m][branch] || [])
+        .filter(s => s.certYear === selectedYear);
+        
+        if (stations.length === 0) {
+        html += `<td>ـــــ</td>`;
+        } else {
+        
+        html += `<td>`;
+        
+        stations.forEach(st => {
+        
+        html += `
+        <div class="stationBox" title="انتهاء الاعتماد: ${st.certEnd.toISOString().slice(0,10)}">
+        
+        <b>${st.station}</b><br>
+        
+        <span style="color:red">🔴 منتهية: ${st.expired}</span><br>
+        <span style="color:orange">🟠 قريبة: ${st.near}</span>
+        
+        </div>
+        `;
+        });
+        
+        html += `</td>`;
+        }
+        
+        }
+        
+        html += `</tr>`;
+        });
+        
+        html += `
+        </table>
+        </body>
+        </html>
+        `;
+        
+        win.document.write(filterHtml + html);
+        win.document.close();
+        
+        /* =============================
+           INIT FILTER
+        ============================= */
+        setTimeout(() => {
+        
+        let select = win.document.getElementById("yearFilter");
+        
+        years.forEach(y => {
+        let opt = win.document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        select.appendChild(opt);
+        });
+        
+        /* default = current year */
+        select.value = currentYear;
+        
+        /* auto refresh */
+        select.addEventListener("change", () => {
+        buildReport(parseInt(select.value));
+        });
+        
+        }, 200);
+        
+        }
+        
+        /* =============================
+           FIRST LOAD
+        ============================= */
+        buildReport(currentYear);
+        
+        });
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
       let waterData = [];
