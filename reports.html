@@ -2269,35 +2269,32 @@
            INIT FILTER
         ============================= */
         setTimeout(() => {
-        
-        let select = win.document.getElementById("yearFilter");
 
-          select.innerHTML = "";
-          
-          // خيار كل السنوات
-          let allOpt = win.document.createElement("option");
-          allOpt.value = "all";
-          allOpt.textContent = "كل السنوات";
-          select.appendChild(allOpt);
-          
-          // السنوات
-          years.forEach(y => {
-          let opt = win.document.createElement("option");
-          opt.value = y;
-          opt.textContent = y;
-          select.appendChild(opt);
-          });
-          
-          // الافتراضي = الكل
-          select.value = "all";
-       
+        let select = win.document.getElementById("yearFilter");
         
-        /* =============================
-           FIRST LOAD
-        ============================= */
-        buildReport("all");
+        select.innerHTML = "";
         
+        // كل السنوات
+        let allOpt = win.document.createElement("option");
+        allOpt.value = "all";
+        allOpt.textContent = "كل السنوات";
+        select.appendChild(allOpt);
+        
+        // السنوات
+        years.forEach(y => {
+        let opt = win.document.createElement("option");
+        opt.value = y;
+        opt.textContent = y;
+        select.appendChild(opt);
         });
+        
+        // الافتراضي
+        select.value = "all";
+        
+        select.addEventListener("change", () => {
+        buildReport(select.value);
+        });
+        
         }, 200);
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
