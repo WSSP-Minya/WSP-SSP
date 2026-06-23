@@ -2266,13 +2266,13 @@
       select.id = "yearFilter";
       select.style.cssText = "display:block;margin:10px auto;padding:5px";
       
-      let allOpt = document.createElement("option");
+      let allOpt = win.document.createElement("option");
       allOpt.value = "all";
       allOpt.textContent = "كل السنوات";
       select.appendChild(allOpt);
       
       years.forEach(y => {
-      let opt = document.createElement("option");
+     let opt = win.document.createElement("option");
       opt.value = y;
       opt.textContent = y;
       select.appendChild(opt);
