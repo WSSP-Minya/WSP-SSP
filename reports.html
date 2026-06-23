@@ -2251,7 +2251,7 @@
          let [ma,ya] = a.split("-").map(Number);
          let [mb,yb] = b.split("-").map(Number);
       
-         return new Date(ya,ma) - new Date(yb,mb);
+         return new Date(ya, ma, 1) - new Date(yb, mb, 1);
       
       });
       // =============================
