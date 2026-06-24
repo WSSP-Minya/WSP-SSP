@@ -2271,7 +2271,9 @@ render(e.target.value);
 });
 
 // أول تشغيل
-render(years[0]);
+if (years.length > 0) {
+  render(years[0]);
+}
 
 };
 
