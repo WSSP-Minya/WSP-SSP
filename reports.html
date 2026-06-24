@@ -2058,230 +2058,237 @@
       
       // تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
    // =====================================================
-   document.getElementById("reportdeadlinebranch")
-      .addEventListener("click", async () => {
-      
-      const allBranches = [
-      "العدوه",
-      "مغاغة",
-      "بنى مزار",
-      "مطاى",
-      "سمالوط",
-      "المنيا",
-      "ابوقرقاص",
-      "ملوى",
-      "ديرمواس"
-      ];
-      
-      const today = new Date();
-      today.setHours(0,0,0,0);
-      
-      const currentYear = today.getFullYear();
-      
-      let monthsNames = [
-      "يناير","فبراير","مارس","ابريل","مايو","يونيو",
-      "يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
-      ];
-      
-      // =============================
-      // بيانات التقرير الموحد
-      // =============================
-      let reportData = {
-      0:[],1:[],2:[],3:[],4:[],5:[],
-      6:[],7:[],8:[],9:[],10:[],11:[]
-      };
-      
-      // =============================
-      // جلب البيانات
-      // =============================
-      await Promise.all(
-      
-      allBranches.map(async (branch) => {
-      
-      let resStations =
-      await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
-      
-      let stationsData = await resStations.json();
-      
-      if (stationsData.status !== "success") return;
-      
-      await Promise.all(
-      
-      stationsData.stations.map(async (station, i) => {
-      
-      let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
-      
-      if (!certifiedDate || isNaN(certifiedDate)) return;
-      
-      // =============================
-      // تفاصيل المحطة
-      // =============================
-      let resDetails =
-      await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
-      
-      let detailsData = await resDetails.json();
-      
-      // =============================
-      // حساب الإجراءات
-      // =============================
-      let expiredCount = 0;
-      let nearCount = 0;
-      
-      if (detailsData.status === "success") {
-      
-      detailsData.details.forEach(detail => {
-      
-      if (detail.checkbox === true) return;
-      
-      let duration = parseInt(detail.duration);
-      if (isNaN(duration)) return;
-      
-      let endDate = new Date(certifiedDate);
-      endDate.setMonth(endDate.getMonth() + duration);
-      
-      let monthsLeft =
-      (endDate.getFullYear() - today.getFullYear()) * 12 +
-      (endDate.getMonth() - today.getMonth());
-      
-      if (monthsLeft <= 0) {
-      expiredCount++;
-      } else if (monthsLeft <= 3) {
-      nearCount++;
-      }
-      
-      });
-      
-      }
-      
-      // =============================
-      // حساب انتهاء الاعتماد (سنتين)
-      // =============================
-      let certEnd = new Date(certifiedDate);
-      certEnd.setFullYear(certEnd.getFullYear() + 2);
-      
-      let month = certEnd.getMonth();
-      
-      if (certEnd.getFullYear() === currentYear) {
-      
-      let exist = reportData[month].find(x =>
-      x.station === station && x.branch === branch
-      );
-      
-      if (exist) {
-      exist.expired += expiredCount;
-      exist.near += nearCount;
-      } else {
-      reportData[month].push({
-      branch,
-      station,
-      expired: expiredCount,
-      near: nearCount
-      });
-      }
-      
-      }
-      
-      })
-      
-      );
-      
-      })
-      
-      );
-      
-      // =============================
-      // استخراج الفروع المستخدمة
-      // =============================
-      let branchesUsed = allBranches.filter(branch =>
-      Object.values(reportData).some(monthArr =>
-      monthArr.some(item => item.branch === branch)
-      )
-      );
-      
-      // =============================
-      // بناء HTML
-      // =============================
-      let html = `
-      <html>
-      <head>
-      <style>
-      body{font-family:Arial;direction:rtl;}
-      table{width:100%;border-collapse:collapse;margin-top:20px;}
-      th,td{border:1px solid black;padding:8px;text-align:center;vertical-align:top;}
-      th{background:#eee;}
-      .stationBox{margin:6px;padding:6px;border-bottom:1px solid #ddd;}
-      </style>
-      </head>
-      <body>
-      
-      <h2 style="text-align:center;">تقرير الاعتمادات والإجراءات</h2>
-      
-      <div style="text-align:center;margin-bottom:15px;">
-      السنة:
-      <select id="yearFilter"></select>
-      </div>
-      
-      <table>
-      <tr>
-      <th>الفرع</th>
-      ${monthsNames.map(m => `<th>${m}</th>`).join("")}
-      </tr>
-      `;
-      
-      // =============================
-      // الصفوف
-      // =============================
-      branchesUsed.forEach(branch => {
-      
-      html += `<tr><td>${branch}</td>`;
-      
-      for (let m = 0; m < 12; m++) {
-      
-      let data = reportData[m].filter(x => x.branch === branch);
-      
-      if (!data.length) {
-      html += `<td>ـــــ</td>`;
-      } else {
-      html += `<td>`;
-      
-      data.forEach(item => {
-      html += `
-      <div class="stationBox">
-      <b>${item.station}</b><br>
-      <span style="color:red">منتهية: ${item.expired}</span><br>
-      <span style="color:orange">قريبة: ${item.near}</span>
-      </div>
-      `;
-      });
-      
-      html += `</td>`;
-      }
-      
-      }
-      
-      html += `</tr>`;
-      });
-      
-      html += `
-           
-      `;
-      
-      let win = window.open("", "", "width=1200,height=900");
-      
-      if (!win) {
-      alert("يرجى السماح بالنوافذ المنبثقة");
-      return;
-      }
-      
-      win.document.write(html);
-      win.document.close();
-      
-      setTimeout(() => {
-      win.focus();
-      win.print();
-      }, 300);
-      
-      });
+ document.getElementById("reportdeadlinebranch")
+.addEventListener("click", async () => {
+
+const allBranches = [
+"العدوه",
+"مغاغة",
+"بنى مزار",
+"مطاى",
+"سمالوط",
+"المنيا",
+"ابوقرقاص",
+"ملوى",
+"ديرمواس"
+];
+
+const today = new Date();
+today.setHours(0,0,0,0);
+
+const currentYear = today.getFullYear();
+
+// 👇 اختيار السنة بدون تغيير الهيكلة
+const selectedYear = parseInt(prompt("ادخل سنة التقرير", currentYear)) || currentYear;
+
+let monthsNames = [
+"يناير","فبراير","مارس","ابريل","مايو","يونيو",
+"يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
+];
+
+// =============================
+// بيانات التقرير الموحد
+// =============================
+let reportData = {
+0:[],1:[],2:[],3:[],4:[],5:[],
+6:[],7:[],8:[],9:[],10:[],11:[]
+};
+
+// =============================
+// جلب البيانات
+// =============================
+await Promise.all(
+
+allBranches.map(async (branch) => {
+
+let resStations =
+await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+
+let stationsData = await resStations.json();
+
+if (stationsData.status !== "success") return;
+
+await Promise.all(
+
+stationsData.stations.map(async (station, i) => {
+
+let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
+
+if (!certifiedDate || isNaN(certifiedDate)) return;
+
+// =============================
+// تفاصيل المحطة
+// =============================
+let resDetails =
+await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+
+let detailsData = await resDetails.json();
+
+// =============================
+// حساب الإجراءات
+// =============================
+let expiredCount = 0;
+let nearCount = 0;
+
+if (detailsData.status === "success") {
+
+detailsData.details.forEach(detail => {
+
+if (detail.checkbox === true) return;
+
+let duration = parseInt(detail.duration);
+if (isNaN(duration)) return;
+
+let endDate = new Date(certifiedDate);
+endDate.setMonth(endDate.getMonth() + duration);
+
+let monthsLeft =
+(endDate.getFullYear() - today.getFullYear()) * 12 +
+(endDate.getMonth() - today.getMonth());
+
+if (monthsLeft <= 0) {
+expiredCount++;
+} else if (monthsLeft <= 3) {
+nearCount++;
+}
+
+});
+
+}
+
+// =============================
+// حساب انتهاء الاعتماد (سنتين) + فلتر السنة
+// =============================
+let certEnd = new Date(certifiedDate);
+certEnd.setFullYear(certEnd.getFullYear() + 2);
+
+let month = certEnd.getMonth();
+
+// 👇 هنا التغيير فقط
+if (certEnd.getFullYear() === selectedYear) {
+
+let exist = reportData[month].find(x =>
+x.station === station && x.branch === branch
+);
+
+if (exist) {
+exist.expired += expiredCount;
+exist.near += nearCount;
+} else {
+reportData[month].push({
+branch,
+station,
+expired: expiredCount,
+near: nearCount
+});
+}
+
+}
+
+})
+
+);
+
+})
+
+);
+
+// =============================
+// استخراج الفروع المستخدمة
+// =============================
+let branchesUsed = allBranches.filter(branch =>
+Object.values(reportData).some(monthArr =>
+monthArr.some(item => item.branch === branch)
+)
+);
+
+// =============================
+// بناء HTML
+// =============================
+let html = `
+<html>
+<head>
+<style>
+body{font-family:Arial;direction:rtl;}
+table{width:100%;border-collapse:collapse;margin-top:20px;}
+th,td{border:1px solid black;padding:8px;text-align:center;vertical-align:top;}
+th{background:#eee;}
+.stationBox{margin:6px;padding:6px;border-bottom:1px solid #ddd;}
+</style>
+</head>
+<body>
+
+<h2 style="text-align:center;">
+تقرير الاعتمادات والإجراءات
+</h2>
+
+<div style="text-align:center;margin-bottom:15px;">
+السنة المختارة: <b>${selectedYear}</b>
+</div>
+
+<table>
+<tr>
+<th>الفرع</th>
+${monthsNames.map(m => `<th>${m}</th>`).join("")}
+</tr>
+`;
+
+// =============================
+// الصفوف
+// =============================
+branchesUsed.forEach(branch => {
+
+html += `<tr><td>${branch}</td>`;
+
+for (let m = 0; m < 12; m++) {
+
+let data = reportData[m].filter(x => x.branch === branch);
+
+if (!data.length) {
+html += `<td>ـــــ</td>`;
+} else {
+html += `<td>`;
+
+data.forEach(item => {
+html += `
+<div class="stationBox">
+<b>${item.station}</b><br>
+<span style="color:red">منتهية: ${item.expired}</span><br>
+<span style="color:orange">قريبة: ${item.near}</span>
+</div>
+`;
+});
+
+html += `</td>`;
+}
+
+}
+
+html += `</tr>`;
+});
+
+html += `
+</table>
+</body>
+</html>
+`;
+
+let win = window.open("", "", "width=1200,height=900");
+
+if (!win) {
+alert("يرجى السماح بالنوافذ المنبثقة");
+return;
+}
+
+win.document.write(html);
+win.document.close();
+
+setTimeout(() => {
+win.focus();
+win.print();
+}, 300);
+
+});
     
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
