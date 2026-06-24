@@ -2075,9 +2075,13 @@ let monthsNames = [
 ];
 
 // =============================
+// بيانات
+// =============================
 let reportData = {};
 let yearsSet = new Set();
 
+// =============================
+// جلب البيانات
 // =============================
 await Promise.all(allBranches.map(async (branch) => {
 
@@ -2139,18 +2143,6 @@ reportData[year] = {
 };
 }
 
-if (!reportData[year][month]) {
-reportData[year][month] = [];
-}
-
-let exist = reportData[year][month].find(x =>
-x.station === station && x.branch === branch
-);
-
-if (exist) {
-exist.expired += expiredCount;
-exist.near += nearCount;
-} else {
 reportData[year][month].push({
 branch,
 station,
@@ -2158,14 +2150,19 @@ expired: expiredCount,
 near: nearCount,
 endDate: certEnd.toISOString().split("T")[0]
 });
-}
 
 }));
 
 }));
 
+// =============================
+// السنوات
+// =============================
 const years = [...yearsSet].sort();
 
+// =============================
+// فتح نافذة
+// =============================
 let win = window.open("", "", "width=1300,height=900");
 
 win.document.write(`
@@ -2195,7 +2192,6 @@ font-weight:bold;
 table{
 width:100%;
 border-collapse:collapse;
-margin-top:10px;
 background:white;
 }
 
@@ -2234,6 +2230,9 @@ cursor:pointer;
 
 win.document.close();
 
+// =============================
+// تشغيل داخل النافذة
+// =============================
 win.onload = () => {
 
 const data = ${JSON.stringify(reportData)};
@@ -2244,7 +2243,7 @@ const select = win.document.getElementById("yearFilter");
 const table = win.document.getElementById("table");
 const dashboard = win.document.getElementById("dashboard");
 
-const years = Object.keys(data).map(Number).sort((a,b)=>a-b);
+const years = Object.keys(data).sort((a,b)=>a-b);
 
 select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
 
@@ -2311,11 +2310,13 @@ html += "</table>";
 table.innerHTML = html;
 }
 
+// change year
 select.addEventListener("change", e => {
 render(e.target.value);
 updateDashboard(e.target.value);
 });
 
+// first load
 if(years.length){
 render(years[0]);
 updateDashboard(years[0]);
