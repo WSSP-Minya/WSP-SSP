@@ -2058,28 +2058,16 @@
       
       // تقرير الإجراءات التي قاربت على الانتهاء للفرع المحدد
    // =====================================================
- document.getElementById("reportdeadlinebranch")
+document.getElementById("reportdeadlinebranch")
 .addEventListener("click", async () => {
 
 const allBranches = [
-"العدوه",
-"مغاغة",
-"بنى مزار",
-"مطاى",
-"سمالوط",
-"المنيا",
-"ابوقرقاص",
-"ملوى",
-"ديرمواس"
+"العدوه","مغاغة","بنى مزار","مطاى",
+"سمالوط","المنيا","ابوقرقاص","ملوى","ديرمواس"
 ];
 
 const today = new Date();
 today.setHours(0,0,0,0);
-
-const currentYear = today.getFullYear();
-
-// 👇 اختيار السنة بدون تغيير الهيكلة
-const selectedYear = parseInt(prompt("ادخل سنة التقرير", currentYear)) || currentYear;
 
 let monthsNames = [
 "يناير","فبراير","مارس","ابريل","مايو","يونيو",
@@ -2087,19 +2075,15 @@ let monthsNames = [
 ];
 
 // =============================
-// بيانات التقرير الموحد
+// بيانات حسب السنوات
 // =============================
-let reportData = {
-0:[],1:[],2:[],3:[],4:[],5:[],
-6:[],7:[],8:[],9:[],10:[],11:[]
-};
+let reportData = {};
+let yearsSet = new Set();
 
 // =============================
 // جلب البيانات
 // =============================
-await Promise.all(
-
-allBranches.map(async (branch) => {
+await Promise.all(allBranches.map(async (branch) => {
 
 let resStations =
 await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
@@ -2108,25 +2092,16 @@ let stationsData = await resStations.json();
 
 if (stationsData.status !== "success") return;
 
-await Promise.all(
-
-stationsData.stations.map(async (station, i) => {
+await Promise.all(stationsData.stations.map(async (station, i) => {
 
 let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
-
 if (!certifiedDate || isNaN(certifiedDate)) return;
 
-// =============================
-// تفاصيل المحطة
-// =============================
 let resDetails =
 await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
 
 let detailsData = await resDetails.json();
 
-// =============================
-// حساب الإجراءات
-// =============================
 let expiredCount = 0;
 let nearCount = 0;
 
@@ -2146,28 +2121,33 @@ let monthsLeft =
 (endDate.getFullYear() - today.getFullYear()) * 12 +
 (endDate.getMonth() - today.getMonth());
 
-if (monthsLeft <= 0) {
-expiredCount++;
-} else if (monthsLeft <= 3) {
-nearCount++;
-}
+if (monthsLeft <= 0) expiredCount++;
+else if (monthsLeft <= 3) nearCount++;
 
 });
-
 }
 
-// =============================
-// حساب انتهاء الاعتماد (سنتين) + فلتر السنة
 // =============================
 let certEnd = new Date(certifiedDate);
 certEnd.setFullYear(certEnd.getFullYear() + 2);
 
+let year = certEnd.getFullYear();
 let month = certEnd.getMonth();
 
-// 👇 هنا التغيير فقط
-if (certEnd.getFullYear() === selectedYear) {
+yearsSet.add(year);
 
-let exist = reportData[month].find(x =>
+if (!reportData[year]) {
+reportData[year] = {
+0:[],1:[],2:[],3:[],4:[],5:[],
+6:[],7:[],8:[],9:[],10:[],11:[]
+};
+}
+
+if (!reportData[year][month]) {
+reportData[year][month] = [];
+}
+
+let exist = reportData[year][month].find(x =>
 x.station === station && x.branch === branch
 );
 
@@ -2175,118 +2155,125 @@ if (exist) {
 exist.expired += expiredCount;
 exist.near += nearCount;
 } else {
-reportData[month].push({
+reportData[year][month].push({
 branch,
 station,
 expired: expiredCount,
-near: nearCount
+near: nearCount,
+endDate: certEnd.toISOString().split("T")[0]
 });
 }
 
-}
+}));
 
-})
+}));
 
-);
-
-})
-
-);
-
-// =============================
-// استخراج الفروع المستخدمة
-// =============================
-let branchesUsed = allBranches.filter(branch =>
-Object.values(reportData).some(monthArr =>
-monthArr.some(item => item.branch === branch)
-)
-);
-
-// =============================
-// بناء HTML
-// =============================
-let html = `
-<html>
-<head>
-<style>
-body{font-family:Arial;direction:rtl;}
-table{width:100%;border-collapse:collapse;margin-top:20px;}
-th,td{border:1px solid black;padding:8px;text-align:center;vertical-align:top;}
-th{background:#eee;}
-.stationBox{margin:6px;padding:6px;border-bottom:1px solid #ddd;}
-</style>
-</head>
-<body>
-
-<h2 style="text-align:center;">
-تقرير الاعتمادات والإجراءات
-</h2>
-
-<div style="text-align:center;margin-bottom:15px;">
-السنة المختارة: <b>${selectedYear}</b>
-</div>
-
-<table>
-<tr>
-<th>الفرع</th>
-${monthsNames.map(m => `<th>${m}</th>`).join("")}
-</tr>
-`;
-
-// =============================
-// الصفوف
-// =============================
-branchesUsed.forEach(branch => {
-
-html += `<tr><td>${branch}</td>`;
-
-for (let m = 0; m < 12; m++) {
-
-let data = reportData[m].filter(x => x.branch === branch);
-
-if (!data.length) {
-html += `<td>ـــــ</td>`;
-} else {
-html += `<td>`;
-
-data.forEach(item => {
-html += `
-<div class="stationBox">
-<b>${item.station}</b><br>
-<span style="color:red">منتهية: ${item.expired}</span><br>
-<span style="color:orange">قريبة: ${item.near}</span>
-</div>
-`;
-});
-
-html += `</td>`;
-}
-
-}
-
-html += `</tr>`;
-});
-
-html += `
-</table>
-</body>
-</html>
-`;
+const years = [...yearsSet].sort();
 
 let win = window.open("", "", "width=1200,height=900");
 
-if (!win) {
-alert("يرجى السماح بالنوافذ المنبثقة");
-return;
+win.document.write(`
+<html>
+<head>
+<style>
+body{font-family:Arial;direction:rtl}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{border:1px solid #000;padding:6px;text-align:center;vertical-align:top}
+th{background:#eee}
+.stationBox{
+padding:5px;
+border-bottom:1px solid #ccc;
+cursor:pointer;
 }
+</style>
+</head>
 
-win.document.write(html);
+<body>
+
+<h2 style="text-align:center">تقرير الاعتمادات</h2>
+
+<div style="text-align:center;margin-bottom:10px">
+السنة:
+<select id="yearFilter"></select>
+</div>
+
+<div id="table"></div>
+
+</body>
+</html>
+`);
+
 win.document.close();
 
-setTimeout(() => {
-win.focus();
-win.print();
-}, 300);
+// =============================
+// تشغيل JS داخل النافذة
+// =============================
+win.onload = () => {
+
+const data = ${JSON.stringify(reportData)};
+const months = ${JSON.stringify(monthsNames)};
+const branches = ${JSON.stringify(allBranches)};
+
+const select = win.document.getElementById("yearFilter");
+const table = win.document.getElementById("table");
+
+const years = Object.keys(data).sort();
+
+select.innerHTML = years.map(y =>
+`<option value="${y}">${y}</option>`
+).join("");
+
+function render(year){
+
+let html = "<table><tr><th>الفرع</th>" +
+months.map(m => `<th>${m}</th>`).join("") +
+"</tr>";
+
+branches.forEach(b => {
+
+html += `<tr><td>${b}</td>`;
+
+for(let m = 0; m < 12; m++){
+
+let items = (data[year]?.[m] || []).filter(x => x.branch === b);
+
+if(!items.length){
+html += "<td>ـــــ</td>";
+}else{
+html += "<td>";
+
+items.forEach(it => {
+html += `
+<div class="stationBox"
+title="تاريخ الانتهاء: ${it.endDate}">
+<b>${it.station}</b><br>
+<span style="color:red">منتهية: ${it.expired}</span><br>
+<span style="color:orange">قريبة: ${it.near}</span>
+</div>`;
+});
+
+html += "</td>";
+}
+
+}
+
+html += "</tr>";
+});
+
+html += "</table>";
+
+table.innerHTML = html;
+}
+
+// تغيير السنة
+select.addEventListener("change", e => {
+render(e.target.value);
+});
+
+// أول تشغيل
+render(years[0]);
+
+};
 
 });
     
