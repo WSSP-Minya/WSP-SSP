@@ -2075,13 +2075,9 @@ let monthsNames = [
 ];
 
 // =============================
-// بيانات حسب السنوات
-// =============================
 let reportData = {};
 let yearsSet = new Set();
 
-// =============================
-// جلب البيانات
 // =============================
 await Promise.all(allBranches.map(async (branch) => {
 
@@ -2170,19 +2166,51 @@ endDate: certEnd.toISOString().split("T")[0]
 
 const years = [...yearsSet].sort();
 
-let win = window.open("", "", "width=1200,height=900");
+let win = window.open("", "", "width=1300,height=900");
 
 win.document.write(`
 <html>
 <head>
 <style>
-body{font-family:Arial;direction:rtl}
-table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{border:1px solid #000;padding:6px;text-align:center;vertical-align:top}
+body{font-family:Arial;direction:rtl;background:#f7f7f7}
+
+#dashboard{
+display:flex;
+gap:10px;
+justify-content:center;
+flex-wrap:wrap;
+margin:10px 0;
+}
+
+.card{
+padding:12px;
+border-radius:10px;
+background:white;
+min-width:160px;
+text-align:center;
+box-shadow:0 2px 6px rgba(0,0,0,0.1);
+font-weight:bold;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+background:white;
+}
+
+th,td{
+border:1px solid #000;
+padding:6px;
+text-align:center;
+vertical-align:top;
+}
+
 th{background:#eee}
+
 .stationBox{
 padding:5px;
-border-bottom:1px solid #ccc;
+border-bottom:1px solid #ddd;
 cursor:pointer;
 }
 </style>
@@ -2190,13 +2218,14 @@ cursor:pointer;
 
 <body>
 
-<h2 style="text-align:center">تقرير الاعتمادات</h2>
+<h2 style="text-align:center">📊 Dashboard الاعتمادات</h2>
 
 <div style="text-align:center;margin-bottom:10px">
 السنة:
 <select id="yearFilter"></select>
 </div>
 
+<div id="dashboard"></div>
 <div id="table"></div>
 
 </body>
@@ -2205,9 +2234,6 @@ cursor:pointer;
 
 win.document.close();
 
-// =============================
-// تشغيل JS داخل النافذة
-// =============================
 win.onload = () => {
 
 const data = ${JSON.stringify(reportData)};
@@ -2216,12 +2242,32 @@ const branches = ${JSON.stringify(allBranches)};
 
 const select = win.document.getElementById("yearFilter");
 const table = win.document.getElementById("table");
+const dashboard = win.document.getElementById("dashboard");
 
-const years = Object.keys(data).sort();
+const years = Object.keys(data).map(Number).sort((a,b)=>a-b);
 
-select.innerHTML = years.map(y =>
-`<option value="${y}">${y}</option>`
-).join("");
+select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
+
+function updateDashboard(year){
+
+let total = 0;
+let expired = 0;
+let near = 0;
+
+Object.values(data[year] || {}).forEach(arr => {
+arr.forEach(i => {
+total += (i.expired + i.near);
+expired += i.expired;
+near += i.near;
+});
+});
+
+dashboard.innerHTML = `
+<div class="card">📊 الإجمالي<br>${total}</div>
+<div class="card" style="background:#ffe5e5">🔴 منتهية<br>${expired}</div>
+<div class="card" style="background:#fff4d6">🟠 قريبة<br>${near}</div>
+`;
+}
 
 function render(year){
 
@@ -2233,7 +2279,7 @@ branches.forEach(b => {
 
 html += `<tr><td>${b}</td>`;
 
-for(let m = 0; m < 12; m++){
+for(let m=0;m<12;m++){
 
 let items = (data[year]?.[m] || []).filter(x => x.branch === b);
 
@@ -2265,20 +2311,19 @@ html += "</table>";
 table.innerHTML = html;
 }
 
-// تغيير السنة
 select.addEventListener("change", e => {
 render(e.target.value);
+updateDashboard(e.target.value);
 });
 
-// أول تشغيل
-if (years.length > 0) {
-  render(years[0]);
+if(years.length){
+render(years[0]);
+updateDashboard(years[0]);
 }
 
 };
 
 });
-    
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
       let waterData = [];
