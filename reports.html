@@ -2153,7 +2153,7 @@ const actionObj = {
     risk: detail.risk || "",
     correction: detail.corraction || "",
     endDate: endDate.toISOString().split("T")[0],
-    status: diffDays <= 0 ? "منتهية" : "قريبة",
+    status: detail.status || "",
     wspcomment: detail.wspcomment || ""
 };
 if(diffDays <= 0){
@@ -2573,9 +2573,6 @@ ${item.station}
 
 <br>
 
-<small>
-${item.certEnd}
-</small>
 
 </div>
 
