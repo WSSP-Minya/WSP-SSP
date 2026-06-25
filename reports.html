@@ -2124,6 +2124,8 @@ const detailsData = await resDetails.json();
 
 let expiredCount = 0;
 let nearCount = 0;
+let expiredActions = [];
+let nearActions = [];
 
 // ==========================================
 // حساب الإجراءات المنتهية والقريبة
@@ -2146,12 +2148,21 @@ Math.ceil(
 (endDate - today) /
 (1000 * 60 * 60 * 24)
 );
-
+const actionObj = {
+    location: detail.location || "",
+    risk: detail.risk || "",
+    correction: detail.corraction || "",
+    endDate: endDate.toISOString().split("T")[0],
+    status: diffDays <= 0 ? "منتهية" : "قريبة",
+    wspcomment: detail.wspcomment || ""
+};
 if(diffDays <= 0){
-expiredCount++;
+    expiredCount++;
+    expiredActions.push(actionObj);
 }
 else if(diffDays <= 90){
-nearCount++;
+    nearCount++;
+    nearActions.push(actionObj);
 }
 
 });
@@ -2187,7 +2198,10 @@ expired: expiredCount,
 near: nearCount,
 
 certEnd:
-certEnd.toISOString().split("T")[0]
+certEnd.toISOString().split("T")[0],
+
+expiredActions,
+nearActions
 
 });
 
@@ -2334,6 +2348,53 @@ win.document.close();
 win.onload = () => {
 
 const data = reportData;
+win.stationMap = {};
+stations.forEach(item => {
+
+const key = branch + "_" + item.station;
+win.stationMap[key] = item;
+
+html += `
+
+<div class="station">
+
+<a
+href="#"
+title="تاريخ انتهاء الاعتماد : ${item.certEnd}"
+style="
+color:blue;
+font-weight:bold;
+text-decoration:underline;
+cursor:pointer;
+"
+onclick="
+showStationDetails(
+'${branch}',
+'${item.station}'
+);
+return false;
+"
+>
+${item.station}
+</a>
+
+<br>
+
+<span class="expired">
+منتهية : ${item.expired}
+</span>
+
+<br>
+
+<span class="near">
+قريبة : ${item.near}
+</span>
+
+</div>
+
+`;
+
+});
 const years =
 Array.from(yearsSet)
 .sort((a,b)=>a-b);
@@ -2454,13 +2515,26 @@ html += `<td>`;
 
 stations.forEach(item => {
 
+const key = branch + "_" + item.station;
+win.stationMap[key] = item;
+  
 html += `
 
 <div class="station">
 
-<b>
+<a
+href="#"
+title="تاريخ انتهاء الاعتماد : ${item.certEnd}"
+style="
+color:blue;
+font-weight:bold;
+text-decoration:underline;
+cursor:pointer;
+"
+onclick="showStationDetails('${branch}','${item.station}')"
+>
 ${item.station}
-</b>
+</a>
 
 <br>
 
