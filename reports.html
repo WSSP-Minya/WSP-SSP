@@ -2062,131 +2062,201 @@ document.getElementById("reportdeadlinebranch")
 .addEventListener("click", async () => {
 
 const allBranches = [
-"العدوه","مغاغة","بنى مزار","مطاى",
-"سمالوط","المنيا","ابوقرقاص","ملوى","ديرمواس"
+"العدوه",
+"مغاغة",
+"بنى مزار",
+"مطاى",
+"سمالوط",
+"المنيا",
+"ابوقرقاص",
+"ملوى",
+"ديرمواس"
 ];
 
 const today = new Date();
 today.setHours(0,0,0,0);
 
-let monthsNames = [
+const monthsNames = [
 "يناير","فبراير","مارس","ابريل","مايو","يونيو",
 "يوليو","اغسطس","سبتمبر","اكتوبر","نوفمبر","ديسمبر"
 ];
 
-// =============================
-// بيانات
-// =============================
+// ====================================================
+// بيانات التقرير
+// ====================================================
 let reportData = {};
 let yearsSet = new Set();
 
-// =============================
+// ====================================================
 // جلب البيانات
-// =============================
-await Promise.all(allBranches.map(async (branch) => {
+// ====================================================
+await Promise.all(
 
-let resStations =
-await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+allBranches.map(async (branch) => {
 
-let stationsData = await resStations.json();
+const resStations =
+await fetch(
+`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
+);
 
-if (stationsData.status !== "success") return;
+const stationsData = await resStations.json();
 
-await Promise.all(stationsData.stations.map(async (station, i) => {
+if(stationsData.status !== "success") return;
 
-let certifiedDate = parseDateSmart(stationsData.certifiedDates[i]);
-if (!certifiedDate || isNaN(certifiedDate)) return;
+await Promise.all(
 
-let resDetails =
-await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+stationsData.stations.map(async (station,index) => {
 
-let detailsData = await resDetails.json();
+const certifiedDate =
+parseDateSmart(stationsData.certifiedDates[index]);
+
+if(!certifiedDate || isNaN(certifiedDate)) return;
+
+// ==========================================
+// تفاصيل المحطة
+// ==========================================
+const resDetails =
+await fetch(
+`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
+);
+
+const detailsData = await resDetails.json();
 
 let expiredCount = 0;
 let nearCount = 0;
 
-if (detailsData.status === "success") {
+// ==========================================
+// حساب الإجراءات المنتهية والقريبة
+// ==========================================
+if(detailsData.status === "success"){
 
 detailsData.details.forEach(detail => {
 
-if (detail.checkbox === true) return;
+if(detail.checkbox === true) return;
 
-let duration = parseInt(detail.duration);
-if (isNaN(duration)) return;
+const duration = parseInt(detail.duration);
 
-let endDate = new Date(certifiedDate);
+if(isNaN(duration)) return;
+
+const endDate = new Date(certifiedDate);
 endDate.setMonth(endDate.getMonth() + duration);
 
-let monthsLeft =
-(endDate.getFullYear() - today.getFullYear()) * 12 +
-(endDate.getMonth() - today.getMonth());
+const diffDays =
+Math.ceil(
+(endDate - today) /
+(1000 * 60 * 60 * 24)
+);
 
-if (monthsLeft <= 0) expiredCount++;
-else if (monthsLeft <= 3) nearCount++;
-
-});
+if(diffDays <= 0){
+expiredCount++;
+}
+else if(diffDays <= 90){
+nearCount++;
 }
 
-// =============================
-let certEnd = new Date(certifiedDate);
+});
+
+}
+
+// ==========================================
+// تاريخ انتهاء الاعتماد (بعد سنتين)
+// ==========================================
+const certEnd = new Date(certifiedDate);
 certEnd.setFullYear(certEnd.getFullYear() + 2);
 
-let year = certEnd.getFullYear();
-let month = certEnd.getMonth();
+const year = certEnd.getFullYear();
+const month = certEnd.getMonth();
 
 yearsSet.add(year);
 
-if (!reportData[year]) {
+if(!reportData[year]){
+
 reportData[year] = {
 0:[],1:[],2:[],3:[],4:[],5:[],
 6:[],7:[],8:[],9:[],10:[],11:[]
 };
+
 }
 
 reportData[year][month].push({
+
 branch,
 station,
+
 expired: expiredCount,
 near: nearCount,
-endDate: certEnd.toISOString().split("T")[0]
+
+certEnd:
+certEnd.toISOString().split("T")[0]
+
 });
 
-}));
+})
 
-}));
+);
 
-// =============================
-// السنوات
-// =============================
-const years = [...yearsSet].sort();
+})
 
-// =============================
-// فتح نافذة
-// =============================
-let win = window.open("", "", "width=1300,height=900");
+);
+
+// ====================================================
+// فتح نافذة التقرير
+// ====================================================
+const win =
+window.open("", "", "width=1400,height=900");
+
+if(!win){
+alert("يرجى السماح بالنوافذ المنبثقة");
+return;
+}
 
 win.document.write(`
-<html>
-<head>
-<style>
-body{font-family:Arial;direction:rtl;background:#f7f7f7}
 
-#dashboard{
+<html>
+
+<head>
+
+<title>تقرير انتهاء الاعتمادات</title>
+
+<style>
+
+body{
+font-family:Arial;
+direction:rtl;
+padding:15px;
+background:#f5f5f5;
+}
+
+h2{
+text-align:center;
+}
+
+.toolbar{
+text-align:center;
+margin-bottom:20px;
+}
+
+select{
+padding:6px;
+font-size:15px;
+}
+
+.dashboard{
 display:flex;
 gap:10px;
 justify-content:center;
+margin-bottom:20px;
 flex-wrap:wrap;
-margin:10px 0;
 }
 
 .card{
+background:white;
 padding:12px;
 border-radius:10px;
-background:white;
-min-width:160px;
+min-width:180px;
 text-align:center;
-box-shadow:0 2px 6px rgba(0,0,0,0.1);
 font-weight:bold;
+box-shadow:0 2px 5px rgba(0,0,0,.15);
 }
 
 table{
@@ -2196,135 +2266,269 @@ background:white;
 }
 
 th,td{
-border:1px solid #000;
-padding:6px;
+border:1px solid #999;
+padding:8px;
 text-align:center;
 vertical-align:top;
 }
 
-th{background:#eee}
-
-.stationBox{
-padding:5px;
-border-bottom:1px solid #ddd;
-cursor:pointer;
+th{
+background:#e9ecef;
 }
+
+.station{
+padding:6px;
+margin:4px 0;
+border-bottom:1px solid #ddd;
+}
+
+.expired{
+color:red;
+font-weight:bold;
+}
+
+.near{
+color:orange;
+font-weight:bold;
+}
+
+.empty{
+color:#999;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<h2 style="text-align:center">📊 Dashboard الاعتمادات</h2>
+<h2>
+تقرير أشهر انتهاء الاعتماد للمحطات
+</h2>
 
-<div style="text-align:center;margin-bottom:10px">
-السنة:
+<div class="toolbar">
+
+<label>
+السنة :
+</label>
+
 <select id="yearFilter"></select>
+
 </div>
 
-<div id="dashboard"></div>
-<div id="table"></div>
+<div id="dashboard" class="dashboard"></div>
+
+<div id="tableContainer"></div>
 
 </body>
+
 </html>
+
 `);
 
 win.document.close();
 
-// =============================
+// ====================================================
 // تشغيل داخل النافذة
-// =============================
+// ====================================================
 win.onload = () => {
 
-const data = ${JSON.stringify(reportData)};
-const months = ${JSON.stringify(monthsNames)};
-const branches = ${JSON.stringify(allBranches)};
+const data = reportData;
+const years =
+Array.from(yearsSet)
+.sort((a,b)=>a-b);
 
-const select = win.document.getElementById("yearFilter");
-const table = win.document.getElementById("table");
-const dashboard = win.document.getElementById("dashboard");
+const yearFilter =
+win.document.getElementById("yearFilter");
 
-const years = Object.keys(data).sort((a,b)=>a-b);
+years.forEach(y => {
 
-select.innerHTML = years.map(y => `<option value="${y}">${y}</option>`).join("");
+const option =
+win.document.createElement("option");
 
-function updateDashboard(year){
+option.value = y;
+option.textContent = y;
 
-let total = 0;
-let expired = 0;
-let near = 0;
+yearFilter.appendChild(option);
 
-Object.values(data[year] || {}).forEach(arr => {
-arr.forEach(i => {
-total += (i.expired + i.near);
-expired += i.expired;
-near += i.near;
-});
 });
 
-dashboard.innerHTML = `
-<div class="card">📊 الإجمالي<br>${total}</div>
-<div class="card" style="background:#ffe5e5">🔴 منتهية<br>${expired}</div>
-<div class="card" style="background:#fff4d6">🟠 قريبة<br>${near}</div>
+// ==========================================
+// Dashboard
+// ==========================================
+function renderDashboard(year){
+
+let stationsCount = 0;
+let expiredTotal = 0;
+let nearTotal = 0;
+
+Object.values(data[year] || {})
+.forEach(monthArr => {
+
+monthArr.forEach(item => {
+
+stationsCount++;
+
+expiredTotal += item.expired;
+nearTotal += item.near;
+
+});
+
+});
+
+win.document.getElementById("dashboard")
+.innerHTML = `
+
+<div class="card">
+عدد المحطات
+<br>
+${stationsCount}
+</div>
+
+<div class="card">
+الإجراءات المنتهية
+<br>
+<span style="color:red">
+${expiredTotal}
+</span>
+</div>
+
+<div class="card">
+الإجراءات القريبة
+<br>
+<span style="color:orange">
+${nearTotal}
+</span>
+</div>
+
 `;
+
 }
 
-function render(year){
+// ==========================================
+// رسم الجدول
+// ==========================================
+function renderTable(year){
 
-let html = "<table><tr><th>الفرع</th>" +
-months.map(m => `<th>${m}</th>`).join("") +
-"</tr>";
+let html = `
 
-branches.forEach(b => {
+<table>
 
-html += `<tr><td>${b}</td>`;
+<tr>
+
+<th>الفرع</th>
+
+${monthsNames
+.map(m => `<th>${m}</th>`)
+.join("")}
+
+</tr>
+
+`;
+
+allBranches.forEach(branch => {
+
+html += `<tr>`;
+
+html += `<td><b>${branch}</b></td>`;
 
 for(let m=0;m<12;m++){
 
-let items = (data[year]?.[m] || []).filter(x => x.branch === b);
+const stations =
+(data[year]?.[m] || [])
+.filter(x => x.branch === branch);
 
-if(!items.length){
-html += "<td>ـــــ</td>";
-}else{
-html += "<td>";
+if(stations.length === 0){
 
-items.forEach(it => {
 html += `
-<div class="stationBox"
-title="تاريخ الانتهاء: ${it.endDate}">
-<b>${it.station}</b><br>
-<span style="color:red">منتهية: ${it.expired}</span><br>
-<span style="color:orange">قريبة: ${it.near}</span>
-</div>`;
+
+<td class="empty">
+ـــــ
+</td>
+`;
+
+}
+else{
+
+html += `<td>`;
+
+stations.forEach(item => {
+
+html += `
+
+<div class="station">
+
+<b>
+${item.station}
+</b>
+
+<br>
+
+<span class="expired">
+منتهية : ${item.expired}
+</span>
+
+<br>
+
+<span class="near">
+قريبة : ${item.near}
+</span>
+
+<br>
+
+<small>
+${item.certEnd}
+</small>
+
+</div>
+
+`;
+
 });
 
-html += "</td>";
+html += `</td>`;
+
 }
 
 }
 
-html += "</tr>";
+html += `</tr>`;
+
 });
 
-html += "</table>";
+html += `</table>`;
 
-table.innerHTML = html;
+win.document.getElementById(
+"tableContainer"
+).innerHTML = html;
+
+renderDashboard(year);
+
 }
 
-// change year
-select.addEventListener("change", e => {
-render(e.target.value);
-updateDashboard(e.target.value);
-});
+// ==========================================
+// تغيير السنة
+// ==========================================
+yearFilter.addEventListener(
+"change",
+e => renderTable(e.target.value)
+);
 
-// first load
+// ==========================================
+// أول تحميل
+// ==========================================
 if(years.length){
-render(years[0]);
-updateDashboard(years[0]);
+
+yearFilter.value = years[0];
+
+renderTable(years[0]);
+
 }
 
 };
 
 });
+
        ///////////////////////////////////////////////////
        ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
       let waterData = [];
