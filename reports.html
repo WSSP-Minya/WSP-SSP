@@ -2350,6 +2350,74 @@ win.onload = () => {
 const data = reportData;
 win.stationMap = {};
 
+win.showStationDetails = function(branch, station){
+
+const key = branch + "_" + station;
+
+const item = win.stationMap[key];
+
+if(!item) return;
+
+let w = window.open("", "", "width=1200,height=800");
+
+let html = `
+<html>
+<head>
+<style>
+body{font-family:Arial;direction:rtl;padding:20px}
+table{width:100%;border-collapse:collapse}
+th,td{border:1px solid #999;padding:8px;text-align:center}
+th{background:#eee}
+</style>
+</head>
+<body>
+
+<h2>${item.station}</h2>
+
+<h3>تاريخ انتهاء الاعتماد: ${item.certEnd}</h3>
+`;
+
+function build(title, arr){
+
+if(!arr || !arr.length) return "";
+
+let t = `<h3>${title}</h3>
+<table>
+<tr>
+<th>الموقع</th>
+<th>الخطر</th>
+<th>الإجراء التصحيحي</th>
+<th>تاريخ الانتهاء</th>
+<th>الموقف</th>
+<th>ملاحظات WSP</th>
+</tr>`;
+
+arr.forEach(a=>{
+t += `
+<tr>
+<td>${a.location}</td>
+<td>${a.risk}</td>
+<td>${a.correction}</td>
+<td>${a.endDate}</td>
+<td>${a.status}</td>
+<td>${a.wspcomment}</td>
+</tr>`;
+});
+
+t += `</table>`;
+return t;
+}
+
+html += build("الإجراءات المنتهية", item.expiredActions);
+html += build("الإجراءات القريبة", item.nearActions);
+
+html += `</body></html>`;
+
+w.document.write(html);
+w.document.close();
+
+};
+  
 const years =
 Array.from(yearsSet)
 .sort((a,b)=>a-b);
