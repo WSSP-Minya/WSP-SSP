@@ -2349,52 +2349,7 @@ win.onload = () => {
 
 const data = reportData;
 win.stationMap = {};
-stations.forEach(item => {
 
-const key = branch + "_" + item.station;
-win.stationMap[key] = item;
-
-html += `
-
-<div class="station">
-
-<a
-href="#"
-title="تاريخ انتهاء الاعتماد : ${item.certEnd}"
-style="
-color:blue;
-font-weight:bold;
-text-decoration:underline;
-cursor:pointer;
-"
-onclick="
-showStationDetails(
-'${branch}',
-'${item.station}'
-);
-return false;
-"
->
-${item.station}
-</a>
-
-<br>
-
-<span class="expired">
-منتهية : ${item.expired}
-</span>
-
-<br>
-
-<span class="near">
-قريبة : ${item.near}
-</span>
-
-</div>
-
-`;
-
-});
 const years =
 Array.from(yearsSet)
 .sort((a,b)=>a-b);
