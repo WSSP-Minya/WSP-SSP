@@ -101,13 +101,34 @@
                 
                 window.location.href= pagename+".html";
             }
-            
-         if (department?.toLowerCase() !== "wsp") {
-            const buttons = document.querySelectorAll(".buttonlabel");
-            const reportsButton = buttons[2];
+        const buttons = document.querySelectorAll(".buttonlabel");
+        const waterMonitoringButton = buttons[0];
+        const reportsButton = buttons[2];      
+        const dep = department?.trim().toLowerCase();
+        
+        const reportsAllowed = [
+            "wsp",
+            "التوعية",
+            "التشغيل والصيانة جنوب"
+        ];
+        
+        const waterMonitoringBlocked = [
+            "التوعية",
+            "التشغيل والصيانة جنوب"
+        ];
+        
+        // تعطيل Water Monitoring للتوعية والتشغيل والصيانة جنوب فقط
+        if (waterMonitoringBlocked.includes(dep)) {
+            waterMonitoringButton.disabled = true;
+            waterMonitoringButton.style.opacity = "0.5";
+            waterMonitoringButton.style.pointerEvents = "none";
+        }
+        
+        // تعطيل Reports لأي قسم غير مسموح له
+        if (!reportsAllowed.includes(dep)) {
             reportsButton.disabled = true;
-            reportsButton.style.opacity = "0.5";  // شكل يدل على أنه غير فعّال
-            reportsButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
+            reportsButton.style.opacity = "0.5";
+            reportsButton.style.pointerEvents = "none";
         }
             // ================= Users Management =================
 
