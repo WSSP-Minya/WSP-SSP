@@ -105,11 +105,8 @@
          if (department?.toLowerCase() !== "wsp") {
             const buttons = document.querySelectorAll(".buttonlabel");
             const reportsButton = buttons[2];
-            waterLevelButton.disabled = true;     // تعطيل الزر
             reportsButton.disabled = true;
-            waterLevelButton.style.opacity = "0.5";  // شكل يدل على أنه غير فعّال
             reportsButton.style.opacity = "0.5";  // شكل يدل على أنه غير فعّال
-            waterLevelButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
             reportsButton.style.pointerEvents = "none"; // يمنع الضغط عليه نهائيًا
         }
             // ================= Users Management =================
