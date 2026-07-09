@@ -679,6 +679,8 @@
                   <td>${detail.corraction || ""}</td>
                   <td>${detail.duration || ""}</td>
                   <td>${detail.status || ""}</td>
+                  <td>${detail.branchcomment || ""}</td>
+                  <td>${detail.wspcomment || ""}</td>
                 </tr>
               `;
             }).join("");
@@ -767,6 +769,8 @@
                               <th>الإجراء التصحيحي</th>
                               <th>مدة التنفيذ</th>
                               <th>حالة التنفيذ</th>
+                              <th>ملاحظات الجهات المنفذه</th>
+                              <th>ملاحظات WSP</th>
                           </tr>
                       </thead>
                       <tbody>${rowsHtml}</tbody>
@@ -907,6 +911,8 @@
                         <td>${detail.corraction || ""}</td>
                         <td>${detail.duration || ""}</td>
                         <td>${detail.status || ""}</td>
+                        <td>${detail.branchcomment || ""}</td>
+                        <td>${detail.wspcomment || ""}</td>
                     </tr>
                 `).join("");
         
@@ -920,6 +926,8 @@
                                 <th>الإجراء التصحيحي</th>
                                 <th>المدة الزمنية</th>
                                 <th>الموقف التنفيذي</th>
+                                <th>ملاحظات الجهات المنفذه</th>
+                                <th>ملاحظات WSP</th>
                             </tr>
                         </thead>
                         <tbody>
