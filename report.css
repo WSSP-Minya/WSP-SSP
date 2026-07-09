@@ -284,6 +284,11 @@ select, input[type="date"] {
   box-sizing: border-box;
 }
 
+.disabled-card {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+}
 /* --------------------------- */
 /*      Responsive Design       */
 /* --------------------------- */
