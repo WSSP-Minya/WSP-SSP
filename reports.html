@@ -684,8 +684,14 @@
             let rowsHtml = allLocations.map(detail => {
               // تغيير لون الصف حسب حالة التنفيذ
               let rowColor = "";
-              if (detail.status?.trim() === "جارى") rowColor = "background-color:#fff3cd;"; // أصفر فاتح
-              else if (detail.status?.trim() === "لم يتم") rowColor = "background-color:#f8d7da;"; // أحمر فاتح
+              if (detail.checkbox === true) {
+                  rowColor = "background-color:#d4edda;"; // أخضر فاتح
+              } else if (detail.status?.trim() === "جارى") {
+                  rowColor = "background-color:#fff3cd;"; // أصفر
+              } else if (detail.status?.trim() === "لم يتم") {
+                  rowColor = "background-color:#f8d7da;"; // أحمر
+              }
+
           
               return `
                 <tr style="${rowColor}">
@@ -937,17 +943,30 @@
             // إضافة التفاصيل لكل محطة باستخدام البيانات المخزنة في allDetailsPerStation
             for (const station1 of Object.keys(allDetailsPerStation)) {
                 const allLocations = allDetailsPerStation[station1];
-                const detailRowsHtml = allLocations.map(detail => `
-                    <tr>
-                        <td>${detail.location || ""}</td>
-                        <td>${detail.risk || ""}</td>
-                        <td>${detail.corraction || ""}</td>
-                        <td>${detail.duration || ""}</td>
-                        <td>${detail.status || ""}</td>
-                        <td>${detail.branchcomment || ""}</td>
-                        <td>${detail.wspcomment || ""}</td>
-                    </tr>
-                `).join("");
+                const detailRowsHtml = allLocations.map(detail => {
+
+                  let rowColor = "";
+              
+                  if (String(detail.checkbox).toLowerCase() === "true") {
+                      rowColor = "background-color:#d4edda;";   // أخضر
+                  } else if (detail.status?.trim() === "جارى") {
+                      rowColor = "background-color:#fff3cd;";   // أصفر
+                  } else if (detail.status?.trim() === "لم يتم") {
+                      rowColor = "background-color:#f8d7da;";   // أحمر
+                  }
+              
+                  return `
+                      <tr style="${rowColor}">
+                          <td>${detail.location || ""}</td>
+                          <td>${detail.risk || ""}</td>
+                          <td>${detail.corraction || ""}</td>
+                          <td>${detail.duration || ""}</td>
+                          <td>${detail.status || ""}</td>
+                          <td>${detail.branchcomment || ""}</td>
+                          <td>${detail.wspcomment || ""}</td>
+                      </tr>
+                  `;
+              }).join("");
         
                 htmlContent += `
                     <h4>تفاصيل الإجراءات لكل موقع في محطة: ${station1}</h4>
