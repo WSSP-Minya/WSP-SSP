@@ -3373,6 +3373,32 @@ renderTable(years[0]);
         sessionStorage.setItem("dashboardFilters", JSON.stringify(data));
         window.location.href = "waterdashboard.html"; // فتح صفحة الـ charts
       }
+      document.addEventListener("DOMContentLoaded", () => {
+      
+          const department = sessionStorage.getItem("department");
+      
+          if (
+              department === "التوعية" ||
+              department === "التشغيل والصيانة جنوب"
+          ) {
+      
+              const disabledCards = [
+                  '[onclick="openModal(\'modal4\')"]',
+                  '[onclick="openModal(\'modal5\')"]',
+                  '[onclick="openModal(\'modal6\')"]'
+              ];
+      
+              disabledCards.forEach(selector => {
+                  const card = document.querySelector(selector);
+      
+                  if (card) {
+                      card.classList.add("disabled-card");
+                  }
+              });
+      
+          }
+      
+      });
     
 
   </script>
