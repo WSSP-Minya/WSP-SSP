@@ -880,7 +880,7 @@
         
                 if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
                 
-                  let allLocations = Object.values(detailsData) || [];
+                let allLocations = detailsData.details;
                      
                       if (
                           department === "التوعية" ||
