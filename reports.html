@@ -1073,7 +1073,7 @@
                         let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
         
                         if (detailsData.status === "success" && detailsData.details?.length) {
-                            const allLocations = detailsData.details;
+                           let allLocations = detailsData.details;
 
                            if (
                                 department === "التوعية" ||
