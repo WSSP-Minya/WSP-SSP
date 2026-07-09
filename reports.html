@@ -639,6 +639,7 @@
           
             const locationSelect = document.getElementById("location");
             const detailsMap = locationSelect.detailsMap;
+            const department = sessionStorage.getItem("department");
           
             if (!detailsMap || Object.keys(detailsMap).length === 0) {
               alert("No Data for Print!");
