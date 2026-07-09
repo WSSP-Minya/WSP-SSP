@@ -645,8 +645,16 @@
               return;
             }
            
-          
-            const allLocations = Object.values(detailsMap) || [];
+           let allLocations = Object.values(detailsMap) || [];
+           
+            if (
+                department === "التوعية" ||
+                department === "التشغيل والصيانة جنوب"
+            ) {
+                allLocations = allLocations.filter(item =>
+                    item.executor?.trim() === currentUser
+                );
+            }
           
             const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
             const inProgressActionsCount = allLocations.filter(item => item.status?.trim() === "جارى").length;
