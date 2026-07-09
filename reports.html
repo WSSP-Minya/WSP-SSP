@@ -804,6 +804,8 @@
         /////////////////////////////// كل المحطات الفرع الواحد المختار
         document.getElementById("reportbranch").addEventListener("click", async () => {
             const branch1 = document.getElementById("branch_modal1").value || "----";
+            const department = sessionStorage.getItem("department");
+
         
             // جلب جميع المحطات للفرع من السيرفر
             const stationsResponse = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch1)}`);
@@ -877,7 +879,23 @@
                 let totalActions = 0, doneActions = 0, inProgressActions = 0, notDoneActions = 0, doneActionsPercent = 0;
         
                 if (detailsData.status === "success" && detailsData.details && detailsData.details.length > 0) {
-                    const allLocations = detailsData.details;
+                
+                  let allLocations = Object.values(detailsMap) || [];
+                     
+                      if (
+                          department === "التوعية" ||
+                          department === "التشغيل والصيانة جنوب"
+                      ) {
+                          allLocations = allLocations.filter(item => {
+                            const executor = item.executor || "";
+                    
+                            const executors = executor
+                                .split(/[,،]/)
+                                .map(e => e.trim());
+                    
+                            return executors.includes(department);
+                        });
+                      }
                     totalActions = allLocations.length;
                     doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
                     inProgressActions = allLocations.filter(item => item.status?.trim() === "جارى").length;
