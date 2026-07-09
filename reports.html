@@ -1072,6 +1072,28 @@
         
                         if (detailsData.status === "success" && detailsData.details?.length) {
                             const allLocations = detailsData.details;
+
+                           if (
+                                department === "التوعية" ||
+                                department === "التشغيل والصيانة جنوب"
+                            ) {
+                        
+                                allLocations = allLocations.filter(item => {
+                                    const executor = item.executor || "";
+                        
+                                    const executors = executor
+                                        .split(/[,،]/)
+                                        .map(e => e.trim());
+                        
+                                    return executors.includes(department);
+                                });
+                        
+                            }
+                        
+                            // إذا لم توجد إجراءات تخص هذه الإدارة فلا تضف المحطة
+                            if (allLocations.length === 0) {
+                                return null;
+                            }
         
                             totalActions = allLocations.length;
                             doneActions = allLocations.filter(item => item.status?.trim() === "تم").length;
