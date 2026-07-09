@@ -652,9 +652,15 @@
                 department === "التوعية" ||
                 department === "التشغيل والصيانة جنوب"
             ) {
-                allLocations = allLocations.filter(item =>
-                    item.executor?.trim() === department
-                );
+                allLocations = allLocations.filter(item => {
+                  const executor = item.executor || "";
+          
+                  const executors = executor
+                      .split(/[,،]/)
+                      .map(e => e.trim());
+          
+                  return executors.includes(currentUser);
+              });
             }
           
             const doneActionsCount = allLocations.filter(item => item.status?.trim() === "تم").length;
