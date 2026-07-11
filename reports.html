@@ -2143,7 +2143,7 @@
    // =====================================================
 document.getElementById("reportdeadlinebranch")
 .addEventListener("click", async () => {
-
+const department = sessionStorage.getItem("department");
 const allBranches = [
 "العدوه",
 "مغاغة",
@@ -2218,6 +2218,20 @@ if(detailsData.status === "success"){
 detailsData.details.forEach(detail => {
 
 if(detail.checkbox === true) return;
+ // فلترة حسب القسم
+    if (
+        department === "التوعية" ||
+        department === "التشغيل والصيانة جنوب"
+    ) {
+
+        const executor = detail.executor || "";
+
+        const executors = executor
+            .split(/[,،]/)
+            .map(e => e.trim());
+
+        if (!executors.includes(department)) return;
+    }
 
 const duration = parseInt(detail.duration);
 
@@ -2270,6 +2284,15 @@ reportData[year] = {
 6:[],7:[],8:[],9:[],10:[],11:[]
 };
 
+}
+  
+if (
+    (department === "التوعية" ||
+     department === "التشغيل والصيانة جنوب") &&
+    expiredCount === 0 &&
+    nearCount === 0
+){
+    return;
 }
 
 reportData[year][month].push({
