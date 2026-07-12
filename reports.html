@@ -650,7 +650,8 @@
            
             if (
                 department === "التوعية" ||
-                department === "التشغيل والصيانة جنوب"
+                department === "التشغيل والصيانة جنوب" || department === "المشروعات"
+              
             ) {
                 allLocations = allLocations.filter(item => {
                   const executor = item.executor || "";
@@ -890,7 +891,7 @@
                      
                       if (
                           department === "التوعية" ||
-                          department === "التشغيل والصيانة جنوب"
+                          department === "التشغيل والصيانة جنوب" || department === "المشروعات"
                       ) {
                           allLocations = allLocations.filter(item => {
                             const executor = item.executor || "";
@@ -1077,7 +1078,7 @@
 
                            if (
                                 department === "التوعية" ||
-                                department === "التشغيل والصيانة جنوب"
+                                department === "التشغيل والصيانة جنوب" || department === "المشروعات"
                             ) {
                         
                                 allLocations = allLocations.filter(item => {
@@ -1284,7 +1285,10 @@
                                 "المنيا",
                                 "ابوقرقاص",
                                 "ملوى",
-                                "ديرمواس"
+                                "ديرمواس",
+                                "التوعية",
+                                "المشروعات",
+                                "التشغيل والصيانة جنوب"
                             ];
                         
                             const executorMatch =
@@ -2221,7 +2225,7 @@ if(detail.checkbox === true) return;
  // فلترة حسب القسم
     if (
         department === "التوعية" ||
-        department === "التشغيل والصيانة جنوب"
+        department === "التشغيل والصيانة جنوب" || department === "المشروعات"
     ) {
 
         const executor = detail.executor || "";
