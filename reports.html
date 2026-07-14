@@ -692,6 +692,27 @@
               } else if (detail.status?.trim() === "لم يتم") {
                   rowColor = "background-color:#f8d7da;"; // أحمر
               }
+               let attachmentsHtml = "";            
+                if (detail.attachment && detail.attachment.trim() !== "") {
+    
+                     // تحويل النص إلى قائمة روابط
+                    let files = detail.attachment
+                      .split("|")
+                      .map(f => f.trim())
+                      .filter(Boolean);
+                
+                    attachmentsHtml = files.map(file => `
+                        <div>
+                            📎
+                            <a href="${file}" target="_blank">
+                                File
+                            </a>
+                        </div>
+                    `).join("");
+    
+                } else {   
+                    attachmentsHtml = "لا يوجد مرفقات";
+                }
 
           
               return `
@@ -701,6 +722,7 @@
                   <td>${detail.corraction || ""}</td>
                   <td>${detail.duration || ""}</td>
                   <td>${detail.status || ""}</td>
+                  <td>${attachmentsHtml}</td>
                   <td>${detail.branchcomment || ""}</td>
                   <td>${detail.wspcomment || ""}</td>
                 </tr>
@@ -791,6 +813,7 @@
                               <th>الإجراء التصحيحي</th>
                               <th>مدة التنفيذ</th>
                               <th>حالة التنفيذ</th>
+                              <th>المرفقات</th>
                               <th>ملاحظات الجهة المنفذه</th>
                               <th>ملاحظات WSP</th>
                           </tr>
@@ -955,6 +978,27 @@
                   } else if (detail.status?.trim() === "لم يتم") {
                       rowColor = "background-color:#f8d7da;";   // أحمر
                   }
+                  let attachmentsHtml = "";            
+                    if (detail.attachment && detail.attachment.trim() !== "") {
+        
+                         // تحويل النص إلى قائمة روابط
+                        let files = detail.attachment
+                          .split("|")
+                          .map(f => f.trim())
+                          .filter(Boolean);
+                    
+                        attachmentsHtml = files.map(file => `
+                            <div>
+                                📎
+                                <a href="${file}" target="_blank">
+                                    File
+                                </a>
+                            </div>
+                        `).join("");
+        
+                    } else {   
+                        attachmentsHtml = "لا يوجد مرفقات";
+                    }
               
                   return `
                       <tr style="${rowColor}">
@@ -963,6 +1007,7 @@
                           <td>${detail.corraction || ""}</td>
                           <td>${detail.duration || ""}</td>
                           <td>${detail.status || ""}</td>
+                          <td>${attachmentsHtml}</td>
                           <td>${detail.branchcomment || ""}</td>
                           <td>${detail.wspcomment || ""}</td>
                       </tr>
