@@ -1337,7 +1337,7 @@
       const station = stationSelect.value === "__new__" ? newStationInput.value.trim() : stationSelect.value;
     
       // التحقق من اكتمال الحقول
-      if (!branch || !station || !capacityInput) {
+      if (!branch || !station ) {
         alert("جميع الحقول مطلوبة!");
         return;
       }
