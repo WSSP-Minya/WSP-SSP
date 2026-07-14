@@ -839,7 +839,8 @@
       formData.append("action", "updatestation");
       formData.append("station", document.getElementById("station").value);
       formData.append("email", email);
-      formData.append("department", currentDepartment);
+      formData.append("department", department);
+      formData.append("branch", document.getElementById("branch").value);
       formData.append("location", locationText.trim());
       formData.append("risk", riskText.trim());
       formData.append("corraction", corractionInput.value);
