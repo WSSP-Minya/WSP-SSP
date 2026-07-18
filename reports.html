@@ -2909,12 +2909,19 @@ renderTable(years[0]);
           }
       
           if (!branches[branch].stations[station]) {
-            branches[branch].stations[station] = {
-              intakeSamples: 0,
-              envVisits: new Set(),
-              waterLevel: 0,
-              screenBottom: 0
-            };
+            const stationSummary = {};
+            for(let i=0;i<12;i++){
+            
+                stationSummary[i] = {
+                    intakeSamples:0,
+                    envVisits:new Set(),
+                    waterLevel:0,
+                    screenBottom:0
+                };
+            
+            }
+            
+            branches[branch].stations[station] = stationSummary;
           }
       
           // =========================
@@ -2931,7 +2938,7 @@ renderTable(years[0]);
       
           if (isIntakeSample) {
            branches[branch].summary[month].intakeSamples++;
-            branches[branch].stations[station].intakeSamples++;
+            branches[branch].stations[station][month].intakeSamples++;
           }
       
           // =========================
@@ -2955,7 +2962,7 @@ renderTable(years[0]);
           // =========================
           if (waterLevel !== "" && waterLevel != null) {
             branches[branch].summary[month].waterLevel++;
-            branches[branch].stations[station].waterLevel++;
+            branches[branch].stations[station][month].waterLevel++;
           }
       
           // =========================
@@ -2963,7 +2970,7 @@ renderTable(years[0]);
           // =========================
           if (screenBottom !== "" && screenBottom != null) {
             branches[branch].summary[month].screenBottom++;
-            branches[branch].stations[station].screenBottom++;
+            branches[branch].stations[station][month].screenBottom++;
           }
         });
       
@@ -2990,7 +2997,7 @@ renderTable(years[0]);
             if (branch) {
              const month = new Date(date).getMonth();
               branches[branch].summary[month].envVisits.add(key);
-              branches[branch].stations[station].envVisits.add(key);
+              branches[branch].stations[station][month].envVisits.add(key);
             }
           }
         }
@@ -3102,31 +3109,64 @@ renderTable(years[0]);
       
           html += `<h3>${b}</h3>`;
       
+          html += `<h3>${b}</h3>`;
+
+          html += `<table>`;
+          
           html += `
-          <table>
-            <tr>
-              <th>المحطة</th>
-              <th>عينات المأخذ</th>
-              <th>المسح البيئى</th>
-              <th>متابعة المناسيب</th>
-              <th>متابعة قاع المجرى المائى</th>
-            </tr>
+          <tr>
+              <th rowspan="2">المحطة</th>
           `;
+          
+          monthsNames.forEach(month=>{
+          
+              html += `
+                  <th colspan="4">
+                      ${month}
+                  </th>
+              `;
+          
+          });
+          
+          html += `
+          </tr>
+          
+          <tr>
+          `;
+          
+          for(let i=0;i<12;i++){
+          
+              html += `
+                  <th>عينات المأخذ</th>
+                  <th>المسح البيئى</th>
+                  <th>المناسيب</th>
+                  <th>قاع المجرى</th>
+              `;          
+          }
+          
+          html += `</tr>`;
       
           for (let station in branches[b].stations) {
 
             const st = branches[b].stations[station];
-      
-            html += `
-              <tr>
-                <td>${station}</td>
-                <td>${st.intakeSamples}</td>
-                <td>${st.envVisits.size}</td>
-                <td>${st.waterLevel}</td>
-                <td>${st.screenBottom}</td>
-              </tr>
-            `;
-          }
+        
+            html += `<tr>`;
+        
+            html += `<td>${station}</td>`;
+        
+            for(let m=0;m<12;m++){
+        
+                html += `
+                    <td>${st[m].intakeSamples}</td>
+                    <td>${st[m].envVisits.size}</td>
+                    <td>${st[m].waterLevel}</td>
+                    <td>${st[m].screenBottom}</td>
+                `;
+        
+            }
+        
+            html += `</tr>`;
+        }
       
           html += `</table>`;
         }
