@@ -2813,8 +2813,33 @@ renderTable(years[0]);
             
               document.body.appendChild(script);
             }
+       ////
+       function getMonthsInRange(fromDate, toDate){
+
+            const months = [];
+        
+            let start = fromDate
+                ? new Date(fromDate)
+                : new Date(filteredData[0][1]);
+        
+            let end = toDate
+                ? new Date(toDate)
+                : new Date(filteredData[filteredData.length-1][1]);
+        
+            start = new Date(start.getFullYear(), start.getMonth(), 1);
+            end   = new Date(end.getFullYear(), end.getMonth(), 1);
+        
+            while(start <= end){        
+                months.push({
+                    index: start.getMonth(),
+                    year: start.getFullYear(),
+                    name: monthsNames[start.getMonth()]
+                });
+                start.setMonth(start.getMonth()+1);
+            }
+            return months;
+        }
        ///دالة انشاء تقرير مجمع وتفصيلى
-      ///دالة انشاء تقرير مجمع وتفصيلى
        function generateFullWaterReport() {
       
         const fromDate = document.getElementById("fromDate_water").value;
@@ -2850,6 +2875,7 @@ renderTable(years[0]);
           alert("لا توجد بيانات فى هذه الفترة");
           return;
         }
+       
       
         // =========================
         // تعريف المسح البيئي
@@ -2907,7 +2933,7 @@ renderTable(years[0]);
               stations: {}
             };
           }
-      
+          const visibleMonths = getMonthsInRange(fromDate,toDate);
           if (!branches[branch].stations[station]) {
             const stationSummary = {};
             for(let i=0;i<12;i++){
@@ -3039,7 +3065,8 @@ renderTable(years[0]);
   
          html += `<tr>
          <th rowspan="2">الفرع</th>`;
-                   monthsNames.forEach(m=>{
+                   visibleMonths.forEach(month=>{
+                  <th colspan="4">${month.name}</th>
           
           html += `
           <th colspan="4">
@@ -3049,7 +3076,7 @@ renderTable(years[0]);
           
           });
          html += `</tr><tr>`;
-         for(let i=0;i<12;i++){
+         visibleMonths.forEach(()=>{
 
           html += `
           <th>عينات المأخذ</th>
@@ -3079,18 +3106,18 @@ renderTable(years[0]);
         
           html += `<tr><td>${b}</td>`;
 
-          for(let m=0;m<12;m++){
+         visibleMonths.forEach(month=>{
+
+              const s = branches[b].summary[month.index];
           
-          const s = branches[b].summary[m];
+              html += `
+                  <td>${s.intakeSamples}</td>
+                  <td>${s.envVisits.size}</td>
+                  <td>${s.waterLevel}</td>
+                  <td>${s.screenBottom}</td>
+              `;
           
-          html += `
-          <td>${s.intakeSamples}</td>
-          <td>${s.envVisits.size}</td>
-          <td>${s.waterLevel}</td>
-          <td>${s.screenBottom}</td>
-          `;
-          
-          }
+          });
           
           html += `</tr>`;
         }
