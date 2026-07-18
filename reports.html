@@ -2778,431 +2778,676 @@ renderTable(years[0]);
 };
 
 });
+///////////////////////////////////////////////////
+// الجزء الخاص بمتابعة مياه الخام
+///////////////////////////////////////////////////
+let waterData = [];
 
-       ///////////////////////////////////////////////////
-       ///////////الجزء الخاص بمتابعة مياه الخام////////////////////
-      let waterData = [];
-            
-            function loadWaterData() {
+function loadWaterData() {
+  const email = sessionStorage.getItem("email");
+  const department = sessionStorage.getItem("department");
 
-              const email = sessionStorage.getItem("email");
-              const department = sessionStorage.getItem("department");
-            
-              window.handleWaterReportData = function (data) {
-                console.log("📊 report data:", data);
-            
-                if (data.status === "unauthorized") {
-                  alert("❌ غير مصرح لك بالوصول");
-                  return;
-                }
-            
-                const rows = data.water_data || [];
-            
-                if (!Array.isArray(rows) || rows.length === 0) {
-                  console.log("No data received");
-                  return;
-                }
-            
-                waterData = rows.slice(1);
-                console.log("✅ Water Data Loaded:", waterData.length);
-              };
-            
-              const script = document.createElement("script");
-            
-              script.src = `${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}&callback=handleWaterReportData`;
-            
-              document.body.appendChild(script);
-            }
-       ////
-       function getMonthsInRange(fromDate, toDate){
+  window.handleWaterReportData = function (data) {
+    console.log("📊 report data:", data);
+    if (data.status === "unauthorized") {
+      alert("❌ غير مصرح لك بالوصول");
+      return;
+    }
 
-            const months = [];
-        
-            let start = fromDate
-                ? new Date(fromDate)
-                : new Date(filteredData[0][1]);
-        
-            let end = toDate
-                ? new Date(toDate)
-                : new Date(filteredData[filteredData.length-1][1]);
-        
-            start = new Date(start.getFullYear(), start.getMonth(), 1);
-            end   = new Date(end.getFullYear(), end.getMonth(), 1);
-        
-            while(start <= end){        
-                months.push({
-                    index: start.getMonth(),
-                    year: start.getFullYear(),
-                    name: monthsNames[start.getMonth()]
-                });
-                start.setMonth(start.getMonth()+1);
-            }
-            return months;
-        }
-       ///دالة انشاء تقرير مجمع وتفصيلى
-       function generateFullWaterReport() {
-      
-        const fromDate = document.getElementById("fromDate_water").value;
-        const toDate = document.getElementById("toDate_water").value;
-      
-        if (!waterData || waterData.length === 0) {
-          alert("لا توجد بيانات");
-          return;
-        }
-      
-        // =========================
-        // فلترة التاريخ
-        // =========================
-        let filteredData = waterData.filter(r => {
-      
-          const rowDate = new Date(r[1]);
-      
-          if (fromDate) {
-            const from = new Date(fromDate);
-            if (rowDate < from) return false;
-          }
-      
-          if (toDate) {
-            const to = new Date(toDate);
-            to.setHours(23, 59, 59, 999);
-            if (rowDate > to) return false;
-          }
-      
-          return true;
+    const rows = data.water_data || [];
+    if (!Array.isArray(rows) || rows.length === 0) {
+      console.log("No data received");
+      return;
+    }
+    waterData = rows.slice(1);
+    console.log("✅ Water Data Loaded:", waterData.length);
+  };
+
+
+  const script = document.createElement("script");
+
+  script.src =
+  `${scriptURL}?action=getData&email=${encodeURIComponent(email)}&department=${encodeURIComponent(department)}&callback=handleWaterReportData`;
+  document.body.appendChild(script);
+}
+//==============================================
+// استخراج الشهور حسب الفترة المختارة
+//==============================================
+
+function getMonthsInRange(fromDate, toDate, filteredData, monthsNames){
+
+    const months = [];
+    let start =
+        fromDate
+        ? new Date(fromDate)
+        : new Date(filteredData[0][1]);
+    let end =
+        toDate
+        ? new Date(toDate)
+        : new Date(filteredData[filteredData.length-1][1]);
+    start = new Date(
+        start.getFullYear(),
+        start.getMonth(),
+        1
+    );
+    end = new Date(
+        end.getFullYear(),
+        end.getMonth(),
+        1
+    );
+    while(start <= end){
+        months.push({
+            index:start.getMonth(),
+            year:start.getFullYear(),
+            name:monthsNames[start.getMonth()]
         });
-      
-        if (filteredData.length === 0) {
-          alert("لا توجد بيانات فى هذه الفترة");
-          return;
-        }
-       
-      
-        // =========================
-        // تعريف المسح البيئي
-        // =========================
-        const envLocations = [
-          "اعلى التيار 3000 م",
-          "اعلى التيار 2500 م",
-          "اعلى التيار 2000 م",
-          "اعلى التيار 1500 م",
-          "اعلى التيار 1000 م",
-          "اعلى التيار 500 م",
-          "المأخذ",
-          "اسفل التيار 500 م",
-          "اسفل التيار 1000 م"
-        ];
-      
-        // =========================
-        // 🔴 إضافة جديدة: الحد الأدنى لاعتماد زيارة المسح البيئي
-        // =========================
-        const MIN_ENV_POINTS = 6; // حد ادنى لنقاط المسح البيئى
-        const monthsNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
-        const branches = {};
-      
-        // =========================
-        // 🔴 إضافة جديدة: تجميع نقاط المسح البيئي قبل الحساب النهائي
-        // =========================
-        const envMap = {};
-      
-        filteredData.forEach(r => {
-      
-          const branch = r[2];
-          const station = r[3];
-          const location = r[4];
-          const waterLevel = r[7];
-          const screenBottom = r[6];
-          const date = r[1];
-          const month = new Date(date).getMonth();
-          
-          if (!branches[branch]) {
-            const summary = {};
+        start.setMonth(
+            start.getMonth()+1
+        );
+    }
+    return months;
+}
+//================================================
+// تقرير مجمع وتفصيلي لمتابعة مياه الخام
+//================================================
 
-            for (let i = 0; i < 12; i++) {
-            
-              summary[i] = {
-                intakeSamples: 0,
-                envVisits: new Set(),
-                waterLevel: 0,
-                screenBottom: 0
-              };
-            
-            }
-            
-            branches[branch] = {
-              summary,
-              stations: {}
-            };
-          }
-          const visibleMonths = getMonthsInRange(fromDate,toDate);
-          if (!branches[branch].stations[station]) {
-            const stationSummary = {};
-            for(let i=0;i<12;i++){
-            
-                stationSummary[i] = {
-                    intakeSamples:0,
-                    envVisits:new Set(),
-                    waterLevel:0,
-                    screenBottom:0
-                };
-            
-            }
-            
-            branches[branch].stations[station] = stationSummary;
-          }
-      
-          // =========================
-          // 1) عينات المأخذ (🔴 تعديل: بناءً على وجود قياسات فعلية)
-          // =========================
-          const hasTurbidity = r[8] !== "" && r[8] != null;
-          const hasPH = r[9] !== "" && r[9] != null;
-          const hasTDS = r[10] !== "" && r[10] != null;
-          const hasTemp = r[11] !== "" && r[11] != null;
-      
-          const isIntakeSample =
-            location === "المأخذ" &&
-            (hasTurbidity || hasPH || hasTDS || hasTemp);
-      
-          if (isIntakeSample) {
-           branches[branch].summary[month].intakeSamples++;
-            branches[branch].stations[station][month].intakeSamples++;
-          }
-      
-          // =========================
-          // 2) المسح البيئي (🔴 تعديل: تجميع أولي فقط)
-          // =========================
-          const isEnv = envLocations.includes(location);
-          const key = station + "_" + date;
-      
-          if (isEnv) {
-            if (!envMap[key]) {
-             envMap[key] = {
-                month,
-                locations:new Set()
-            };
-            }
-            envMap[key].locations.add(location);
-          }
-      
-          // =========================
-          // 3) water level
-          // =========================
-          if (waterLevel !== "" && waterLevel != null) {
-            branches[branch].summary[month].waterLevel++;
-            branches[branch].stations[station][month].waterLevel++;
-          }
-      
-          // =========================
-          // 4) screen bottom
-          // =========================
-          if (screenBottom !== "" && screenBottom != null) {
-            branches[branch].summary[month].screenBottom++;
-            branches[branch].stations[station][month].screenBottom++;
-          }
-        });
-      
-        // =========================
-        // 🔴 إضافة جديدة: حساب الزيارات البيئية الفعلية (Partial acceptance)
-        // =========================
-        for (let key in envMap) {
-      
-          const [station, date] = key.split("_");
-          const locationsSet = envMap[key].locations;
-          const month = envMap[key].month;
-      
-          const pointsCount = locationsSet.size;
-      
-          // زيارة صحيحة إذا وصلت للحد الأدنى وليس شرط 9/9
-          const isValidVisit = pointsCount >= MIN_ENV_POINTS;
-      
-          if (isValidVisit) {
-      
-            const branch = Object.keys(branches).find(b =>
-              branches[b].stations[station]
-            );
-      
-            if (branch) {
-             const month = new Date(date).getMonth();
-              branches[branch].summary[month].envVisits.add(key);
-              branches[branch].stations[station][month].envVisits.add(key);
-            }
-          }
-        }
-      
-        // =========================
-        // HTML
-        // =========================
-        let periodText = "";
-        if (fromDate || toDate) {
-          periodText = `<p style="text-align:center;">
-            الفترة من ${fromDate || "البداية"} إلى ${toDate || "الآن"}
-          </p>`;
-        }
-      
-        let html = `
-        <html>
-        <head>
-          <style>
-            body {font-family: Arial; direction: rtl; padding:20px; font-size: 17px;}
-            h2 {font-size: 26px;}
-            h3 {font-size: 22px;}
-            table {width:100%; border-collapse:collapse; margin-bottom:20px; font-size: 16px;}
-            th, td {border:1px solid #000; padding:8px; text-align:center;}
-            th {background:#eee; font-size: 16px;}         
-            p {font-size: 18px; font-weight: bold;}
-          </style>
-          
-        </head>
-        <body>
-      
-        <h2>تقرير متابعة مصدر المياه</h2>
-        ${periodText}
-        `;
-      
-        // =========================
-        // SUMMARY
-        // =========================
-         html += `<table>`;
+function generateFullWaterReport() {
   
-         html += `<tr>
-         <th rowspan="2">الفرع</th>`;
-                   visibleMonths.forEach(month=>{
-                  <th colspan="4">${month.name}</th>
-          
-          html += `
-          <th colspan="4">
-          ${m}
-          </th>
-          `;
-          
-          });
-         html += `</tr><tr>`;
-         visibleMonths.forEach(()=>{
+const fromDate =
+document.getElementById("fromDate_water").value;
 
-          html += `
-          <th>عينات المأخذ</th>
-          <th>المسح البيئى</th>
-          <th>المناسيب</th>
-          <th>قاع المجرى</th>
-          `;
-          
-          }
-          html += "</tr>";
-         
-         const branchOrder = [
-            "العدوه",
-            "مغاغة",
-            "بنى مزار",
-            "مطاى",
-            "سمالوط",
-            "المنيا",
-            "ابوقرقاص",
-            "ملوى",
-            "ديرمواس"
-          ];
-      
-        for (let b of branchOrder) {
+const toDate =
+document.getElementById("toDate_water").value;
 
-          if (!branches[b]) continue;
-        
-          html += `<tr><td>${b}</td>`;
+if(!waterData || waterData.length===0){
+    alert("لا توجد بيانات");
+    return;
+}
+//=========================================
+// فلترة التاريخ
+//=========================================
 
-         visibleMonths.forEach(month=>{
+let filteredData = waterData.filter(r=>{
+    const rowDate = new Date(r[1]);
+    if(fromDate){
+        const from = new Date(fromDate);
+        if(rowDate < from)
+            return false;
+    }
 
-              const s = branches[b].summary[month.index];
-          
-              html += `
-                  <td>${s.intakeSamples}</td>
-                  <td>${s.envVisits.size}</td>
-                  <td>${s.waterLevel}</td>
-                  <td>${s.screenBottom}</td>
-              `;
-          
-          });
-          
-          html += `</tr>`;
+    if(toDate){
+        const to = new Date(toDate);
+        to.setHours(
+            23,59,59,999
+        );
+        if(rowDate > to)
+            return false;
+    }
+    return true;
+});
+
+
+
+if(filteredData.length===0){
+    alert("لا توجد بيانات فى هذه الفترة");
+    return;
+}
+//=========================================
+// تعريف الشهور
+//=========================================
+
+const monthsNames = [
+
+"يناير",
+"فبراير",
+"مارس",
+"أبريل",
+"مايو",
+"يونيو",
+"يوليو",
+"أغسطس",
+"سبتمبر",
+"أكتوبر",
+"نوفمبر",
+"ديسمبر"
+];
+
+// الشهور الظاهرة حسب الفلتر
+
+const visibleMonths =
+getMonthsInRange(
+    fromDate,
+    toDate,
+    filteredData,
+    monthsNames
+);
+//=========================================
+// تعريف المسح البيئي
+//=========================================
+
+const envLocations = [
+
+"اعلى التيار 3000 م",
+"اعلى التيار 2500 م",
+"اعلى التيار 2000 م",
+"اعلى التيار 1500 م",
+"اعلى التيار 1000 م",
+"اعلى التيار 500 م",
+"المأخذ",
+"اسفل التيار 500 م",
+"اسفل التيار 1000 م"
+];
+
+const MIN_ENV_POINTS = 6;
+  
+const branches = {};
+
+const envMap = {};
+//=========================================
+// تجميع البيانات
+//=========================================
+filteredData.forEach(r=>{
+  
+const branch = r[2];
+const station = r[3];
+const location = r[4];
+const waterLevel = r[7];
+const screenBottom = r[6];
+const date = r[1];
+
+const month =
+new Date(date).getMonth();
+
+// إنشاء الفرع
+if(!branches[branch]){
+    const summary={};
+    for(let i=0;i<12;i++){
+        summary[i]={
+            intakeSamples:0,
+            envVisits:new Set(),
+            waterLevel:0,
+            screenBottom:0
+        };
+    }
+    branches[branch]={
+        summary,
+        stations:{}
+    };
+}
+// إنشاء المحطة
+if(!branches[branch].stations[station]){
+
+    const stationSummary={};
+    for(let i=0;i<12;i++){
+        stationSummary[i]={
+            intakeSamples:0,
+            envVisits:new Set(),
+            waterLevel:0,
+            screenBottom:0
+        };
+    }
+    branches[branch]
+    .stations[station]=stationSummary;
+}
+//=========================================
+// عينات المأخذ
+//=========================================
+
+
+const hasTurbidity =
+r[8]!=="" && r[8]!=null;
+const hasPH =
+r[9]!=="" && r[9]!=null;
+const hasTDS =
+r[10]!=="" && r[10]!=null;
+const hasTemp =
+r[11]!=="" && r[11]!=null;
+const isIntakeSample =
+location==="المأخذ" && (hasTurbidity || hasPH || hasTDS || hasTemp);
+
+if(isIntakeSample){
+branches[branch]
+.summary[month]
+.intakeSamples++;
+
+branches[branch]
+.stations[station]
+[month]
+.intakeSamples++;
+}
+//=========================================
+// المسح البيئي
+//=========================================
+const isEnv = envLocations.includes(location);
+const key = station+"_"+date;
+if(isEnv){
+    if(!envMap[key]){
+        envMap[key]={
+            month,
+            locations:new Set()
+        };
+    }
+    envMap[key]
+    .locations
+    .add(location);
+}
+//=========================================
+// المناسيب
+//=========================================
+if(waterLevel!=="" && waterLevel!=null){
+branches[branch]
+.summary[month]
+.waterLevel++;
+
+branches[branch]
+.stations[station]
+[month]
+.waterLevel++;
+}
+//=========================================
+// قاع المجرى
+//=========================================
+if(screenBottom!=="" && screenBottom!=null){
+branches[branch]
+.summary[month]
+.screenBottom++;
+
+branches[branch]
+.stations[station]
+[month]
+.screenBottom++;
+}
+});
+//=========================================
+// حساب الزيارات البيئية الفعلية
+//=========================================
+for(let key in envMap){
+    const parts = key.split("_");
+    const station = parts[0];
+    const date = parts.slice(1).join("_");
+    const locationsSet = envMap[key].locations;
+    const month = envMap[key].month;
+    const pointsCount = locationsSet.size;
+    const isValidVisit = pointsCount >= MIN_ENV_POINTS;
+
+    if(isValidVisit){
+        const branch = 
+        Object.keys(branches)
+        .find(b =>
+            branches[b].stations[station]
+        );
+
+        if(branch){
+            branches[branch]
+            .summary[month]
+            .envVisits
+            .add(key);
+
+            branches[branch]
+            .stations[station]
+            [month]
+            .envVisits
+            .add(key);
         }
-      
-        html += `</table>`;
-      
-        // =========================
-        // DETAILS
-        // =========================
-         
-        for (let b of branchOrder) {
+    }
+}
+//=========================================
+// نص الفترة
+//=========================================
 
-          if (!branches[b]) continue;
-        
-          
-      
-          html += `<h3>${b}</h3>`;
-          html += `<table>`;
-          
-          html += `
-          <tr>
-              <th rowspan="2">المحطة</th>
-          `;
-          
-          monthsNames.forEach(month=>{
-          
-              html += `
-                  <th colspan="4">
-                      ${month}
-                  </th>
-              `;
-          
-          });
-          
-          html += `
-          </tr>
-          
-          <tr>
-          `;
-          
-          for(let i=0;i<12;i++){
-          
-              html += `
-                  <th>عينات المأخذ</th>
-                  <th>المسح البيئى</th>
-                  <th>المناسيب</th>
-                  <th>قاع المجرى</th>
-              `;          
-          }
-          
-          html += `</tr>`;
-      
-          for (let station in branches[b].stations) {
+let periodText="";
 
-            const st = branches[b].stations[station];
-        
-            html += `<tr>`;
-        
-            html += `<td>${station}</td>`;
-        
-            for(let m=0;m<12;m++){
-        
-                html += `
-                    <td>${st[m].intakeSamples}</td>
-                    <td>${st[m].envVisits.size}</td>
-                    <td>${st[m].waterLevel}</td>
-                    <td>${st[m].screenBottom}</td>
-                `;
-        
-            }
-        
-            html += `</tr>`;
-        }
-      
-          html += `</table>`;
-        }
-      
-        html += `</body></html>`;
-      
-        const printWindow = window.open("", "_blank");
-        printWindow.document.write(html);
-        printWindow.document.close();
-        printWindow.print();
-      }
-     
+if(fromDate || toDate){
+periodText = `
+<p style="text-align:center;font-weight:bold">
+الفترة من ${fromDate || "البداية"}
+إلى
+${toDate || "الآن"}
+</p>
+`;
+}
+
+//=========================================
+// HTML
+//=========================================
+
+let html = `
+<html>
+<head>
+<meta charset="UTF-8">
+<style>
+body{
+font-family:Arial;
+direction:rtl;
+padding:20px;
+font-size:16px;
+}
+h2{
+text-align:center;
+font-size:26px;
+}
+h3{
+background:#0d6efd;
+color:white;
+padding:8px;
+text-align:center;
+}
+table{
+width:100%;
+border-collapse:collapse;
+margin-bottom:25px;
+}
+th,td{
+border:1px solid #000;
+padding:7px;
+text-align:center;
+}
+th{
+background:#e9ecef;
+}
+</style>
+</head>
+<body>
+<h2>تقرير متابعة مصدر المياه</h2>
+${periodText}
+`;
+//=========================================
+// ترتيب الفروع
+//=========================================
+
+const branchOrder=[
+"العدوه",
+"مغاغة",
+"بنى مزار",
+"مطاى",
+"سمالوط",
+"المنيا",
+"ابوقرقاص",
+"ملوى",
+"ديرمواس"
+];
+//=========================================
+// SUMMARY
+//=========================================
+
+html += `
+<h3>التقرير المجمع</h3>
+<table>
+<tr>
+<th rowspan="2">
+الفرع
+</th>
+`;
+
+
+// الشهور الظاهرة فقط
+visibleMonths.forEach(month=>{
+html += `
+<th colspan="4">
+${month.name} ${month.year}
+</th>
+`;
+});
+
+html += `
+</tr>
+<tr>
+`;
+
+visibleMonths.forEach(()=>{
+  
+html += `
+<th>عينات المأخذ</th>
+<th>المسح البيئى</th>
+<th>المناسيب</th>
+<th>قاع المجرى</th>
+`;
+});
+html += `</tr>`;
+
+
+// بيانات الفروع
+for(let b of branchOrder){
+
+if(!branches[b])
+continue;
+
+html += `
+
+<tr>
+<td><b>${b}</b></td>
+`;
+
+visibleMonths.forEach(month=>{
+const s = branches[b].summary[month.index];
+
+html += `
+
+<td>${s.intakeSamples}</td>
+<td>${s.envVisits.size}</td>
+<td>${s.waterLevel}</td>
+<td>${s.screenBottom}</td>
+`;
+});
+
+html += `
+</tr>
+`;
+}
+
+html += `
+</table>
+`;
+//=========================================
+// DETAILS
+//=========================================
+
+
+for(let b of branchOrder){
+
+
+if(!branches[b])
+continue;
+
+
+
+html += `
+
+<h3>
+${b}
+</h3>
+
+
+<table>
+
+
+<tr>
+
+<th rowspan="2">
+المحطة
+</th>
+
+`;
+
+
+
+visibleMonths.forEach(month=>{
+
+
+html += `
+
+<th colspan="4">
+
+${month.name} ${month.year}
+
+</th>
+
+`;
+
+
+});
+
+
+
+html += `
+
+</tr>
+
+
+<tr>
+
+`;
+
+
+
+visibleMonths.forEach(()=>{
+
+
+html += `
+
+<th>
+عينات المأخذ
+</th>
+
+
+<th>
+المسح البيئى
+</th>
+
+
+<th>
+المناسيب
+</th>
+
+
+<th>
+قاع المجرى
+</th>
+
+`;
+
+});
+
+
+html += `
+
+</tr>
+
+`;
+
+
+
+// المحطات
+
+for(let station in branches[b].stations){
+
+
+
+const st =
+branches[b]
+.stations[station];
+
+
+
+html += `
+
+<tr>
+
+<td>
+${station}
+</td>
+
+`;
+
+
+
+visibleMonths.forEach(month=>{
+
+
+const s =
+st[month.index];
+
+
+
+html += `
+
+<td>
+${s.intakeSamples}
+</td>
+
+
+<td>
+${s.envVisits.size}
+</td>
+
+
+<td>
+${s.waterLevel}
+</td>
+
+
+<td>
+${s.screenBottom}
+</td>
+
+`;
+
+
+
+});
+
+
+
+html += `
+
+</tr>
+
+`;
+
+}
+
+
+
+html += `
+
+</table>
+
+`;
+
+}
+
+
+
+html += `
+
+</body>
+
+</html>
+
+`;
+
+
+
+//=========================================
+// فتح التقرير
+//=========================================
+
+
+const printWindow =
+window.open(
+"",
+"_blank"
+);
+
+
+
+printWindow.document.write(html);
+
+
+printWindow.document.close();
+
+
+printWindow.print();  
      
       
       ///////////////////////////////
