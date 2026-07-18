@@ -3016,9 +3016,10 @@ branches[branch]
 const isEnv = envLocations.includes(location);
 const key = station+"_"+date;
 if(isEnv){
+
     if(!envMap[key]){
         envMap[key]={
-            month,
+            monthKey,
             locations:new Set()
         };
     }
@@ -3059,7 +3060,7 @@ for(let key in envMap){
     const station = parts[0];
     const date = parts.slice(1).join("_");
     const locationsSet = envMap[key].locations;
-    const month = envMap[key].month;
+    const monthKey = envMap[key].monthKey;
     const pointsCount = locationsSet.size;
     const isValidVisit = pointsCount >= MIN_ENV_POINTS;
 
@@ -3211,8 +3212,13 @@ html += `
 `;
 
 visibleMonths.forEach(month=>{
-const s = branches[b].summary[month.year+"_"+month.index];
-
+const s = branches[b].summary[month.year+"_"+month.index] ||
+{
+    intakeSamples:0,
+    envVisits:new Set(),
+    waterLevel:0,
+    screenBottom:0
+};
 html += `
 
 <td>${s.intakeSamples}</td>
@@ -3356,7 +3362,13 @@ ${station}
 visibleMonths.forEach(month=>{
 
 
-const s = st[month.year+"_"+month.index];
+const s = st[month.year+"_"+month.index] ||
+{
+    intakeSamples:0,
+    envVisits:new Set(),
+    waterLevel:0,
+    screenBottom:0
+};
 
 
 
