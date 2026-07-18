@@ -2870,7 +2870,7 @@ renderTable(years[0]);
         // 🔴 إضافة جديدة: الحد الأدنى لاعتماد زيارة المسح البيئي
         // =========================
         const MIN_ENV_POINTS = 6; // حد ادنى لنقاط المسح البيئى
-      
+        const monthsNames = ["يناير","فبراير","مارس","أبريل","مايو","يونيو","يوليو","أغسطس","سبتمبر","أكتوبر","نوفمبر","ديسمبر"];
         const branches = {};
       
         // =========================
@@ -2886,15 +2886,24 @@ renderTable(years[0]);
           const waterLevel = r[7];
           const screenBottom = r[6];
           const date = r[1];
-      
+          const month = new Date(date).getMonth();
+          
           if (!branches[branch]) {
-            branches[branch] = {
-              summary: {
+            const summary = {};
+
+            for (let i = 0; i < 12; i++) {
+            
+              summary[i] = {
                 intakeSamples: 0,
                 envVisits: new Set(),
                 waterLevel: 0,
                 screenBottom: 0
-              },
+              };
+            
+            }
+            
+            branches[branch] = {
+              summary,
               stations: {}
             };
           }
@@ -2921,7 +2930,7 @@ renderTable(years[0]);
             (hasTurbidity || hasPH || hasTDS || hasTemp);
       
           if (isIntakeSample) {
-            branches[branch].summary.intakeSamples++;
+           branches[branch].summary[month].intakeSamples++;
             branches[branch].stations[station].intakeSamples++;
           }
       
@@ -2933,16 +2942,19 @@ renderTable(years[0]);
       
           if (isEnv) {
             if (!envMap[key]) {
-              envMap[key] = new Set();
+             envMap[key] = {
+                month,
+                locations:new Set()
+            };
             }
-            envMap[key].add(location);
+            envMap[key].locations.add(location);
           }
       
           // =========================
           // 3) water level
           // =========================
           if (waterLevel !== "" && waterLevel != null) {
-            branches[branch].summary.waterLevel++;
+            branches[branch].summary[month].waterLevel++;
             branches[branch].stations[station].waterLevel++;
           }
       
@@ -2950,7 +2962,7 @@ renderTable(years[0]);
           // 4) screen bottom
           // =========================
           if (screenBottom !== "" && screenBottom != null) {
-            branches[branch].summary.screenBottom++;
+            branches[branch].summary[month].screenBottom++;
             branches[branch].stations[station].screenBottom++;
           }
         });
@@ -2961,7 +2973,8 @@ renderTable(years[0]);
         for (let key in envMap) {
       
           const [station, date] = key.split("_");
-          const locationsSet = envMap[key];
+          const locationsSet = envMap[key].locations;
+          const month = envMap[key].month;
       
           const pointsCount = locationsSet.size;
       
@@ -2975,7 +2988,8 @@ renderTable(years[0]);
             );
       
             if (branch) {
-              branches[branch].summary.envVisits.add(key);
+             const month = new Date(date).getMonth();
+              branches[branch].summary[month].envVisits.add(key);
               branches[branch].stations[station].envVisits.add(key);
             }
           }
@@ -3014,16 +3028,31 @@ renderTable(years[0]);
         // =========================
         // SUMMARY
         // =========================
-        html += `
-        <table>
-          <tr>
-            <th>الفرع</th>
-            <th>عينات المأخذ</th>
-            <th>المسح البيئى</th>
-            <th>متابعة المناسيب</th>
-            <th>متابعة قاع المجرى المائى</th>
-          </tr>
-        `;
+         html += `<table>`;
+  
+         html += `<tr>
+         <th rowspan="2">الفرع</th>`;
+                   monthsNames.forEach(m=>{
+          
+          html += `
+          <th colspan="4">
+          ${m}
+          </th>
+          `;
+          
+          });
+         html += `</tr><tr>`;
+         for(let i=0;i<12;i++){
+
+          html += `
+          <th>عينات المأخذ</th>
+          <th>المسح البيئى</th>
+          <th>المناسيب</th>
+          <th>قاع المجرى</th>
+          `;
+          
+          }
+          html += "</tr>";
          
          const branchOrder = [
             "العدوه",
@@ -3041,17 +3070,22 @@ renderTable(years[0]);
 
           if (!branches[b]) continue;
         
-          const s = branches[b].summary;
-      
+          html += `<tr><td>${b}</td>`;
+
+          for(let m=0;m<12;m++){
+          
+          const s = branches[b].summary[m];
+          
           html += `
-            <tr>
-              <td>${b}</td>
-              <td>${s.intakeSamples}</td>
-              <td>${s.envVisits.size}</td>
-              <td>${s.waterLevel}</td>
-              <td>${s.screenBottom}</td>
-            </tr>
+          <td>${s.intakeSamples}</td>
+          <td>${s.envVisits.size}</td>
+          <td>${s.waterLevel}</td>
+          <td>${s.screenBottom}</td>
           `;
+          
+          }
+          
+          html += `</tr>`;
         }
       
         html += `</table>`;
