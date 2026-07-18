@@ -2954,21 +2954,22 @@ const location = r[4];
 const waterLevel = r[7];
 const screenBottom = r[6];
 const date = r[1];
-
-const month =
-new Date(date).getMonth();
+const rowDate = new Date(date);
+const monthKey = rowDate.getFullYear() + "_" + rowDate.getMonth();
+const month = rowDate.getMonth();
 
 // إنشاء الفرع
 if(!branches[branch]){
     const summary={};
-    for(let i=0;i<12;i++){
-        summary[i]={
-            intakeSamples:0,
-            envVisits:new Set(),
-            waterLevel:0,
-            screenBottom:0
-        };
-    }
+    visibleMonths.forEach(m=>{
+
+      summary[m.year+"_"+m.index]={      
+          intakeSamples:0,
+          envVisits:new Set(),
+          waterLevel:0,
+          screenBottom:0      
+      };      
+      });
     branches[branch]={
         summary,
         stations:{}
@@ -2978,14 +2979,14 @@ if(!branches[branch]){
 if(!branches[branch].stations[station]){
 
     const stationSummary={};
-    for(let i=0;i<12;i++){
-        stationSummary[i]={
-            intakeSamples:0,
-            envVisits:new Set(),
-            waterLevel:0,
-            screenBottom:0
-        };
-    }
+    visibleMonths.forEach(m=>{
+    stationSummary[m.year+"_"+m.index]={    
+        intakeSamples:0,
+        envVisits:new Set(),
+        waterLevel:0,
+        screenBottom:0    
+    };    
+    });
     branches[branch]
     .stations[station]=stationSummary;
 }
@@ -2994,25 +2995,19 @@ if(!branches[branch].stations[station]){
 //=========================================
 
 
-const hasTurbidity =
-r[8]!=="" && r[8]!=null;
-const hasPH =
-r[9]!=="" && r[9]!=null;
-const hasTDS =
-r[10]!=="" && r[10]!=null;
-const hasTemp =
-r[11]!=="" && r[11]!=null;
-const isIntakeSample =
-location==="المأخذ" && (hasTurbidity || hasPH || hasTDS || hasTemp);
+const hasTurbidity = r[8]!=="" && r[8]!=null;
+const hasPH = r[9]!=="" && r[9]!=null;
+const hasTDS = r[10]!=="" && r[10]!=null;
+const hasTemp = r[11]!=="" && r[11]!=null;
+const isIntakeSample = location==="المأخذ" && (hasTurbidity || hasPH || hasTDS || hasTemp);
 
 if(isIntakeSample){
 branches[branch]
-.summary[month]
+.summary[monthKey]
 .intakeSamples++;
 
 branches[branch]
-.stations[station]
-[month]
+.stations[station][monthKey]
 .intakeSamples++;
 }
 //=========================================
@@ -3036,12 +3031,11 @@ if(isEnv){
 //=========================================
 if(waterLevel!=="" && waterLevel!=null){
 branches[branch]
-.summary[month]
+.summary[monthKey]
 .waterLevel++;
 
 branches[branch]
-.stations[station]
-[month]
+.stations[station][monthKey]
 .waterLevel++;
 }
 //=========================================
@@ -3049,12 +3043,11 @@ branches[branch]
 //=========================================
 if(screenBottom!=="" && screenBottom!=null){
 branches[branch]
-.summary[month]
+.summary[monthKey]
 .screenBottom++;
 
 branches[branch]
-.stations[station]
-[month]
+.stations[station][monthKey]
 .screenBottom++;
 }
 });
@@ -3079,13 +3072,12 @@ for(let key in envMap){
 
         if(branch){
             branches[branch]
-            .summary[month]
+            .summary[monthKey]
             .envVisits
             .add(key);
 
             branches[branch]
-            .stations[station]
-            [month]
+            .stations[station][monthKey]
             .envVisits
             .add(key);
         }
@@ -3219,7 +3211,7 @@ html += `
 `;
 
 visibleMonths.forEach(month=>{
-const s = branches[b].summary[month.index];
+const s = branches[b].summary[month.year+"_"+month.index];
 
 html += `
 
@@ -3364,8 +3356,7 @@ ${station}
 visibleMonths.forEach(month=>{
 
 
-const s =
-st[month.index];
+const s = st[month.year+"_"+month.index];
 
 
 
