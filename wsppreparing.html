@@ -486,6 +486,8 @@
 <script>
   const scriptURL = "https://script.google.com/macros/s/AKfycbx58UbL-SAWDB6BJ9k4D3oMyeNL9AzVDIgNSKAqPImqcMk-bEF10jxAbtNbf-ZCVVQgHA/exec";
   const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
+  const department = sessionStorage.getItem("department");
+  document.getElementById("section").value = department || "";
 
 
   /* =========================================================
