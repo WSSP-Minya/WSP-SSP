@@ -133,6 +133,11 @@
                 <img src="water-setization-image.webp" alt="Water Quality Monitoring" title="Raw Water Quality Monitoring">
                 <span>Raw Water Monitoring</span>
             </button>
+
+             <button onclick="AccessedToPage('wsppreparing')" class="buttonlabel">
+                <img src="business-report.webp" alt="WSP-Perparing" title="WSP-Preparing">
+                <span>WSP-Preparing</span>
+            </button> 
             
             <button onclick="AccessedToPage('correctiveactions')" class="buttonlabel">
                 <img src="https://i0.wp.com/hellonimbly.com/wp-content/uploads/2022/09/BLOG-Social-Media_September_5-Important-Benefits-of-Corrective-Action-Report-in-Business.jpg?fit=1281%2C721&ssl=1" alt="Corrective Actions" title="Corrective Actions">
@@ -147,6 +152,11 @@
             <button onclick="AccessedToPage('reports')" class="buttonlabel">
                 <img src="business-report.webp" alt="Reports" title="Reports">
                 <span>Reports</span>
+            </button> 
+
+            <button onclick="AccessedToPage('wsppreparing')" class="buttonlabel">
+                <img src="business-report.webp" alt="Reports" title="WSP-Preparing">
+                <span>WSP-Preparing</span>
             </button> 
           
         </div>
@@ -170,8 +180,9 @@
             
         const buttons = document.querySelectorAll(".buttonlabel");
         const waterMonitoringButton = buttons[0];
-        const financialButton = buttons[2];  
-        const reportsButton = buttons[3];                    
+        const wspPreparingButton = buttons[1];    
+        const financialButton = buttons[3];  
+        const reportsButton = buttons[4];                    
         const dep = department?.trim().toLowerCase();
         const addStationButton = document.getElementById("addstation-button");
         const userRole = sessionStorage.getItem("role");
@@ -198,6 +209,12 @@
              "التخطيط",
              "المشروعات"
         ];
+
+          const wspPreparingBlocked = [
+             
+              "الصحة"
+              
+          ];  
         
         // تعطيل Water Monitoring للتوعية والتشغيل والصيانة جنوب فقط
         if (waterMonitoringBlocked.includes(dep)) {
@@ -205,6 +222,12 @@
             waterMonitoringButton.style.opacity = "0.5";
             waterMonitoringButton.style.pointerEvents = "none";
         }
+        // تعطيل WSP-preparing للجهات الخارجية 
+       // if (wspPreparingBlocked.includes(dep)) {
+         //   wspPreparingButton.disabled = true;
+           // wspPreparingButton.style.opacity = "0.5";
+            //wspPreparingButton.style.pointerEvents = "none";
+        //}
         
         // تعطيل Reports لأي قسم غير مسموح له
         if (!reportsAllowed.includes(dep)) {
@@ -229,7 +252,10 @@
         if (userRole !== "Admin"){
             addUserButton.disabled = true;
             addUserButton.style.opacity = "0.5";
-            addUserButton.style.pointerEvents = "none";   
+            addUserButton.style.pointerEvents = "none"; 
+            wspPreparingButton.disabled = true;
+            wspPreparingButton.style.opacity = "0.5";
+            wspPreparingButton.style.pointerEvents = "none";
         }
             
             
