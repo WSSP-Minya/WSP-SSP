@@ -671,7 +671,12 @@ function denyPageAccess(message) {
 
   //تحميل المحطات
 function loadStations() {
-
+    if (!pageAuthorized) {
+            console.warn(
+                "loadStations blocked: user is not authorized."
+            );
+            return;
+        }
     const branches = [
         "العدوه",
         "مغاغة",
