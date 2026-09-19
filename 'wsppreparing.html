@@ -1,0 +1,3063 @@
+
+<!DOCTYPE html>
+<html dir="ltr">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="index.css">
+
+<title>إعداد خطط مأمونية المياه</title>
+
+</head>
+
+
+<body>
+<div class="topbar">
+
+    <div class="left">
+        <button class="logout-button" onclick="logout()">
+            Logout
+        </button>
+
+        <button class="homepage-button" onclick="AccessedToPage('mainpage')">
+            <img src="myhome.webp" title="Main Page">
+        </button>
+    </div>
+
+
+    <div class="right">
+        <div class="userinfo">
+            <label>Section</label>
+            <input id="section" disabled>
+        </div>
+
+        <img src="https://wssp.hcww.com.eg/public/static/media/wsp.22cd4e849308ae80b006.png"
+             class="logo">
+    </div>
+
+</div>
+
+<div class="container">
+
+
+<!-- =========================================================
+     TABLE PAGE
+========================================================= -->
+
+<div id="tablePage">
+    <div class="page-header">
+        <h1>WSP Preparation</h1>
+    </div>
+
+
+    <!-- =====================================================
+         TOOLBAR
+    ====================================================== -->
+
+    <div class="toolbar">
+        <button class="btn btn-primary" id="addstation-button">
+          + Add Station
+        </button>
+
+        <input type="text" id="searchInput" placeholder="Station Search 🔍">
+
+        <select id="tableYear" onchange="changeTableYear()"></select>
+
+        <span class="year-info" id="yearInfo"></span>
+    </div>
+
+
+    <!-- =====================================================
+         TABLE
+    ====================================================== -->
+
+    <div class="table-wrapper">
+
+        <table>
+            <thead id="tableHeader"></thead>
+            <tbody id="tableBody"></tbody>
+        </table>
+    </div>
+</div>
+
+
+<!-- =========================================================
+     STATION PAGE
+========================================================= -->
+
+<div id="stationPage"
+     class="station-page">
+
+    <!-- =====================================================
+         STATION HEADER
+    ====================================================== -->
+
+    <div class="station-page-header">
+
+        <button
+            class="btn btn-secondary"
+            onclick="showTablePage()">
+            Return
+        </button>
+
+        <h2 id="stationTitle" dir="rtl"></h2>
+
+        <div
+            id="stationPeriod"
+            class="station-period">
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TABS
+    ====================================================== -->
+
+    <div class="station-tabs">
+
+        <button
+            type="button"
+            class="station-tab active"
+            data-tab="generalTab"
+            onclick="openStationTab('generalTab', this)">
+            General Information
+        </button>
+
+        <button
+            type="button"
+            class="station-tab"
+            data-tab="stagesTab"
+            onclick="openStationTab('stagesTab', this)">
+            Stages
+        </button>
+
+        <button
+            type="button"
+            class="station-tab"
+            data-tab="technicalTab"
+            onclick="openStationTab('technicalTab', this)">
+            Technical Features
+        </button>
+
+    </div>
+
+
+    <!-- =====================================================
+         GENERAL INFORMATION TAB
+    ====================================================== -->
+
+    <div
+        id="generalTab"
+        class="station-tab-content active">
+
+        <!-- =====================================================
+             BASIC DATA
+        ====================================================== -->
+
+        <div class="form-card">
+
+            <h3>General Information</h3>
+
+            <div class="form-grid">
+
+                <div class="field">
+                    <label>Type</label>
+
+                    <select id="type" onchange="updateComponents()">
+
+                        <option value="">-- Select --</option>
+                        <option value="ترشيح سريع">ترشيح سريع</option>
+                        <option value="ترشيح مباشر">ترشيح مباشر</option>
+                        <option value="ترشيح طبيعى">ترشيح طبيعى</option>
+                        <option value="ترشيح فائق">ترشيح فائق</option>
+                        <option value="ترشيح طبيعى + ترشيح سريع">ترشيح طبيعى + ترشيح سريع</option>
+                        <option value="ترشيح طبيعى + ترشيح مباشر">ترشيح طبيعى + ترشيح مباشر</option>
+                        <option value="ترشيح فائق + ترشيح طبيعى">ترشيح فائق + ترشيح طبيعى</option>
+
+                    </select>
+                </div>
+
+
+                <div class="field">
+                    <label>Executor</label>
+                    <input id="executingAuthority" type="text">
+                </div>
+
+
+                <div class="field">
+                    <label>Water source</label>
+
+                    <select id="waterSource">
+
+                        <option value="">-- Select --</option>
+                        <option value="نهر النيل">نهر النيل</option>
+                        <option value="ترعة الابراهيمية">ترعة الابراهيمية</option>
+                        <option value="قناة بحر يوسف">قناة بحر يوسف</option>
+
+                    </select>
+                </div>
+
+
+                <div class="field">
+                    <label>Nearby stations located on the same source</label>
+                    <input id="nearbyStations" type="text">
+                </div>
+
+
+                <div class="field">
+                    <label>Other Alternative Sources</label>
+                    <input id="alternativeSource" type="text">
+                </div>
+
+
+                <div class="field">
+                    <label>Status</label>
+
+                    <select id="handoverStatus">
+
+                        <option value="">-- Select --</option>
+                        <option value="لم يتم التسليم">لم يتم التسليم</option>
+                        <option value="استلام ابتدائى">استلام ابتدائى</option>
+                        <option value="استلام نهائى">استلام نهائى</option>
+
+                    </select>
+                </div>
+
+
+                <div class="field">
+                    <label>Construction date</label>
+                    <input id="constructionDate" type="date">
+                </div>
+
+
+                <div class="field">
+                    <label>Construction Contractor</label>
+                    <input id="constructionContractor" type="text">
+                </div>
+
+
+                <div class="field">
+                    <label>Designed Capacity m<sup>3</sup>/d</label>
+                    <input id="designCapacity" type="number" min="0" readonly>
+                </div>
+
+
+                <div class="field">
+                    <label>Actual Capacity m<sup>3</sup>/d</label>
+                    <input id="actualCapacity" type="number" min="0">
+                </div>
+
+
+                <div class="field">
+                    <label>Workers count</label>
+                    <input id="workers" type="number" min="0">
+                </div>
+
+
+                <div class="field">
+                    <label>Area m<sup>2</sup></label>
+                    <input id="area" type="number" min="0">
+                </div>
+
+
+                <div class="field">
+                    <label>Alternative Power source</label>
+
+                    <select id="alternativePower">
+
+                        <option value="">-- Select --</option>
+                        <option value="يوجد">يوجد</option>
+                        <option value="لا يوجد">لا يوجد</option>
+
+                    </select>
+                </div>
+
+
+                <div class="field">
+                    <label>Service area</label>
+                    <input id="serviceArea" type="text">
+                </div>
+
+
+                <div class="field">
+                    <label>Population</label>
+                    <input id="population" type="number" min="0">
+                </div>
+
+
+                <div class="field">
+                    <label>Network Length</label>
+                    <input id="networkLength" type="number" min="0">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =====================================================
+             COMPONENTS
+        ====================================================== -->
+
+        <div class="form-card">
+
+            <h3>Essential Components</h3>
+
+            <div
+                id="componentsGrid"
+                class="components-grid">
+            </div>
+
+            <div
+                id="componentDataArea">
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         STAGES TAB
+    ====================================================== -->
+
+    <div
+        id="stagesTab"
+        class="station-tab-content">
+
+        <div class="form-card">
+
+            <h3>Stages</h3>
+
+            <div id="stagesContent">
+
+                <div id="stagesLoading" class="stages-loading">
+                    Loading Stages...
+                </div>
+
+                <div id="stagesChecklist"></div>
+
+            </div>
+            <div class="stages-save-actions">
+                <button
+                    type="button"
+                    class="btn btn-success"
+                    onclick="saveStages()">
+                    Save Stages
+                </button>
+            </div>
+
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         TECHNICAL FEATURES TAB
+    ====================================================== -->
+
+    <div
+        id="technicalTab"
+        class="station-tab-content">
+
+        <div class="form-card">
+
+            <h3>Technical Features</h3>
+
+            <div id="technicalFeaturesContent">
+
+                <!--
+                    ضع هنا Technical Features لاحقًا
+                -->
+
+                <p class="tab-placeholder">
+                    Technical features information will be added here.
+                </p>
+
+            </div>
+
+        </div>
+    </div>
+    <!-- =====================================================
+         SAVE
+    ====================================================== -->
+
+    <div style="display:flex; gap:10px; margin-bottom:30px;">
+        <button class="btn btn-success" onclick="saveStationData()">Save</button>
+        <button class="btn btn-secondary" onclick="showTablePage()">Cancel</button>
+    </div>
+
+</div>
+</div>
+<!-- =========================================================
+     ADD STATION MODAL
+========================================================= -->
+<div id="stationModal"
+     class="modal">
+    <div class="station-modal">
+        <div class="modal-header">
+            <h3>Station Addition</h3>
+
+            <button type="button" class="modal-close" onclick="closeModal()">
+                ×
+            </button>
+        </div>
+
+
+        <div class="station-form">
+            <!-- الفرع -->
+            <div class="form-group">
+                <label for="branchmodalselect">Branch</label>
+
+                <select id="branchmodalselect">
+                    <option value="" selected disabled>Select Branch</option>
+                    <option value="العدوه">العدوه</option>
+                    <option value="مغاغة">مغاغة</option>
+                    <option value="بنى مزار">بنى مزار</option>
+                    <option value="مطاى">مطاى</option>
+                    <option value="سمالوط">سمالوط</option>
+                    <option value="المنيا">المنيا</option>
+                    <option value="ابوقرقاص">ابوقرقاص</option>
+                    <option value="ملوى">ملوى</option>
+                    <option value="ديرمواس">ديرمواس</option>
+                </select>
+            </div>
+
+
+            <!-- المحطة -->
+
+            <div class="form-group">
+                <label for="stationmodalselect">Station</label>
+                <select id="stationmodalselect">
+                    <option value="" selected disabled>Select Station</option>
+                </select>
+            </div>
+
+            <!-- الفترة -->
+
+            <div class="form-section">
+                <div class="form-section-title">
+                    Duration
+                </div>
+
+
+                <div class="date-grid">
+                    <div class="form-group">
+                        <label for="startperiodmodal">Start Time</label>
+                        <input type="month" id="startperiodmodal">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endperiodmodal">End Time</label>
+                        <input type="month" id="endperiodmodal">
+                    </div>
+                </div>                
+
+            </div>
+
+
+            <!-- الأزرار -->
+
+            <div class="modal-actions">
+                <button type="button" class="btn-primary" onclick="submitStation()">
+                    Submit
+                </button>
+
+                <button type="button" class="btn-secondary" onclick="closeModal()">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+</body>
+
+</html>
+<script>
+  const scriptURL = "https://script.google.com/macros/s/AKfycbx58UbL-SAWDB6BJ9k4D3oMyeNL9AzVDIgNSKAqPImqcMk-bEF10jxAbtNbf-ZCVVQgHA/exec";
+  const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
+
+
+  /* =========================================================
+    GLOBAL VARIABLES
+  ========================================================= */
+
+  let currentTableYear =
+      parseInt(localStorage.getItem("tableYear")) ||
+      new Date().getFullYear();
+
+  let stations = [];
+
+
+  const monthNames = {
+      1: "January",
+      2: "February",
+      3: "March",
+      4: "April",
+      5: "May",
+      6: "June",
+      7: "July",
+      8: "August",
+      9: "September",
+      10: "October",
+      11: "November",
+      12: "December"
+  };
+  function escapeHTML(value) {
+
+    return String(value ?? "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
+  //تحميل المحطات
+function loadStations() {
+
+    const branches = [
+        "العدوه",
+        "مغاغة",
+        "بنى مزار",
+        "مطاى",
+        "سمالوط",
+        "المنيا",
+        "ابوقرقاص",
+        "ملوى",
+        "ديرمواس"
+    ];
+
+    // تصفير البيانات قبل التحميل
+    stations = [];
+
+    const requests = branches.map(branch => {
+
+        const url = scriptURL +"?action=getStations&branch=" +encodeURIComponent(branch);
+
+        return fetch(url)
+            .then(response => response.json())
+            .then(data => {
+
+                console.log(
+                    "Stations response for",
+                    branch,
+                    data
+                );
+
+                if (data.status !== "success") {
+                    return [];
+                }
+
+                const result = [];
+
+                const stationNames = data.stations || [];
+                
+                const fromDates = data.fromDates || [];
+                const toDates = data.toDates || [];
+
+                /*مصفوفة للمحطات لاستدعاء البيانات الخاصة بها */
+
+                for (let i = 0; i < stationNames.length; i++) {
+
+                    result.push({
+                        name: stationNames[i],
+                        branch: branch,
+                        start: convertToMonth(fromDates[i]),
+                        end: convertToMonth(toDates[i])
+                    });
+                }
+                return result;
+            })
+            .catch(error => {
+                console.error("Error loading branch:", branch, error);
+                return [];
+            });
+    });
+
+
+    Promise.all(requests)
+        .then(results => {
+
+            // تجميع جميع الفروع
+            stations = results.flat();
+
+            console.log("All stations loaded:", stations);
+            renderTable();
+        })
+        .catch(error => {
+            console.error("Error loading all stations:", error);
+            stations = [];
+            renderTable();
+        });
+}
+
+
+// =========================================================
+  // INITIALIZE
+//=========================================================
+
+function initializeYearSelector() {
+    const select = document.getElementById("tableYear");
+    select.innerHTML = "";
+    for (let year = 2020; year <= 2050; year++) {
+
+        const option = document.createElement("option");
+        option.value = year;
+        option.textContent =
+            year + " / " + (year + 1);
+
+        if (year === currentTableYear) {
+            option.selected = true;
+        }
+        select.appendChild(option);
+    }
+    updateYearInfo();
+}
+
+
+/* =========================================================
+   CHANGE YEAR
+========================================================= */
+
+function changeTableYear() {
+
+    currentTableYear = parseInt(document.getElementById("tableYear").value);
+    localStorage.setItem("tableYear", currentTableYear);
+    updateYearInfo();
+    renderTable();
+}
+
+
+/* =========================================================
+   YEAR INFO
+========================================================= */
+
+function updateYearInfo() {
+    document.getElementById("yearInfo").textContent =
+        "From July " + currentTableYear + " To June " + (currentTableYear + 1);
+}
+/* =========================================================
+   GET TABLE MONTHS
+========================================================= */
+
+function getTableMonths() {
+
+    const result = [];
+
+    for (let month = 7; month <= 12; month++) {
+
+        result.push({
+            month: month,
+            year: currentTableYear,
+            key:
+                currentTableYear
+                + "-"
+                + String(month).padStart(2,"0")
+        });
+    }
+
+    for (let month = 1; month <= 6; month++) {
+        result.push({
+            month: month,
+            year: currentTableYear + 1,
+            key:
+                (currentTableYear + 1)
+                + "-"
+                + String(month).padStart(2,"0")
+        });
+    }
+
+    return result;
+}
+/* =========================================================
+   GET MONTHS BETWEEN TWO DATES
+========================================================= */
+
+function getMonthsBetween(start, end) {
+
+    const result = [];
+
+    if (!start || !end) {
+        return result;
+    }
+
+    const [startYear, startMonth] = start.split("-").map(Number);
+    const [endYear, endMonth] = end.split("-").map(Number);
+
+    let year = startYear;
+    let month = startMonth;
+
+    while (
+        year < endYear ||
+        (year === endYear && month <= endMonth)
+    ) {
+        result.push({
+            month: month,
+            year: year,
+            key:
+                year +
+                "-" +
+                String(month).padStart(2, "0")
+        });
+
+        month++;
+        if (month > 12) {
+            month = 1;
+            year++;
+        }
+    }
+    return result;
+}
+/* =========================================================
+   GET STATION PROGRESS
+========================================================= */
+
+async function getStationProgress(station) {
+
+    if (!station || !station.branch || !station.name) {
+        return 0;
+    }
+
+    try {
+
+        const url =
+            preparingScriptURL +
+            "?action=getStages" +
+            "&branch=" +
+            encodeURIComponent(station.branch) +
+            "&station=" +
+            encodeURIComponent(station.name);
+
+        const response = await fetch(url);
+
+        if (!response.ok) {
+            throw new Error("HTTP Error: " + response.status);
+        }
+
+        const result = await response.json();
+
+        if (
+            result &&
+            result.status === "success"
+        ) {
+
+            const progress =
+                Number(result.overallProgress);
+
+            if (Number.isFinite(progress)) {
+                return Math.max(0, Math.min(100, progress));
+            }
+        }
+
+    }
+    catch (error) {
+
+        console.error(
+            "Error loading progress:",
+            station.name,
+            error
+        );
+
+    }
+
+    return 0;
+}
+
+/* =========================================================
+   RENDER TABLE
+========================================================= */
+
+function renderTable() {
+
+    const header = document.getElementById("tableHeader");
+    const body = document.getElementById("tableBody");
+
+    // =====================================================
+    // SEARCH
+    // =====================================================
+
+    const search = document
+        .getElementById("searchInput")
+        .value
+        .trim()
+        .toLowerCase();
+    // =====================================================
+    // تحديد المحطات
+    // =====================================================
+    let filtered = [];
+    // =====================================================
+    // Search
+    // =====================================================
+    if (search) {
+        filtered = stations.filter(station => {
+            const stationName =
+                String(station.name || "")
+                    .trim()
+                    .toLowerCase();
+            return stationName.includes(search);
+        });
+    }
+    // =====================================================
+    // العام المالي
+    // =====================================================
+    else {
+        const tableStart = currentTableYear + "-07";
+        const tableEnd = (currentTableYear + 1) + "-06";
+
+
+        filtered = stations.filter(station => {
+            if (!station.start || !station.end) {
+                return false;
+            }
+            return (
+                station.start <= tableEnd &&
+                station.end >= tableStart
+            );
+        });
+    }
+    // =====================================================
+    // تحديد شهور الجدول
+    // =====================================================
+    let tableMonths = [];
+    // =====================================================
+    // SEARCH MODE
+    // =====================================================
+    if (search && filtered.length > 0) {      
+        let minStart = null;
+        let maxEnd = null;
+        filtered.forEach(station => {
+            if (station.start) {
+                if (!minStart || station.start < minStart) {
+                    minStart = station.start;
+                }
+            }
+
+            if (station.end) {
+                if (!maxEnd || station.end > maxEnd) {
+                    maxEnd = station.end;
+                }
+            }
+        });
+
+         if (minStart && maxEnd) {
+
+            tableMonths =
+                getMonthsBetween(
+                    minStart,
+                    maxEnd
+                );
+
+        }  
+        else {
+            tableMonths = getTableMonths();
+        }
+    }
+    // =====================================================
+    // NORMAL MODE
+    // =====================================================
+    else {
+        tableMonths = getTableMonths();
+    }
+
+    // =====================================================
+    // HEADER
+    // =====================================================
+
+    header.innerHTML = "";
+
+    const headerRow = document.createElement("tr");
+    const stationHeader = document.createElement("th");
+    stationHeader.textContent = "Station";
+    headerRow.appendChild(stationHeader);
+    tableMonths.forEach(item => {
+
+        const th = document.createElement("th");
+
+        th.innerHTML =
+            escapeHTML(monthNames[item.month]) +
+            `<span class="year">${item.year}</span>`;
+
+        headerRow.appendChild(th);
+    });
+
+    header.appendChild(headerRow);
+    // =====================================================
+    // BODY
+    // =====================================================
+    body.innerHTML = "";
+    // =====================================================
+    // NO DATA
+    // =====================================================
+    if (filtered.length === 0) {
+
+        const row = document.createElement("tr");
+
+        const cell = document.createElement("td");
+
+        cell.colSpan = tableMonths.length + 1;
+        cell.className = "empty-message";
+        cell.textContent = "No Station Found";
+        row.appendChild(cell);
+        body.appendChild(row);
+        return;
+    }
+    // =====================================================
+    // STATIONS
+    // =====================================================
+      filtered.forEach(station => {
+
+      const row = document.createElement("tr");
+
+      // =================================================
+      // Station Name
+      // =================================================
+
+      const nameCell = document.createElement("td");
+
+      nameCell.className = "station-cell";
+
+      nameCell.innerHTML = `
+          <div class="station-name-wrapper">
+
+              <span
+                  class="station-link"
+                  onclick="openStation('${escapeHTML(station.name)}')">
+                  ${escapeHTML(station.name)}
+              </span>
+
+              <div class="station-progress">
+
+                  <div class="progress-track">
+                      <div
+                          class="progress-fill"
+                          style="width:0%">
+                      </div>
+                  </div>
+
+                  <div class="progress-info">
+
+                      <span>Progress</span>
+
+                      <span class="progress-percent">
+                          0%
+                      </span>
+
+                  </div>
+
+              </div>
+
+          </div>
+
+          <div class="actions">
+
+              <button
+                  type="button"
+                  class="btn-danger"
+                  title="Clear period"
+                  onclick="clearStationPeriod('${escapeHTML(station.name)}')">
+                  🗑️
+              </button>
+
+          </div>
+      `;
+
+      row.appendChild(nameCell);
+
+
+      // =================================================
+      // MONTHS
+      // =================================================
+
+      tableMonths.forEach(item => {
+
+          const cell = document.createElement("td");
+
+          if (
+              station.start &&
+              station.end &&
+              item.key >= station.start &&
+              item.key <= station.end
+          ) {
+              cell.className = "active-month";
+          }
+
+          row.appendChild(cell);
+
+      });
+
+
+      // =================================================
+      // إضافة الصف للجدول
+      // =================================================
+
+      body.appendChild(row);
+
+
+      // =================================================
+      // تحميل Progress للمحطة
+      // =================================================
+
+      getStationProgress(station)
+          .then(progress => {
+
+              const fill =
+                  row.querySelector(".progress-fill");
+
+              const percent =
+                  row.querySelector(".progress-percent");
+
+
+              if (fill) {
+
+                  fill.style.width =
+                      Math.round(progress) + "%";
+
+              }
+
+
+              if (percent) {
+
+                  percent.textContent =
+                      Math.round(progress) + "%";
+
+              }
+
+          })
+          .catch(error => {
+
+              console.error(
+                  "Error loading station progress:",
+                  station.name,
+                  error
+              );
+
+          });
+
+  });
+      
+}
+/* =========================================================
+   SHOW TABLE
+========================================================= */
+function showTablePage() {
+
+    currentStationId = null;
+
+    document.getElementById("stationPage").style.display = "none";
+    document.getElementById("tablePage").style.display = "block";
+
+    renderTable();
+
+    window.scrollTo(0, 0);
+}
+/* =========================================================
+   SEARCH
+========================================================= */
+document.getElementById("searchInput").addEventListener("input", renderTable);
+/* =========================================================
+   OPEN ADD STATION MODAL
+========================================================= */
+document.getElementById("addstation-button").onclick = function() {
+    resetStationModal();
+    document.getElementById("stationModal").style.display = "flex";
+};
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+function closeModal() {
+
+    document.getElementById("stationModal").style.display = "none";
+}
+/* =========================================================
+   MODAL ELEMENTS
+========================================================= */
+
+const branchSelectModal = document.getElementById("branchmodalselect");
+const stationSelectModal = document.getElementById("stationmodalselect");
+const startPeriodModal = document.getElementById("startperiodmodal");
+const endPeriodModal = document.getElementById("endperiodmodal");
+/* =========================================================
+   MODAL STATIONS
+========================================================= */
+let modalStations = [];
+/* =========================================================
+   GET STATIONS
+========================================================= */
+
+function fetchStationsModal(branch) {
+
+    if (!branch) return;
+    stationSelectModal.innerHTML = '<option value="" disabled selected>Loading Stations...</option>';
+
+      const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(branch);
+
+    fetch(url)
+        .then(res => res.json())
+        .then(data => {
+            console.log("getStations response:", data);
+            if (data.status === "success") {
+                stationSelectModal.innerHTML = '<option value="" disabled selected>Select Station</option>';
+
+                /*حفظ بيانات المحطات كاملة*/
+                modalStations = data.stations || [];
+                /*إضافة المحطات إلى القائمة*/
+               modalStations.forEach(station => {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = station;
+                option.textContent = station;
+
+                stationSelectModal.appendChild(option);
+
+            });
+
+            } else {
+                modalStations = [];
+                stationSelectModal.innerHTML = '<option value="" disabled selected>Not found</option>';
+            }
+        })
+        .catch(err => {
+            console.error("Error fetching stations:", err);
+
+            modalStations = [];
+            stationSelectModal.innerHTML = '<option value="" disabled selected>Connection Error</option>';
+        });
+}
+
+
+/* =========================================================
+   عند تغيير الفرع
+========================================================= */
+
+branchSelectModal.addEventListener("change", () => {
+
+    const selectedBranch = branchSelectModal.value;
+    /*مسح بيانات المحطة السابقة*/
+    modalStations = [];
+    stationSelectModal.innerHTML ='<option value="" disabled selected>Select Station</option>';
+
+    /*مسح Start / End*/
+    startPeriodModal.value = "";
+    endPeriodModal.value = "";
+
+    /*جلب محطات الفرع*/
+    fetchStationsModal(selectedBranch);
+});
+
+
+/* =========================================================
+   عند تغيير المحطة
+========================================================= */
+
+stationSelectModal.addEventListener("change", () => {
+
+    const selectedStation = stationSelectModal.value;
+
+    // البحث عن المحطة المختارة بالاسم
+    const station = modalStations.find(s => String(s) === String(selectedStation));
+
+    console.log("Selected station:", station);
+
+    // إذا لم توجد المحطة
+    if (!station) {
+        startPeriodModal.value = "";
+        endPeriodModal.value = "";
+        return;
+    }
+
+    // تعبئة بداية الفترة
+    startPeriodModal.value = convertToMonth(station.start);
+
+    // تعبئة نهاية الفترة
+    endPeriodModal.value = convertToMonth(station.end);
+
+});
+
+
+/* =========================================================
+   فتح نافذة إضافة محطة
+========================================================= */
+
+document.getElementById("addstation-button").onclick = function () {
+    document.getElementById("stationModal").style.display = "flex";
+
+    /*تصفير الحقول*/
+    branchSelectModal.value = "";
+    stationSelectModal.innerHTML = `
+        <option value="" disabled selected>Select Station</option>
+    `;
+
+    startPeriodModal.value = "";
+
+    endPeriodModal.value = "";
+
+};
+
+/* =========================================================
+   إغلاق النافذة
+========================================================= */
+
+function closeModal() {
+
+    document.getElementById("stationModal").style.display = "none";
+}
+/* =========================================================
+   تحويل التاريخ إلى YYYY-MM
+========================================================= */
+
+function convertToMonth(value) {
+
+    if (!value) return "";
+    /* إذا كانت القيمة بالفعل YYYY-MM */
+
+    if (/^\d{4}-\d{2}$/.test(String(value))) {
+        return String(value);
+    }
+    /*إذا كانت القيمة تاريخ*/
+
+    const date = new Date(value);
+
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    return `${year}-${month}`;
+}
+/*ضبط تاريخ البداية على اول يوم فى الشهر*/
+function getFirstDayOfMonth(yearMonth) {
+    if (!yearMonth) return "";
+    const [year, month] = yearMonth.split("-");
+    if (!year || !month) return "";
+    return `01/${month}/${year}`;
+}
+/*ضبط تاريخ النهاية على اخر يوم فى الشهر*/
+function getLastDayOfMonth(yearMonth) {
+    if (!yearMonth) return "";
+    const [year, month] = yearMonth.split("-");
+    if (!year || !month) return "";
+    
+    const lastDay = new Date(year, month, 0).getDate();
+    return `${String(lastDay).padStart(2, "0")}/${month}/${year}`;
+}
+
+// تحديد فترة الإعداد
+function submitStation() {
+  // جلب العناصر والقيم من النموذج
+  const branchSelect = document.getElementById("branchmodalselect");
+  const stationSelect = document.getElementById("stationmodalselect");
+  const fromInput = document.getElementById("startperiodmodal"); // حقل From
+  const toInput = document.getElementById("endperiodmodal");     // حقل To
+     
+  const branch = branchSelect ? branchSelect.value : "";
+  const station = stationSelect ? stationSelect.value : "";
+  const fromDates = fromInput ? fromInput.value : "";
+  const toDates = toInput ? toInput.value : "";
+
+  // التحقق من اكتمال الحقول الأساسية (الفرع والمحطة)
+  if (!branch || !station) {
+    alert("يرجى اختيار الفرع والمحطة!");
+    return;
+  }
+
+  // التحقق من إدخال قيم From أو To (حسب رغبتك في الإلزام)
+  if (!fromDates && !toDates) {
+    alert("يرجى إدخال قيمة From أو To على الأقل!");
+    return;
+  }
+
+  // تجهيز البيانات للإرسال إلى السيرفر
+  const params = new URLSearchParams({
+    action: "savePreparingStation",
+    branch: branch,
+    station: station,
+    from: fromDates,
+    to: toDates
+  });
+
+  // إرسال البيانات إلى السيرفر
+  fetch(scriptURL, { method: "POST", body: params })
+    .then(res => res.json())
+    .then(res => {
+      alert(res.message);
+      loadStations();
+      renderTable();
+      if (res.status === "updated" && typeof clearCertifiedStationAdditionModal === "function") {
+        
+        clearStationModal();       
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert("حدث خطأ أثناء الحفظ");
+    });
+}
+/*==========
+مسح الفترة الزمنية للاعداد
+============*/
+function clearStationPeriod(stationName) {
+
+    if (!stationName) {
+        alert("لم يتم تحديد المحطة!");
+        return;
+    }
+
+    const station = stations.find(s =>
+        String(s.name || "").trim() === String(stationName).trim()
+    );
+
+    if (!station) {
+        alert("لم يتم العثور على المحطة: " + stationName);
+        return;
+    }
+
+    if (!confirm(
+        "هل أنت متأكد من مسح تاريخ البداية والنهاية للمحطة:\n\n" +
+        stationName
+    )) {
+        return;
+    }
+
+    const params = new URLSearchParams({
+        action: "savePreparingStation",
+        branch: station.branch,
+        station: station.name,
+        from: "",
+        to: ""
+    });
+
+    fetch(scriptURL, {
+        method: "POST",
+        body: params
+    })
+    .then(res => res.json())
+    .then(res => {
+
+        console.log("Clear period response:", res);
+
+        alert(res.message);
+
+        if (res.status === "updated") {
+
+            // إعادة تحميل المحطات
+            loadStations();
+
+        }
+
+    })
+    .catch(err => {
+
+        console.error("Clear period error:", err);
+
+        alert("حدث خطأ أثناء مسح الفترة الزمنية");
+
+    });
+}
+
+
+
+document.addEventListener("DOMContentLoaded", function () {
+    initializeYearSelector();
+    loadStations();
+});
+
+
+/* =========================================================
+   OPEN STATION
+========================================================= */
+let currentStation = null;
+
+function openStation(stationName) {
+
+    if (!stationName) {
+        return;
+    }
+    // =====================================================
+    // البحث عن المحطة
+    // =====================================================
+
+    const station = stations.find(s => String(s.name || "").trim() === String(stationName).trim());
+
+
+    if (!station) {
+
+        alert("لم يتم العثور على المحطة: " + stationName);
+        return;
+    }
+    // =====================================================
+    // حفظ المحطة الحالية
+    // =====================================================
+    currentStation = station;
+    console.log("Opening station:", station);
+    // =====================================================
+    // إخفاء الجدول
+    // =====================================================
+    document.getElementById("tablePage").style.display = "none";
+    // =====================================================
+    // إظهار صفحة المحطة
+    // =====================================================
+    document.getElementById("stationPage").style.display = "block";
+    // =====================================================
+    // عنوان المحطة
+    // =====================================================
+
+    document.getElementById("stationTitle").textContent = station.name ||
+        "بيانات المحطة";
+    // =====================================================
+    // جلب Capacity من WSSP
+    // =====================================================
+    loadStationCapacity(station);
+    // =====================================================
+    // جلب General Data من WSP-Preparing
+    // =====================================================
+    loadGeneralData(station);
+    loadStages(station);
+
+    // =====================================================
+    // أعلى الصفحة
+    // =====================================================
+
+    window.scrollTo(
+        0,
+        0
+    );
+
+}
+
+/* =========================================================
+   COMPONENT LISTS
+========================================================= */
+
+const components = {
+
+    "ترشيح سريع": [
+
+        "المأخذ",
+        "عنبر الطلمبات العكرة",
+        "عنبر الطلمبات المرشحة",
+        "عنبر الطلمبات العكرة والمرشحة",
+        "بيارة العكرة",
+        "بئر التوزيع",
+        "المروقات",
+        "أحواض الترسيب",
+        "المرشحات",
+        "منظومة الكلور",
+        "منظومة الشبة",
+        "برج التعادل",
+        "الخزانات",
+        "عنبر طلمبات مياه الغسيل والروبة",
+        "أحواض التجفيف",
+        "وحدة Beltpress",
+        "المبنى الإداري والمعمل",
+        "عنبر المولد الكهربائي",
+        "عنبر المحول الكهربائي"
+
+    ],
+
+
+    "ترشيح مباشر": [
+
+        "المأخذ",
+        "عنبر الطلمبات العكرة",
+        "عنبر الطلمبات المرشحة",
+        "عنبر الطلمبات العكرة والمرشحة",
+        "بئر التوزيع",
+        "المرشحات",
+        "منظومة الكلور",
+        "منظومة الشبة",
+        "برج التعادل",
+        "الخزانات",
+        "عنبر طلمبات مياه الغسيل والروبة",
+        "أحواض التجفيف",
+        "وحدة Beltpress",
+        "المبنى الإداري والمعمل",
+        "عنبر المولد الكهربائي",
+        "عنبر المحول الكهربائي"
+
+    ],
+
+
+    "ترشيح طبيعى": [
+
+        "منظومة الكلور",
+        "الخزانات",
+        "المبنى الإداري والمعمل",
+        "عنبر المولد الكهربائي",
+        "عنبر المحول الكهربائي",
+        "وحدات ترشيح طبيعي"
+
+    ],
+
+
+    "ترشيح فائق": [
+
+        "المأخذ",
+        "عنبر الطلمبات العكرة",
+        "عنبر الطلمبات المرشحة",
+        "عنبر الطلمبات العكرة والمرشحة",
+        "بيارة العكرة",
+        "المرشحات",
+        "منظومة الكلور",
+        "برج التعادل",
+        "الخزانات",
+        "عنبر طلمبات مياه الغسيل والروبة",
+        "أحواض التجفيف",
+        "وحدة",
+        "المبنى الإداري والمعمل",
+        "عنبر المولد الكهربائي",
+        "عنبر المحول الكهربائي",
+        "خزانات الغسيل العكسي",
+        "منظومة CIP",
+        "منظومة CEB"
+
+    ]
+
+};
+
+/* =========================================================
+   GET CURRENT COMPONENTS
+========================================================= */
+
+function getCurrentComponents() {
+
+    const type = document.getElementById("type").value;
+    return components[type] || [];
+}
+
+/* =========================================================
+   UPDATE COMPONENTS
+========================================================= */
+
+function updateComponents(savedSelected = null, savedData = null) {
+
+    const grid = document.getElementById("componentsGrid");
+    const dataArea = document.getElementById("componentDataArea");
+
+
+    const list = getCurrentComponents();
+    grid.innerHTML = "";
+    dataArea.innerHTML = "";
+
+    if (list.length === 0) {
+        grid.innerHTML = `
+            <div style="
+                grid-column:1/-1;
+                padding:15px;
+                color:#777;">
+
+                اختر نوع المحطة لعرض المكونات.
+            </div>
+        `;
+        return;
+    }
+
+
+    const selected = savedSelected !== null ? savedSelected : [];
+
+    list.forEach(component => {
+
+            const div = document.createElement("div");
+            div.className = "component-check";
+
+            const checked = selected.includes(component);
+
+            if (checked) {
+                div.classList.add("checked");
+            }
+
+            const checkbox = document.createElement("input");
+
+            checkbox.type = "checkbox";
+            checkbox.checked = checked;
+            checkbox.value = component;
+
+            //checkbox.addEventListener("change", function() {
+            //        toggleComponent(
+            //            component,
+             //           this
+             //       );
+
+           //     }
+           // );
+            const label = document.createElement("label");
+            label.appendChild(checkbox);
+
+            const span = document.createElement("span");
+            span.textContent = component;
+            label.appendChild(span);
+            div.appendChild(label);
+            grid.appendChild(div);
+        }
+    );
+
+    /*إعادة البيانات المحفوظة*/
+    selected.forEach(component => {
+            if (list.includes(component)) {
+                createComponentData(component, savedData ? savedData[component]: null);
+            }
+        }
+    );
+}
+/* =========================================================
+   LOAD STATION CAPACITY FROM WSSP
+========================================================= */
+
+function loadStationCapacity(station) {
+
+    const designCapacity = document.getElementById("designCapacity");
+
+    if (!designCapacity) {
+        return;
+    }
+
+    // مسح القيمة القديمة
+    designCapacity.value = "";
+
+    if (!station || !station.branch || !station.name) {
+        return;
+    }
+
+    const url =
+        scriptURL +
+        "?action=getStations&branch=" +
+        encodeURIComponent(station.branch);
+
+    fetch(url)
+        .then(response => response.json())
+        .then(data => {
+            console.log("WSSP stations response:", data);
+
+            if (data.status !== "success") {
+                console.warn("Unable to load WSSP stations");
+                return;
+            }
+
+            const stationNames = data.stations || [];
+            const capacities = data.capacity || [];
+
+            // البحث عن المحطة
+            const index = stationNames.findIndex(name =>
+                    String(name || "").trim() ===
+                    String(station.name || "").trim()
+                );
+
+            if (index === -1) {
+                console.warn("Station not found in WSSP:", station.name);
+                return;
+            }
+
+            // Capacity من العمود D
+            const capacity = capacities[index];
+            designCapacity.value = capacity ?? "";
+
+            console.log("Design Capacity:", capacity);
+        })
+
+        .catch(error => {
+            console.error("Error loading capacity:", error);
+            designCapacity.value = "";
+        });
+}
+/* =========================================================
+   SAVE GENERAL DATA
+   WSP-Preparing -> General
+========================================================= */
+function saveStationData() {
+    // =====================================================
+    // التأكد من وجود محطة
+    // =====================================================
+    if (!currentStation) {
+        alert("لم يتم تحديد المحطة.");
+        return;
+    }
+
+
+    // =====================================================
+    // بيانات المحطة
+    // =====================================================
+    const branch = currentStation.branch || "";
+    const station = currentStation.name || "";
+
+    // =====================================================
+    // قراءة Basic Data
+    // =====================================================
+
+    const type = document.getElementById("type").value;
+    const waterSource = document.getElementById("waterSource").value;
+    const executingAuthority = document.getElementById("executingAuthority").value.trim();
+    const nearbyStations = document.getElementById("nearbyStations").value.trim();
+    const alternativeSource = document.getElementById("alternativeSource").value.trim();
+    const handoverStatus = document.getElementById("handoverStatus").value;
+    const constructionDate = document.getElementById("constructionDate").value;
+    const constructionContractor = document.getElementById("constructionContractor").value.trim();
+    const designCapacity = document.getElementById("designCapacity").value;
+    const actualCapacity = document.getElementById("actualCapacity").value;
+    const workers = document.getElementById("workers").value;
+    const area = document.getElementById("area").value;
+    const alternativePower = document.getElementById("alternativePower").value;
+    const serviceArea = document.getElementById("serviceArea").value.trim();
+    const population = document.getElementById("population").value;
+    const networkLength = document.getElementById("networkLength").value;
+    // =====================================================
+    // المكونات المختارة
+    // =====================================================
+
+    const selectedComponents = [];
+
+    document.querySelectorAll('#componentsGrid input[type="checkbox"]:checked').forEach(checkbox => {
+            selectedComponents.push(checkbox.value);
+        });
+
+    const componentsText = selectedComponents.join("، ");
+
+    // =====================================================
+    // تجهيز البيانات
+    // =====================================================
+
+    const params = new URLSearchParams({
+
+            action: "saveGeneralData",
+            branch: branch,
+            station:station,
+            type: type,
+            executingAuthority: executingAuthority,
+            waterSource: waterSource,
+            nearbyStations: nearbyStations,
+            alternativeSource: alternativeSource,
+            handoverStatus: handoverStatus,
+            constructionDate: constructionDate,
+            constructionContractor: constructionContractor,
+            designCapacity: designCapacity,
+            actualCapacity: actualCapacity,
+            workers: workers,
+            area: area,
+            components: componentsText,
+            alternativePower: alternativePower,
+            serviceArea: serviceArea,
+            population:  population,
+            networkLength: networkLength
+        });
+
+    // =====================================================
+    // منع الضغط المتكرر
+    // =====================================================
+    const saveButton = document.querySelector('button[onclick="saveStationData()"]');
+    if (saveButton) {
+        saveButton.disabled = true;
+    }
+    // =====================================================
+    // إرسال إلى WSP-Preparing
+    // =====================================================
+    fetch(preparingScriptURL,{
+            method: "POST",
+            body: params
+        }
+    )
+
+    .then(response => {
+        if (!response.ok) {
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+        }
+        return response.json();
+    })
+
+    .then(data => {
+        console.log("WSP-Preparing response:", data);
+
+        if (
+            data.status === "created" ||
+            data.status === "updated"
+        ) {
+
+            alert(data.message || "تم حفظ البيانات بنجاح");
+        }
+        else {
+            alert(data.message || "حدث خطأ أثناء الحفظ");
+        }
+    })
+    .catch(error => {
+        console.error("Save General Error:", error);
+        alert("حدث خطأ أثناء حفظ البيانات");
+    })
+    .finally(() => {
+        if (saveButton) {
+            saveButton.disabled = false;
+        }
+
+    });
+
+}
+
+/* =========================================================
+   LOAD GENERAL DATA
+   WSP-Preparing -> General
+========================================================= */
+
+function loadGeneralData(station) {
+
+    if (!station) {
+        return;
+    }
+
+    const branch = station.branch || "";
+    const stationName = station.name || "";
+
+    if (!branch || !stationName) {
+        return;
+    }
+
+
+    const url =
+        preparingScriptURL +
+        "?action=getGeneralData" +
+        "&branch=" +
+        encodeURIComponent(branch) +
+        "&station=" +
+        encodeURIComponent(stationName);
+
+
+    console.log("Loading General Data:", url);
+
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(
+                    "HTTP Error: " +
+                    response.status
+                );
+            }
+            return response.json();
+        })
+
+        .then(result => {
+            console.log("General Data response:", result);
+            // =================================================
+            // لا توجد بيانات محفوظة
+            // =================================================
+            if (result.status === "not_found") {
+
+                console.log("No General data found for:", stationName);
+                return;
+            }
+            // =================================================
+            // حدث خطأ
+            // =================================================
+
+            if (result.status !== "success") {
+                console.warn(result.message);
+                return;
+            }
+
+            const data = result.data;
+            if (!data) {
+                return;
+            }
+
+
+            // =================================================
+            // BASIC DATA
+            // =================================================
+
+            document.getElementById("type").value = data.type || "";
+            document.getElementById("waterSource").value = data.waterSource || "";
+            document.getElementById("executingAuthority").value = data.executingAuthority || "";    
+            document.getElementById("nearbyStations").value = data.nearbyStations || "";
+            document.getElementById("alternativeSource").value = data.alternativeSource || "";
+            document.getElementById("handoverStatus").value = data.handoverStatus || "";
+            document.getElementById("constructionDate").value = convertToDateInput(data.constructionDate);
+            document.getElementById("constructionContractor").value = data.constructionContractor || "";
+            document.getElementById("designCapacity").value = data.designCapacity ?? "";
+            document.getElementById("actualCapacity").value = data.actualCapacity ?? "";
+            document.getElementById("workers").value = data.workers ?? "";
+            document.getElementById("area").value = data.area ?? "";
+            document.getElementById("alternativePower").value = data.alternativePower || "";
+            document.getElementById("serviceArea").value = data.serviceArea || "";
+            document.getElementById("population").value = data.population ?? "";
+            document.getElementById("networkLength").value = data.networkLength ?? "";
+            // =================================================
+            // COMPONENTS
+            // =================================================
+
+            let savedComponents = [];
+
+            if (data.components) {
+                if (Array.isArray(data.components)) {
+                    savedComponents = data.components;
+                }
+                else {
+                    savedComponents = String(data.components)
+                        .split("،")
+                        .map(item =>
+                            item.trim()
+                        )
+                        .filter(Boolean);
+                }
+            }
+            // =================================================
+            // تحديث قائمة المكونات
+            // =================================================
+
+            updateComponents(savedComponents);
+            console.log("General data loaded successfully");
+        })
+
+        .catch(error => {
+            console.error("Error loading General Data:", error);
+        });
+}
+/* =========================================================
+   STAGES
+========================================================= */
+
+let stagesData = [];
+
+/*
+    كل عنصر سيكون بهذا الشكل:
+
+    {
+        row: 2,
+        number: "1",
+        item: "هل تم تشكيل لجنة...",
+        responsible: "wsp",
+        section: "المتطلبات الإدارية",
+        status: "مطابق"
+    }
+*/
+
+
+/* =========================================================
+   LOAD STAGES
+========================================================= */
+
+function loadStages(station) {
+
+    if (!station || !station.name) {
+        return;
+    }
+
+    const container =
+        document.getElementById("stagesChecklist");
+
+    const loading =
+        document.getElementById("stagesLoading");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = "";
+
+    if (loading) {
+        loading.style.display = "block";
+    }
+
+    const url =
+        preparingScriptURL +
+        "?action=getStages" +
+        "&branch=" +
+        encodeURIComponent(station.branch || "") +
+        "&station=" +
+        encodeURIComponent(station.name || "");
+
+    console.log("Loading Stages:", url);
+
+    fetch(url)
+        .then(response => {
+
+            if (!response.ok) {
+                throw new Error(
+                    "HTTP Error: " +
+                    response.status
+                );
+            }
+
+            return response.json();
+        })
+
+        .then(result => {
+
+            console.log("Stages response:", result);
+
+            if (loading) {
+                loading.style.display = "none";
+            }
+
+            if (result.status !== "success") {
+
+                container.innerHTML = `
+                    <div class="tab-placeholder">
+                        لا توجد بيانات للمراحل.
+                    </div>
+                `;
+
+                return;
+            }
+
+           stagesData = result.data || [];
+
+            console.log(
+              "Stages loaded:",
+              stagesData
+            );
+
+            console.log(
+              "Total items:",
+              result.totalItems
+            );
+
+            console.log(
+              "Completed:",
+              result.completed
+            );
+
+            console.log(
+              "Overall progress:",
+              result.overallProgress + "%"
+            );
+
+            renderStages();
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading Stages:",
+                error
+            );
+
+            if (loading) {
+                loading.style.display = "none";
+            }
+
+            container.innerHTML = `
+                <div class="tab-placeholder">
+                    حدث خطأ أثناء تحميل بنود الـ Stages.
+                </div>
+            `;
+        });
+}
+/////////////////////
+////حساب progress لكل مرحلة
+/////////////////////
+function calculateStageProgress(items) {
+
+    if (!Array.isArray(items) || items.length === 0) {
+        return 0;
+    }
+
+    const completed = items.filter(item => {
+
+        const status =
+            String(item.status || "")
+                .trim()
+                .toLowerCase();
+
+        const value =
+            String(item.value || "")
+                .trim()
+                .toLowerCase();
+
+        return (
+            status === "completed" ||
+            status === "مطابق" ||
+            value === "completed" ||
+            value === "done" ||
+            value === "✓" ||
+            value === "✔" ||
+            value === "مطابق"
+        );
+
+    }).length;
+
+    return Math.round(
+        (completed / items.length) * 100
+    );
+}
+
+/* =========================================================
+   RENDER STAGES
+========================================================= */
+
+function renderStages() {
+
+    console.log("stagesData =", stagesData);
+    console.log("length =", stagesData?.length);
+
+    const container =
+        document.getElementById("stagesChecklist");
+
+    if (!container) {
+        console.error("❌ stagesChecklist غير موجود في HTML");
+        return;
+    }
+
+    container.innerHTML = "";
+
+    if (!Array.isArray(stagesData) || !stagesData.length) {
+
+        container.innerHTML = `
+            <div class="tab-placeholder">
+                لا توجد بنود.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    /* =====================================================
+       FIXED STAGES
+       كل Tab مرتبط بنطاق صفوف محدد في Google Sheet
+    ===================================================== */
+
+    const stageDefinitions = [
+
+        {
+            name: "المتطلبات الإدارية",
+            startRow: 3,
+            endRow: 11
+        },
+
+        {
+            name: "وصف مصدر المياه",
+            startRow: 13,
+            endRow: 27
+        },
+
+        {
+            name: "وصف مراحل التنقية",
+            startRow: 29,
+            endRow: 42
+        },
+
+        {
+            name: "وصف شبكات التوزيع",
+            startRow: 44,
+            endRow: 65
+        },
+
+        {
+            name: "وصف مجتمع المستهلكين",
+            startRow: 67,
+            endRow: 78
+        }
+
+    ];
+
+
+    /* =====================================================
+       STAGES TABS CONTAINER
+    ===================================================== */
+
+    const tabsWrapper =
+        document.createElement("div");
+
+    tabsWrapper.className =
+        "stages-inner-tabs";
+
+
+    const tabsButtons =
+        document.createElement("div");
+
+    tabsButtons.className =
+        "stages-inner-tab-buttons";
+
+
+    const tabsContent =
+        document.createElement("div");
+
+    tabsContent.className =
+        "stages-inner-tab-content";
+
+
+    /* =====================================================
+       CREATE 5 TABS
+    ===================================================== */
+
+    stageDefinitions.forEach(
+        (stageDefinition, stageIndex) => {
+
+            /*
+             * =============================================
+             * البنود الخاصة بالـ Tab الحالي
+             * =============================================
+             */
+
+            const items =
+                stagesData.filter(item => {
+
+                    const row =
+                        Number(item.row || 0);
+
+                    return (
+                        row >= stageDefinition.startRow &&
+                        row <= stageDefinition.endRow
+                    );
+
+                });
+
+
+            console.log(
+                stageDefinition.name,
+                "Rows:",
+                stageDefinition.startRow,
+                "-",
+                stageDefinition.endRow,
+                "Items:",
+                items.length
+            );
+
+
+            /* =====================================================
+              TAB BUTTON
+            ===================================================== */
+
+            const tabId = `stagesContent_${stageIndex}`;
+
+            const tabButton = document.createElement("button");
+
+            tabButton.type = "button";
+            tabButton.className = "stages-inner-tab";
+
+            tabButton.dataset.tab = tabId;
+
+            tabButton.textContent =
+                stageDefinition.name;
+
+            if (stageIndex === 0) {
+                tabButton.classList.add("active");
+            }
+
+
+            /* =====================================================
+              TAB CONTENT
+            ===================================================== */
+
+            const tabContent = document.createElement("div");
+
+            tabContent.className =
+                "stages-inner-content";
+
+            tabContent.id =
+                tabId;
+
+            if (stageIndex === 0) {
+                tabContent.classList.add("active");
+            }
+
+            /*
+             * =============================================
+             * STAGE SECTION
+             * =============================================
+             */
+
+            const sectionElement =
+                document.createElement("div");
+
+            sectionElement.className =
+                "stages-section";
+
+            /*
+             * =============================================
+             * TITLE
+             * =============================================
+             */
+
+            const sectionTitle =
+                document.createElement("div");
+
+            sectionTitle.className =
+                "stages-section-title";
+
+
+            // اسم القسم
+            const titleText =
+                document.createElement("span");
+
+            titleText.textContent =
+                stageDefinition.name;
+
+
+            // حساب نسبة الإنجاز
+            const progress =
+                calculateStageProgress(items);
+
+
+            // نسبة الإنجاز
+            const progressText =
+                document.createElement("span");
+
+            progressText.className =
+                "stage-section-progress";
+
+            progressText.textContent =
+                "نسبة الإنجاز: " + progress + "%";
+
+
+            // إضافة الاسم والنسبة للعنوان
+            sectionTitle.appendChild(titleText);
+
+            sectionTitle.appendChild(progressText);
+
+            sectionElement.appendChild(
+                sectionTitle
+            );
+
+
+            /*
+             * =============================================
+             * NO ITEMS
+             * =============================================
+             */
+
+            if (items.length === 0) {
+
+                const emptyMessage =
+                    document.createElement("div");
+
+                emptyMessage.className =
+                    "tab-placeholder";
+
+                emptyMessage.textContent =
+                    "لا توجد بنود في هذا القسم.";
+
+                sectionElement.appendChild(
+                    emptyMessage
+                );
+
+            }
+
+
+            /*
+             * =============================================
+             * ITEMS
+             * =============================================
+             */
+
+            items.forEach(
+                (item, index) => {
+
+                    const itemDiv =
+                        document.createElement("div");
+
+                    itemDiv.className =
+                        "stage-item";
+
+                    itemDiv.dataset.index =
+                        index;
+
+                    itemDiv.dataset.row =
+                        item.row || "";
+
+
+                    /*
+                     * =====================================
+                     * QUESTION
+                     * =====================================
+                     */
+
+                    const question =
+                        document.createElement("div");
+
+                    question.className =
+                        "stage-question";
+
+
+                    const number =
+                        document.createElement("div");
+
+                    number.className =
+                        "stage-number";
+
+                    number.textContent =
+                        item.no || "";
+
+
+                    const text =
+                        document.createElement("div");
+
+                    text.className =
+                        "stage-text";
+
+                    text.textContent =
+                        item.checklist || "";
+
+
+                    question.appendChild(
+                        number
+                    );
+
+                    question.appendChild(
+                        text
+                    );
+
+                    itemDiv.appendChild(
+                        question
+                    );
+
+
+                    /*
+                     * =====================================
+                     * ACTIONS
+                     * =====================================
+                     */
+
+                    const actions =
+                        document.createElement("div");
+
+                    actions.className =
+                        "stage-actions";
+
+
+                    const matchButton =
+                        document.createElement("button");
+
+                    matchButton.type =
+                        "button";
+
+                    matchButton.className =
+                        "stage-status-btn match";
+
+                    matchButton.innerHTML =
+                        "✅ مطابق";
+
+
+                    const notMatchButton =
+                        document.createElement("button");
+
+                    notMatchButton.type =
+                        "button";
+
+                    notMatchButton.className =
+                        "stage-status-btn not-match";
+
+                    notMatchButton.innerHTML =
+                        "❌ غير مطابق";
+
+
+                    actions.appendChild(
+                        matchButton
+                    );
+
+                    actions.appendChild(
+                        notMatchButton
+                    );
+
+                    itemDiv.appendChild(
+                        actions
+                    );
+
+
+                    /*
+                     * =====================================
+                     * REASON
+                     * =====================================
+                     */
+
+                    const reasonDiv =
+                        document.createElement("div");
+
+                    reasonDiv.className =
+                        "stage-reason";
+
+
+                    const reasonLabel =
+                        document.createElement("label");
+
+                    reasonLabel.textContent =
+                        "سبب عدم المطابقة";
+
+
+                    const reasonInput =
+                        document.createElement("textarea");
+
+                    reasonInput.placeholder =
+                        "اكتب سبب عدم المطابقة...";
+
+
+                    reasonDiv.appendChild(
+                        reasonLabel
+                    );
+
+                    reasonDiv.appendChild(
+                        reasonInput
+                    );
+
+                    itemDiv.appendChild(
+                        reasonDiv
+                    );
+
+
+                    /*
+                     * =====================================
+                     * INITIAL STATUS
+                     * =====================================
+                     */
+
+                    const savedStatus =
+                        String(
+                            item.status || ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    const savedValue =
+                        String(
+                            item.value || ""
+                        )
+                        .trim()
+                        .toLowerCase();
+
+
+                    /*
+                     * =====================================
+                     * MATCHED
+                     * =====================================
+                     */
+
+                    if (
+
+                        savedStatus ===
+                            "completed" ||
+
+                        savedStatus ===
+                            "مطابق" ||
+
+                        savedValue ===
+                            "completed" ||
+
+                        savedValue ===
+                            "done" ||
+
+                        savedValue ===
+                            "✓" ||
+
+                        savedValue ===
+                            "✔"
+
+                    ) {
+
+                        matchButton.classList.add(
+                            "active"
+                        );
+
+                    }
+
+
+                    /*
+                     * =====================================
+                     * NOT MATCHED
+                     * =====================================
+                     */
+
+                    else if (
+
+                        savedStatus ===
+                            "note" ||
+
+                        savedStatus ===
+                            "غير مطابق"
+
+                    ) {
+
+                        notMatchButton.classList.add(
+                            "active"
+                        );
+
+                        reasonDiv.classList.add(
+                            "show"
+                        );
+
+                        reasonInput.value =
+                            item.value || "";
+
+                    }
+
+
+                    /*
+                     * =====================================
+                     * MATCH BUTTON
+                     * =====================================
+                     */
+
+                    matchButton.addEventListener(
+                        "click",
+                        () => {
+
+                            matchButton.classList.add(
+                                "active"
+                            );
+
+                            notMatchButton.classList.remove(
+                                "active"
+                            );
+
+                            reasonDiv.classList.remove(
+                                "show"
+                            );
+
+                            reasonInput.value = "";
+
+                            item.status =
+                                "completed";
+
+                            item.value =
+                                "✓";
+
+                        }
+                    );
+
+
+                    /*
+                     * =====================================
+                     * NOT MATCH BUTTON
+                     * =====================================
+                     */
+
+                    notMatchButton.addEventListener(
+                        "click",
+                        () => {
+
+                            notMatchButton.classList.add(
+                                "active"
+                            );
+
+                            matchButton.classList.remove(
+                                "active"
+                            );
+
+                            reasonDiv.classList.add(
+                                "show"
+                            );
+
+                            item.status =
+                                "note";
+
+                        }
+                    );
+
+
+                    /*
+                     * =====================================
+                     * REASON CHANGE
+                     * =====================================
+                     */
+
+                    reasonInput.addEventListener(
+                        "input",
+                        () => {
+
+                            if (
+                                notMatchButton.classList.contains(
+                                    "active"
+                                )
+                            ) {
+
+                                item.status =
+                                    "note";
+
+                                item.value =
+                                    reasonInput.value.trim();
+
+                            }
+
+                        }
+                    );
+
+
+                    sectionElement.appendChild(
+                        itemDiv
+                    );
+
+                }
+            );
+
+
+            /*
+             * =============================================
+             * ADD SECTION TO TAB
+             * =============================================
+             */
+
+            tabContent.appendChild(
+                sectionElement
+            );
+
+
+            /*
+              * =============================================
+              * TAB CLICK
+              * =============================================
+              */
+
+              tabButton.addEventListener("click", function () {
+
+                  openStagesTab(tabId, this);
+
+              });
+
+
+
+            /*
+             * =============================================
+             * ADD TAB BUTTON
+             * =============================================
+             */
+
+            tabsButtons.appendChild(
+                tabButton
+            );
+
+
+            /*
+             * =============================================
+             * ADD TAB CONTENT
+             * =============================================
+             */
+
+            tabsContent.appendChild(
+                tabContent
+            );
+
+        }
+    );
+
+
+    /*
+     * =====================================================
+     * ADD EVERYTHING TO PAGE
+     * =====================================================
+     */
+
+    tabsWrapper.appendChild(
+        tabsButtons
+    );
+
+    tabsWrapper.appendChild(
+        tabsContent
+    );
+
+    container.appendChild(
+        tabsWrapper
+    );
+
+}
+
+/* =========================================================
+   STAGES INNER TABS
+========================================================= */
+
+function openStagesTab(tabId, button) {
+
+    // إخفاء جميع محتويات Stages الداخلية
+    document
+        .querySelectorAll(".stages-inner-content")
+        .forEach(content => {
+            content.classList.remove("active");
+        });
+
+    // إزالة Active من جميع أزرار Stages الداخلية
+    document
+        .querySelectorAll(".stages-inner-tab")
+        .forEach(tabButton => {
+            tabButton.classList.remove("active");
+        });
+
+    // إظهار الـ Tab المطلوب
+    const selectedTab =
+        document.getElementById(tabId);
+
+    if (selectedTab) {
+        selectedTab.classList.add("active");
+    }
+
+    // تفعيل الزر الحالي
+    if (button) {
+        button.classList.add("active");
+    }
+}
+
+
+/* =========================================================
+   CONVERT DATE TO INPUT DATE FORMAT
+========================================================= */
+function convertToDateInput(value) {
+
+    if (!value) {
+        return "";
+    }
+
+    // إذا كانت القيمة بالفعل YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(String(value))) {
+        return String(value);
+    }
+
+    // إذا كانت القيمة YYYY-MM
+    if (/^\d{4}-\d{2}$/.test(String(value))) {
+        return String(value) + "-01";
+    }
+
+    const date = new Date(value);
+
+    if (isNaN(date.getTime())) {
+        return "";
+    }
+
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+
+    return (year + "-" + month + "-" + day);
+}
+/* =========================================================
+   STATION TABS
+========================================================= */
+function openStationTab(tabId, button) {
+
+    // إخفاء جميع محتويات الـ Tabs
+    document
+        .querySelectorAll(".station-tab-content")
+        .forEach(tab => {
+            tab.classList.remove("active");
+        });
+
+    // إزالة Active من جميع أزرار الـ Tabs
+    document
+        .querySelectorAll(".station-tab")
+        .forEach(tabButton => {
+            tabButton.classList.remove("active");
+        });
+
+
+    // إظهار الـ Tab المطلوب
+    const selectedTab = document.getElementById(tabId);
+
+    if (selectedTab) {
+        selectedTab.classList.add("active");
+    }
+    // تفعيل الزر الحالي
+    if (button) {
+        button.classList.add("active");
+    }
+}
+/* =========================================================
+   RESET STATION TAB
+========================================================= */
+
+function resetStationTab() {
+    const firstTab = document.querySelector(".station-tab[data-tab='generalTab']");
+    const firstContent = document.getElementById("generalTab");
+
+    document
+        .querySelectorAll(".station-tab")
+        .forEach(tab => {
+            tab.classList.remove("active");
+        });
+
+    document
+        .querySelectorAll(".station-tab-content")
+        .forEach(content => {
+            content.classList.remove("active");
+        });
+
+    if (firstTab) {
+        firstTab.classList.add("active");
+    }
+
+    if (firstContent) {
+        firstContent.classList.add("active");
+    }
+}
+/* =========================================================
+   SAVE ALL STAGES
+   حفظ جميع بنود الـ Stages بطلب واحد فقط
+========================================================= */
+
+async function saveStages() {
+    // =====================================================
+    // التأكد من وجود محطة
+    // =====================================================
+    if (!currentStation) {
+        alert("لم يتم تحديد المحطة.");
+        return;
+    }
+
+    // =====================================================
+    // التأكد من وجود بيانات Stages
+    // =====================================================
+    if (!Array.isArray(stagesData) || stagesData.length === 0) {
+        alert("لا توجد بنود لحفظها.");
+        return;
+    }
+
+    const station = String(currentStation.name || "").trim();
+    const branch = String(currentStation.branch || "").trim();
+
+    if (!station) {
+        alert("اسم المحطة غير موجود.");
+        return;
+    }
+
+    // =====================================================
+    // زر الحفظ
+    // =====================================================
+    const saveButton = document.querySelector('button[onclick="saveStages()"]');
+
+    if (saveButton) {
+        saveButton.disabled = true;
+        saveButton.textContent = "Saving...";
+    }
+
+    try {
+
+        // =================================================
+        // تجهيز البنود
+        // =================================================
+        const items = [];
+        stagesData.forEach(item => {
+            const row = Number(item.row || 0);
+
+            if (!row) {
+                console.warn("Skipping item without valid row:", item);
+                return;
+            }
+            // =============================================
+            // البحث عن العنصر في DOM
+            // =============================================
+            const itemDiv = document.querySelector(`.stage-item[data-row="${row}"]`);
+
+            if (!itemDiv) {
+                console.warn("Stage item not found in DOM. Row:", row);
+                return;
+            }
+
+            // =============================================
+            // أزرار الحالة
+            // =============================================
+            const matchButton = itemDiv.querySelector(".stage-status-btn.match");
+            const notMatchButton = itemDiv.querySelector(".stage-status-btn.not-match");
+            const reasonInput = itemDiv.querySelector(".stage-reason textarea");
+            // =============================================
+            // تحديد القيمة
+            // =============================================
+            let value = "";
+
+            if (matchButton && matchButton.classList.contains("active")) {
+                value = "مطابق";
+            }
+            else if (notMatchButton && notMatchButton.classList.contains("active")) {
+                value = reasonInput ? reasonInput.value.trim(): "";
+            }
+
+            // =============================================
+            // إضافة البند للقائمة
+            // =============================================
+            items.push({
+                row: row,
+                value: value
+            });
+        });
+
+        // =================================================
+        // التأكد من وجود بنود
+        // =================================================
+        if (items.length === 0) {
+            throw new Error("لم يتم العثور على أي بنود صالحة للحفظ.");
+        }
+
+        console.log("Saving stages in ONE request:", items.length);
+        // =================================================
+        // تجهيز الطلب
+        // =================================================
+        const params = new URLSearchParams();
+        params.append("action", "saveStages");
+        params.append("branch", branch);
+        params.append("station", station);
+        params.append("items", JSON.stringify(items));
+        // =================================================
+        // إرسال طلب واحد فقط
+        // =================================================
+
+        const response = await fetch(preparingScriptURL,{
+                    method: "POST",
+                    body: params
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error("HTTP Error: " + response.status);
+        }
+
+        const result = await response.json();
+
+        console.log("Save stages result:", result);
+
+        // =================================================
+        // التحقق من النتيجة
+        // =================================================
+        if (!result || result.status !== "success") {
+            throw new Error(result.message || "فشل حفظ الـ Stages.");
+        }
+        // =================================================
+        // تحديث stagesData المحلي
+        // =================================================
+        stagesData.forEach(item => {
+            const row = Number(item.row || 0);
+            const savedItem = items.find(x => Number(x.row) === row);
+            if (!savedItem) {
+                return;
+            }
+            const value = String(savedItem.value || "").trim();
+            item.value = value;
+
+            if (value === "مطابق") {
+                item.status = "completed";
+            } else if (value) {
+                item.status = "note";
+            } else {
+                item.status = "";
+            }
+        });
+
+        // =================================================
+        // نجاح
+        // =================================================
+        alert("تم حفظ جميع بنود الـ Stages بنجاح");
+        // =================================================
+        // إعادة تحميل البيانات
+        // =================================================
+        await loadStages(currentStation);
+    }
+    catch (error) {
+        console.error("Save Stages Error:", error);
+        alert("حدث خطأ أثناء حفظ الـ Stages:\n" + error.message);
+    }
+    finally {
+
+        if (saveButton) {
+            saveButton.disabled = false;
+            saveButton.textContent = "Save Stages";
+        }
+    }
+}
+</script>
