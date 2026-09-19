@@ -1,0 +1,1326 @@
+*{
+    box-sizing:border-box;
+}
+/* ===== الصفحة بالكامل ===== */
+body {
+    margin: 0;
+    background: #f4f6fa;
+    font-family: "Segoe UI", sans-serif;
+}
+
+
+/* === TOPBAR === */
+.topbar {
+    width: 100%;
+    height: 65px;
+    background: rgba(135, 206, 250, 0.637);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    box-sizing: border-box;
+    border-style: groove;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 999;
+}
+/* ===== الجهة اليسار (Logout + Home) ===== */
+.left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* زر Logout على اليسار */
+.logout-button {
+    background: #3c94e7;
+    color: white;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: auto;
+}
+
+.logout-button:hover,
+.homepage-button:hover {
+    background: #c0392b;
+}
+.homepage-button{
+    background: #3c94e7;
+    color: white;
+    padding: 2px 4px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 15px;  /* المسافة بين الأزرار */
+}
+
+.homepage-button img{
+    width: 35px; 
+    height: 35px; 
+    object-fit: cover;
+}
+/* ===== الجهة اليمين (User Info + Logo) ===== */
+.right {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 12px;
+}
+/* === صندوق الـ Section بجانب الشعار === */
+.userinfo {
+    background: rgba(255, 255, 255, 0.733);
+    padding: 8px 14px;
+    border-radius: 10px;
+    border: 1px solid #d0d0d0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    min-width: 90px;
+    margin-right: 10px;
+}
+
+.userinfo label{
+    font-size: 13px;
+    font-weight: bold;
+    color: #333;
+    
+}
+
+.userinfo input{
+    padding: 4px;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    text-align:center;
+    width:110px;
+    font-weight:bold;
+}
+
+/* الشعار على أقصى اليمين */
+.logo {
+    
+    width:4%;
+}
+
+/* =========================================================
+   GENERAL
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Tahoma, Arial, sans-serif;
+    background: #f4f6f9;
+    color: #222;
+}
+
+button,
+input,
+select,
+textarea {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container {
+    width: 95%;
+    max-width: 1500px;
+    margin: 80px auto;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.page-header {
+    
+    color: black(255, 255, 255);
+    padding: 10px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    text-align: center; 
+    }
+
+.page-header h1 {
+    margin: 0 0 8px;
+    font-size: 25px;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    background: white;
+    padding: 15px;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+    margin-bottom: 20px;
+    
+}
+
+.toolbar input,
+.toolbar select {
+    padding: 10px 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 14px;
+   
+}
+
+.toolbar input {
+    min-width: 220px;
+}
+
+.btn {
+    border:black;
+    border-radius: 7px;
+    padding: 10px 17px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn-primary {
+    background: #3c94e7;
+    color: black;
+    font-weight: bold;
+    border-style:groove;
+}
+
+.btn-primary:hover {
+    background:#21bb88;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-success {
+    background: #198754;
+    color: white;
+}
+
+.btn-danger {
+    background: #dc3545;
+    color: white;
+}
+
+.small-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   YEAR INFO
+========================================================= */
+
+.year-info {
+    margin-right: auto;
+    color: #555;
+    font-size: 14px;
+}
+
+/* =========================================================
+   STATION PROGRESS
+========================================================= */
+
+.station-progress {
+    margin-top: 7px;
+    width: 100%;
+    max-width: 180px;
+}
+
+.progress-track {
+    width: 100%;
+    height: 8px;
+    background: #e5e7eb;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(
+        90deg,
+        #22c55e,
+        #16a34a
+    );
+    border-radius: 20px;
+    transition: width 0.5s ease;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3px;
+    font-size: 11px;
+    color: #666;
+}
+
+.progress-percent {
+    font-weight: bold;
+    color: #15803d;
+}
+
+/* =========================================================
+   TABLE
+========================================================= */
+
+.table-wrapper {
+    background: white;
+
+    border-radius: 10px;
+
+    overflow-x: auto;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 1050px;
+}
+
+th,
+td {
+    border: 1px solid #ddd;
+
+    padding: 10px;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+thead th {
+    background: #e9f2ff;
+
+    color: #174a7e;
+
+    font-weight: bold;
+}
+
+thead th:first-child {
+    position: sticky;
+
+    right: 0;
+
+    z-index: 3;
+
+    background: #0d6efd;
+
+    color: white;
+
+    min-width: 220px;
+}
+
+tbody td:first-child {
+    position: sticky;
+
+    right: 0;
+
+    z-index: 2;
+
+    background: white;
+}
+
+th .year {
+    display: block;
+
+    font-size: 11px;
+
+    color: #777;
+
+    margin-top: 3px;
+}
+
+
+/* =========================================================
+   ACTIVE MONTH
+========================================================= */
+
+.active-month {
+    background: #28a745 !important;
+
+    position: relative;
+}
+
+.active-month::after {
+    content: "✓";
+
+    color: white;
+
+    font-weight: bold;
+
+    font-size: 16px;
+}
+
+
+/* =========================================================
+   STATION CELL
+========================================================= */
+
+.station-cell {
+    text-align: right;
+
+    min-width: 220px;
+}
+
+.station-link {
+    color: #0d6efd;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+    text-decoration: underline;
+}
+
+.station-link:hover {
+    color: #084298;
+}
+
+.actions {
+    margin-top: 7px;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.empty-message {
+    padding: 30px !important;
+
+    color: #777;
+}
+
+
+/* =========================================================
+   STATION PAGE
+========================================================= */
+
+.station-page {
+    display: none;
+}
+
+.station-page-header {
+    background: white;
+    padding: 18px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.station-page-header h2 {
+    margin: 1 0 8px;
+    color: #0d6efd;
+}
+.station-period {
+    color: #666;
+    font-size: 14px;
+}
+
+
+/* =========================================================
+   FORM CARD
+========================================================= */
+
+.form-card {
+    background: white;
+
+    padding: 20px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.form-card h3 {
+    margin-top: 0;
+
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #eee;
+
+    color: #333;
+}
+
+.form-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 17px;
+}
+
+.field {
+    display: flex;
+
+    flex-direction: column;
+}
+
+.field.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    margin-bottom: 7px;
+
+    font-weight: bold;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+
+    padding: 10px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 7px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: #0d6efd;
+
+    box-shadow:
+        0 0 0 3px rgba(13,110,253,.1);
+}
+
+.field textarea {
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+/* =========================================================
+   COMPONENTS
+========================================================= */
+
+.components-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 10px;
+
+    margin-top: 15px;
+}
+
+.component-check {
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    padding: 10px;
+
+    background: #fafafa;
+
+    transition: .2s;
+}
+
+.component-check:hover {
+    border-color: #0d6efd;
+}
+
+.component-check.checked {
+    background: #e7f1ff;
+
+    border-color: #0d6efd;
+}
+
+.component-check label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+}
+
+.component-check input {
+    width: 18px;
+    height: 18px;
+}
+
+
+/* =========================================================
+   COMPONENT DATA
+========================================================= */
+
+#componentDataArea {
+    margin-top: 20px;
+}
+
+.component-card {
+    border: 1px solid #ddd;
+
+    border-radius: 10px;
+
+    overflow: hidden;
+
+    margin-bottom: 15px;
+
+    background: white;
+}
+
+.component-card-header {
+    background: #0d6efd;
+
+    color: white;
+
+    padding: 12px 15px;
+
+    font-weight: bold;
+}
+
+.component-card-body {
+    padding: 15px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 15px;
+}
+
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    background:
+        rgba(0,0,0,.5);
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.station-modal {
+    width: min(600px, 95%);
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 14px;
+
+    padding: 0;
+
+    box-shadow:
+        0 15px 50px rgba(0,0,0,.25);
+}
+
+
+/* =========================================================
+   MODAL HEADER
+========================================================= */
+
+.modal-header {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    padding: 18px 22px;
+
+    background: #0d6efd;
+
+    color: white;
+
+    border-radius:
+        14px 14px 0 0;
+}
+
+.modal-header h3 {
+    margin: 0;
+
+    font-size: 21px;
+}
+
+.modal-close {
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.18);
+
+    color: white;
+
+    font-size: 24px;
+
+    cursor: pointer;
+}
+
+.modal-close:hover {
+    background:
+        rgba(255,255,255,.3);
+}
+
+
+/* =========================================================
+   MODAL FORM
+========================================================= */
+
+.station-form {
+    padding: 22px;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 7px;
+
+    font-weight: 600;
+
+    color: #333;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+
+    padding: 11px 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 8px;
+
+    background: white;
+
+    font-size: 15px;
+
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+    border-color: #0d6efd;
+
+    box-shadow:
+        0 0 0 3px rgba(13,110,253,.1);
+}
+
+
+/* =========================================================
+   PERIOD SECTION
+========================================================= */
+
+.form-section {
+    margin-top: 20px;
+
+    padding: 16px;
+
+    background: #f7f9fc;
+
+    border: 1px solid #e1e5ea;
+
+    border-radius: 10px;
+}
+
+.form-section-title {
+    margin-bottom: 15px;
+
+    font-weight: bold;
+
+    color: #333;
+}
+
+.form-section-title span {
+    color: #888;
+
+    font-size: 13px;
+
+    font-weight: normal;
+}
+
+.date-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0,1fr));
+
+    gap: 15px;
+}
+
+.date-grid .form-group {
+    margin-bottom: 0;
+}
+
+.form-hint {
+    margin-top: 10px;
+
+    color: #777;
+
+    font-size: 13px;
+}
+
+
+/* =========================================================
+   MODAL ACTIONS
+========================================================= */
+
+.modal-actions {
+    display: flex;
+
+    gap: 10px;
+
+    margin-top: 22px;
+
+    padding-top: 18px;
+
+    border-top: 1px solid #eee;
+}
+
+.modal-actions button {
+    min-width: 120px;
+
+    padding: 11px 18px;
+
+    border: none;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+/* =====================================================
+   STATION PAGE
+===================================================== */
+
+#stationPage {
+    display: none;
+}
+
+.station-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+.station-header h2 {
+    color: #075985;
+    margin: 0;
+}
+
+.period-box {
+    background: #e0f2fe;
+    color: #075985;
+    padding: 13px;
+    border-radius: 8px;
+    margin: 18px 0;
+    font-weight: bold;
+}
+/* =========================================================
+   STATION TABS
+========================================================= */
+
+.station-tabs {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    margin: 20px 0 0;
+
+    padding: 0 10px;
+
+    border-bottom: 2px solid #e5e7eb;
+
+    direction: ltr;
+}
+
+
+.station-tab {
+    position: relative;
+
+    border: none;
+    background: transparent;
+
+    padding: 14px 25px;
+
+    font-size: 15px;
+    font-weight: 600;
+
+    color: #6b7280;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease;
+}
+
+
+.station-tab:hover {
+    color: #2563eb;
+    background: #f8fafc;
+}
+
+
+.station-tab.active {
+    color: #2563eb;
+}
+
+
+/* الخط الموجود أسفل الـ Tab المفتوح */
+
+.station-tab.active::after {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: -2px;
+
+    height: 3px;
+
+    background: #2563eb;
+
+    border-radius: 3px 3px 0 0;
+}
+
+
+/* =========================================================
+   TAB CONTENT
+========================================================= */
+
+.station-tab-content {
+    display: none;
+
+    padding-top: 20px;
+}
+
+
+.station-tab-content.active {
+    display: block;
+}
+
+
+/* =========================================================
+   EMPTY TAB MESSAGE
+========================================================= */
+
+.tab-placeholder {
+    padding: 30px;
+
+    text-align: center;
+
+    color: #777;
+
+    background: #f8fafc;
+
+    border: 1px dashed #cbd5e1;
+
+    border-radius: 8px;
+}
+
+/* =========================================================
+   STAGES CHECKLIST
+========================================================= */
+
+.stages-section {
+    margin-bottom: 25px;
+    border: 1px solid #e1e5ea;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.stages-section-title {
+    background: #f1f5f9;
+    color: #1e3a5f;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 14px 18px;
+    border-bottom: 1px solid #e1e5ea;
+    direction: rtl;
+    text-align: right;
+}
+
+.stage-item {
+    padding: 18px;
+    border-bottom: 1px solid #edf0f2;
+}
+
+.stage-item:last-child {
+    border-bottom: none;
+}
+
+.stage-question {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    direction: rtl;
+    text-align: right;
+}
+
+.stage-number {
+    min-width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e8f0fe;
+    color: #1d4ed8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.stage-text {
+    flex: 1;
+    line-height: 1.8;
+    font-size: 15px;
+    color: #333;
+}
+
+/* =========================================================
+   STAGE ACTIONS
+========================================================= */
+
+.stage-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 14px;
+    direction: ltr;
+}
+
+.stage-status-btn {
+    border: 1px solid #d1d5db;
+    background: white;
+    border-radius: 8px;
+    padding: 9px 18px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.stage-status-btn.match:hover,
+.stage-status-btn.match.active {
+    background: #dcfce7;
+    border-color: #22c55e;
+    color: #15803d;
+}
+
+.stage-status-btn.not-match:hover,
+.stage-status-btn.not-match.active {
+    background: #fee2e2;
+    border-color: #ef4444;
+    color: #b91c1c;
+}
+
+/* =========================================================
+   REASON
+========================================================= */
+
+.stage-reason {
+    display: none;
+    margin-top: 12px;
+}
+
+.stage-reason.show {
+    display: block;
+}
+
+.stage-reason label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    direction: rtl;
+    text-align: right;
+}
+
+.stage-reason textarea {
+    width: 100%;
+    min-height: 80px;
+    resize: vertical;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    padding: 10px;
+    box-sizing: border-box;
+    direction: rtl;
+    font-family: inherit;
+}
+
+.stage-reason textarea:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+.stages-loading {
+    text-align: center;
+    padding: 30px;
+    color: #777;
+}
+.stages-section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.stage-section-progress {
+    font-size: 14px;
+    font-weight: 700;
+    color: #198754;
+    background: #e8f7f0;
+    padding: 5px 12px;
+    border-radius: 15px;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .station-tabs {
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    .station-tab {
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+
+}
+
+.stages-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 10px;
+}
+
+.stages-tab {
+    border: none;
+    background: #f1f3f5;
+    color: #444;
+    padding: 11px 18px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+.stages-tab:hover {
+    background: #e2e6ea;
+}
+
+.stages-tab.active {
+    background: #0d6efd;
+    color: white;
+}
+
+.stages-tab-content {
+    display: none;
+}
+
+.stages-tab-content.active {
+    display: block;
+}
+
+/* =========================================================
+   STAGES INNER TABS
+   ========================================================= */
+
+.stages-inner-tabs {
+    width: 100%;
+    margin-top: 15px;
+}
+
+
+/* =========================================================
+   INNER TABS BUTTONS
+   ========================================================= */
+
+.stages-inner-tab-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+
+    border-bottom: 1px solid #ddd;
+}
+
+
+/* =========================================================
+   INNER TAB BUTTON
+   ========================================================= */
+
+.stages-inner-tab {
+    border: none;
+
+    background: #f1f3f5;
+
+    color: #444;
+
+    padding: 11px 18px;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    font-weight: 600;
+
+    font-size: 14px;
+
+    transition: 0.2s;
+}
+
+
+.stages-inner-tab:hover {
+    background: #e2e6ea;
+}
+
+
+.stages-inner-tab.active {
+    background: #0d6efd;
+    color: white;
+}
+
+
+/* =========================================================
+   INNER TAB CONTENT
+   مهم جدًا
+   ========================================================= */
+
+.stages-inner-tab-content {
+    width: 100%;
+}
+
+
+/*
+   إخفاء كل المحتويات
+*/
+
+.stages-inner-content {
+    display: none !important;
+}
+
+
+/*
+   إظهار المحتوى الخاص بالـ Tab النشط فقط
+*/
+
+.stages-inner-content.active {
+    display: block !important;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .components-grid {
+        grid-template-columns:
+            repeat(2, minmax(0,1fr));
+    }
+
+    .component-card-body {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .components-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .date-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions button {
+        width: 100%;
+    }
+
+}
