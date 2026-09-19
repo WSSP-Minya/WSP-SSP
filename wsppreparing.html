@@ -588,48 +588,50 @@ async function verifyPageAccess() {
     }
 }
 /* =========================================================
-   DENY PAGE ACCESS
+   DENY DATA ACCESS
 ========================================================= */
 function denyPageAccess(message) {
+
     pageAuthorized = false;
     // ==========================================
-    // إيقاف أي تحميل ظاهر
+    // مسح أي بيانات موجودة
+    // ==========================================
+    stations = [];
+
+    const tableHeader = document.getElementById("tableHeader");
+    const tableBody = document.getElementById("tableBody");
+
+    if (tableHeader) {
+        tableHeader.innerHTML = "";
+    }
+
+    if (tableBody) {
+        tableBody.innerHTML = `
+            <tr>
+                <td class="empty-message">
+                    ${message || "غير مصرح لك بالوصول إلى بيانات هذا القسم."}
+                </td>
+            </tr>
+        `;
+    }
+
+    // ==========================================
+    // منع فتح صفحة المحطة
     // ==========================================
 
-    const tablePage = document.getElementById("tablePage");
-    const stationPage = document.getElementById("stationPage");
+    currentStation = null;
 
-    if (tablePage) {
-        tablePage.style.display = "none";
-    }
+    const stationPage =  document.getElementById("stationPage");
 
     if (stationPage) {
         stationPage.style.display = "none";
     }
 
     // ==========================================
-    // إيقاف العمليات
-    // ==========================================
-    stations = [];
-
-    // ==========================================
-    // رسالة للمستخدم
+    // لا نحذف Session
     // ==========================================
 
-    alert(message || "غير مصرح لك بالدخول.");
-    // ==========================================
-    // حذف بيانات الجلسة
-    // ==========================================
-
-    sessionStorage.removeItem("department");
-    sessionStorage.removeItem("email");
-    sessionStorage.removeItem("role");
-
-    // ==========================================
-    // العودة لصفحة Login
-    // ==========================================
-
-    window.location.href = "login.html";
+    console.warn("Data access denied:", message);
 }
 
   /* =========================================================
@@ -1516,37 +1518,37 @@ function clearStationPeriod(stationName) {
 /* =========================================================
    PAGE INITIALIZATION
 ========================================================= */
-
 document.addEventListener("DOMContentLoaded", async function () {
         // ==========================================
-        // إخفاء الصفحة أثناء التحقق
+        // الصفحة نفسها تظهر طبيعيًا
         // ==========================================
-        document.getElementById("tablePage").style.display = "none";
-        document.getElementById("stationPage").style.display = "none";
+        const tablePage = document.getElementById("tablePage");
+
+        if (tablePage) {
+            tablePage.style.display = "block";
+        }
         // ==========================================
-        // التحقق من المستخدم والقسم أولًا
+        // عرض القسم الموجود في Session
+        // ==========================================
+        document.getElementById("section").value = department || "";
+        // ==========================================
+        // التحقق من المستخدم والقسم
         // ==========================================
         const authorized = await verifyPageAccess();
         // ==========================================
-        // إذا فشل التحقق
-        // لا يتم تحميل أي بيانات
+        // غير مصرح
+        // لا تحمل أي بيانات
         // ==========================================
-
         if (!authorized) {
             return;
         }
-
-
         // ==========================================
-        // بعد نجاح التحقق فقط
+        // مصرح
+        // الآن فقط نبدأ تحميل البيانات
         // ==========================================
-
         initializeYearSelector();
         loadStations();
 
-
-        // إظهار الصفحة
-        document.getElementById("tablePage").style.display = "block";
     }
 );
 
