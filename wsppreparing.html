@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html dir="ltr">
 
@@ -484,11 +483,154 @@
 
 </html>
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbx58UbL-SAWDB6BJ9k4D3oMyeNL9AzVDIgNSKAqPImqcMk-bEF10jxAbtNbf-ZCVVQgHA/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwnQ1m7kEpUwz7QPqCWWHnquL-lhQcGygGPxqkOPcKaqm67swjyBzbARpiqrD7lMco/exec";
   const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
-  const department = sessionStorage.getItem("department");
-  document.getElementById("section").value = department || "";
 
+   const userEmail = sessionStorage.getItem("email");
+   const department = sessionStorage.getItem("department");
+   const userRole = sessionStorage.getItem("role");
+
+
+/* =========================================================
+   ACCESS STATE
+========================================================= */
+let pageAuthorized = false;
+/* =========================================================
+   DISPLAY DEPARTMENT
+========================================================= */
+document.getElementById("section").value =  department || "";
+/* =========================================================
+   VERIFY USER + DEPARTMENT
+========================================================= */
+
+async function verifyPageAccess() {
+
+    // ==========================================
+    // منع تحميل البيانات بدون Session
+    // ==========================================
+    if (!userEmail || !department) {
+        denyPageAccess(
+            "لم يتم تسجيل الدخول."
+        );
+        return false;
+    }
+    try {
+        const url =
+            scriptURL +
+            "?action=verifyPageAccess" +
+            "&email=" +
+            encodeURIComponent(userEmail) +
+            "&department=" +
+            encodeURIComponent(department);
+
+        console.log("Checking page access...");
+
+        const response =
+            await fetch(url, {
+                method: "GET",
+                cache: "no-store"
+            });
+
+        if (!response.ok) {
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+        }
+
+        const result = await response.json();
+        console.log("Page access result:", result);
+
+
+        // ======================================
+        // المستخدم غير مصرح
+        // ======================================
+
+        if (!result || result.status !== "authorized") {
+            denyPageAccess(result?.message ||  "غير مصرح لك بالدخول إلى هذا القسم.");
+            return false;
+        }
+
+
+        // ======================================
+        // تأكيد البيانات القادمة من السيرفر
+        // ======================================
+
+        if (String(result.email || "").trim() !== String(userEmail || "").trim()) {
+            denyPageAccess("فشل التحقق من هوية المستخدم.");
+            return false;
+        }
+
+
+        if (String(result.department || "").trim() !== String(department || "").trim()) {
+            denyPageAccess("القسم غير مصرح به لهذا المستخدم.");
+            return false;
+        }
+
+
+        // ======================================
+        // Authorized
+        // ======================================
+
+        pageAuthorized = true;
+
+        console.log(
+            "User authorized:",
+            result.email,
+            result.department
+        );
+        return true;
+    }
+    catch (error) {
+        console.error("Access verification error:", error);
+        denyPageAccess("تعذر التحقق من صلاحية المستخدم.");
+        return false;
+    }
+}
+/* =========================================================
+   DENY PAGE ACCESS
+========================================================= */
+function denyPageAccess(message) {
+    pageAuthorized = false;
+    // ==========================================
+    // إيقاف أي تحميل ظاهر
+    // ==========================================
+
+    const tablePage = document.getElementById("tablePage");
+    const stationPage = document.getElementById("stationPage");
+
+    if (tablePage) {
+        tablePage.style.display = "none";
+    }
+
+    if (stationPage) {
+        stationPage.style.display = "none";
+    }
+
+    // ==========================================
+    // إيقاف العمليات
+    // ==========================================
+    stations = [];
+
+    // ==========================================
+    // رسالة للمستخدم
+    // ==========================================
+
+    alert(message || "غير مصرح لك بالدخول.");
+    // ==========================================
+    // حذف بيانات الجلسة
+    // ==========================================
+
+    sessionStorage.removeItem("department");
+    sessionStorage.removeItem("email");
+    sessionStorage.removeItem("role");
+
+    // ==========================================
+    // العودة لصفحة Login
+    // ==========================================
+
+    window.location.href = "login.html";
+}
 
   /* =========================================================
     GLOBAL VARIABLES
