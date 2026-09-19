@@ -1513,12 +1513,43 @@ function clearStationPeriod(stationName) {
     });
 }
 
+/* =========================================================
+   PAGE INITIALIZATION
+========================================================= */
+
+document.addEventListener("DOMContentLoaded", async function () {
+        // ==========================================
+        // إخفاء الصفحة أثناء التحقق
+        // ==========================================
+        document.getElementById("tablePage").style.display = "none";
+        document.getElementById("stationPage").style.display = "none";
+        // ==========================================
+        // التحقق من المستخدم والقسم أولًا
+        // ==========================================
+        const authorized = await verifyPageAccess();
+        // ==========================================
+        // إذا فشل التحقق
+        // لا يتم تحميل أي بيانات
+        // ==========================================
+
+        if (!authorized) {
+            return;
+        }
 
 
-document.addEventListener("DOMContentLoaded", function () {
-    initializeYearSelector();
-    loadStations();
-});
+        // ==========================================
+        // بعد نجاح التحقق فقط
+        // ==========================================
+
+        initializeYearSelector();
+        loadStations();
+
+
+        // إظهار الصفحة
+        document.getElementById("tablePage").style.display = "block";
+    }
+);
+
 
 
 /* =========================================================
