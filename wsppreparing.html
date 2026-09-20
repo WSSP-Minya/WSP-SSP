@@ -86,31 +86,20 @@
 <!-- =========================================================
      STATION PAGE
 ========================================================= -->
-
-<div id="stationPage"
-     class="station-page">
-
+<div id="stationPage" class="station-page">
     <!-- =====================================================
          STATION HEADER
     ====================================================== -->
-
     <div class="station-page-header">
-
-        <button
-            class="btn btn-secondary"
-            onclick="showTablePage()">
+        <button class="btn btn-secondary" onclick="showTablePage()">
             Return
         </button>
 
         <h2 id="stationTitle" dir="rtl"></h2>
 
-        <div
-            id="stationPeriod"
-            class="station-period">
+        <div id="stationPeriod" class="station-period">
         </div>
-
     </div>
-
 
     <!-- =====================================================
          TABS
@@ -1116,6 +1105,9 @@ function renderTable() {
                   type="button"
                   class="btn-danger"
                   title="Clear period"
+                  ${department !== "WSP"
+                        ? 'disabled style="opacity:0.5;pointer-events:none;"'
+                        : ''}
                   onclick="clearStationPeriod('${escapeHTML(station.name)}')">
                   🗑️
               </button>
@@ -1547,6 +1539,16 @@ document.addEventListener("DOMContentLoaded", async function () {
         if (!authorized) {
             return;
         }
+       //فاعلية ازرار ل WSP فقط
+        const addStationButton =  document.getElementById("addstation-button");
+        const 
+    
+        if (department !== "WSP") {
+        
+            addStationButton.disabled = true;
+            addStationButton.style.opacity = "0.5";
+            addStationButton.style.pointerEvents = "none";
+        }
         // ==========================================
         // مصرح
         // الآن فقط نبدأ تحميل البيانات
@@ -1579,6 +1581,11 @@ function openStation(stationName) {
     if (!station) {
 
         alert("لم يتم العثور على المحطة: " + stationName);
+        return;
+    }
+    // صلاحية فتح المحطة
+    if (department !== "WSP" && String(station.branch || "").trim() !== String(department || "").trim()) {
+        alert("غير مصرح لك بالدخول إلى هذه المحطة.");
         return;
     }
     // =====================================================
