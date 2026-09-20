@@ -2200,28 +2200,23 @@ function loadStages(station) {
 
            stagesData = result.data || [];
 
-            console.log(
-              "Stages loaded:",
-              stagesData
-            );
+            console.log("Stages loaded:", stagesData);
+            console.log("Total items:", result.totalItems);
+            console.log("Completed:", result.completed);
+            console.log("Overall progress:", result.overallProgress + "%");
 
-            console.log(
-              "Total items:",
-              result.totalItems
-            );
-
-            console.log(
-              "Completed:",
-              result.completed
-            );
-
-            console.log(
-              "Overall progress:",
-              result.overallProgress + "%"
-            );
+            if (department === "WSP") {
+                // WSP يرى جميع البنود
+                stagesData = allStages;
+            } else {
+                stagesData = allStages.filter(item => {
+            const responsible = String(item.responsible || "").trim();
+             return
+                 ( responsible === "branch" ||  responsible === "التخطيط" || responsible === "التشغيل والصيانة - جنوب");
+                });
+            }
 
             renderStages();
-
         })
 
         .catch(error => {
