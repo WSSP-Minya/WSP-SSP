@@ -218,11 +218,11 @@
             waterMonitoringButton.style.pointerEvents = "none";
         }
         // تعطيل WSP-preparing للجهات الخارجية 
-       // if (wspPreparingBlocked.includes(dep)) {
-         //   wspPreparingButton.disabled = true;
-           // wspPreparingButton.style.opacity = "0.5";
-            //wspPreparingButton.style.pointerEvents = "none";
-        //}
+        if (wspPreparingBlocked.includes(dep)) {
+            wspPreparingButton.disabled = true;
+            wspPreparingButton.style.opacity = "0.5";
+            wspPreparingButton.style.pointerEvents = "none";
+        }
         
         // تعطيل Reports لأي قسم غير مسموح له
         if (!reportsAllowed.includes(dep)) {
@@ -244,14 +244,14 @@
             addStationButton.style.opacity = "0.5";
             addStationButton.style.pointerEvents = "none";
         }
-        if (userRole !== "Admin"){
-            addUserButton.disabled = true;
-            addUserButton.style.opacity = "0.5";
-            addUserButton.style.pointerEvents = "none"; 
-            wspPreparingButton.disabled = true;
-            wspPreparingButton.style.opacity = "0.5";
-            wspPreparingButton.style.pointerEvents = "none";
-        }
+        //if (userRole !== "Admin"){
+          //  addUserButton.disabled = true;
+          //  addUserButton.style.opacity = "0.5";
+         //   addUserButton.style.pointerEvents = "none"; 
+         //   wspPreparingButton.disabled = true;
+         //   wspPreparingButton.style.opacity = "0.5";
+         //   wspPreparingButton.style.pointerEvents = "none";
+       // }
             
             
             // ================= Users Management =================
