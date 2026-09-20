@@ -2184,20 +2184,7 @@ function loadStages(station) {
             console.log("Total items:", result.totalItems);
             console.log("Completed:", result.completed);
             console.log("Overall progress:", result.overallProgress + "%");
-            const branches = [
-                "العدوه",
-                "مغاغة",
-                "بنى مزار",
-                "مطاى",
-                "سمالوط",
-                "المنيا",
-                "ابوقرقاص",
-                "ملوى",
-                "ديرمواس"
-            ];
             
-            const isBranchUser = branches.includes(branch);
-
             if (department === "WSP") {
                 // WSP يرى جميع البنود
                 stagesData = allStages;
