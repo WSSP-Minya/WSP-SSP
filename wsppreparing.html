@@ -472,7 +472,7 @@
 
 </html>
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbwnQ1m7kEpUwz7QPqCWWHnquL-lhQcGygGPxqkOPcKaqm67swjyBzbARpiqrD7lMco/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbx4ECAaZs2t9p9zEjUy0mZXkDp8PV_-HmnlJjnlRLwIjkdhwl26Vqkib8V4Li6Za8djmg/exec";
   const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
 
    const userEmail = sessionStorage.getItem("email");
@@ -2115,21 +2115,6 @@ function loadGeneralData(station) {
 ========================================================= */
 
 let stagesData = [];
-
-/*
-    كل عنصر سيكون بهذا الشكل:
-
-    {
-        row: 2,
-        number: "1",
-        item: "هل تم تشكيل لجنة...",
-        responsible: "wsp",
-        section: "المتطلبات الإدارية",
-        status: "مطابق"
-    }
-*/
-
-
 /* =========================================================
    LOAD STAGES
 ========================================================= */
@@ -2140,11 +2125,8 @@ function loadStages(station) {
         return;
     }
 
-    const container =
-        document.getElementById("stagesChecklist");
-
-    const loading =
-        document.getElementById("stagesLoading");
+    const container = document.getElementById("stagesChecklist");
+    const loading = document.getElementById("stagesLoading");
 
     if (!container) {
         return;
@@ -2168,7 +2150,6 @@ function loadStages(station) {
 
     fetch(url)
         .then(response => {
-
             if (!response.ok) {
                 throw new Error(
                     "HTTP Error: " +
@@ -2180,7 +2161,6 @@ function loadStages(station) {
         })
 
         .then(result => {
-
             console.log("Stages response:", result);
 
             if (loading) {
