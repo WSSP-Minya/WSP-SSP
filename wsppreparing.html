@@ -2190,9 +2190,9 @@ function loadStages(station) {
                 stagesData = allStages;
             } else {
                 stagesData = allStages.filter(item => {
-            const responsible = String(item.responsible || "").trim();
+            const responsibility = String(item.responsibility || "").trim();
              return
-                 ( responsible === "branch" ||  responsible === "التخطيط" || responsible === "التشغيل والصيانة - جنوب");
+                 ( responsibility === "branch" ||  responsibility === "التخطيط" || responsibility === "التشغيل والصيانة - جنوب");
                 });
             }
 
