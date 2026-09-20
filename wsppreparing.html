@@ -2192,7 +2192,7 @@ function loadStages(station) {
                 stagesData = allStages.filter(item => {
             const responsibility = String(item.responsibility || "").trim();
              return
-                 ( responsibility === "branch" ||  responsibility === "التخطيط" || responsibility === "التشغيل والصيانة - جنوب");
+                 ( responsibility === "branch" ||  responsibility.includes("wsp, branch") || responsibility.includes("branch, wsp"));
                 });
             }
 
