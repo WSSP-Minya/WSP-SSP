@@ -1583,7 +1583,7 @@ function openStation(stationName) {
     }
     // صلاحية فتح المحطة
     if (department !== "WSP" && String(station.branch || "").trim() !== String(department || "").trim()) {
-        alert("غير مصرح لك بالدخول إلى هذه المحطة.");
+        alert("غير مصرح لك بالدخول لهذه المحطة.");
         return;
     }
     // =====================================================
