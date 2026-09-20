@@ -2191,8 +2191,7 @@ function loadStages(station) {
             } else {
                 stagesData = allStages.filter(item => {
             const responsibility = String(item.responsibility || "").trim().toLowerCase();
-             return
-                 responsibility.includes("branch");
+             return responsibility.includes("branch");
                 });
             }
 
