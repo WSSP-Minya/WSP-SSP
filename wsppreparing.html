@@ -2190,7 +2190,7 @@ function loadStages(station) {
                 stagesData = allStages;
             } else {
                 stagesData = allStages.filter(item => {
-            const responsibility = String(item.responsibility || "").trim();
+            const responsibility = String(item.responsibility || "").trim().toLowerCase();
              return
                  ( responsibility === "branch" ||  responsibility.includes("wsp, branch") || responsibility.includes("branch, wsp"));
                 });
