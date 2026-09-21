@@ -1722,8 +1722,10 @@ const components = {
 
 function getCurrentComponents() {
 
-    const type = document.getElementById("type").value;
-    return components[type] || [];
+    const selectedTypes = Array.from(document.getElementById("type").selectedOptions).map(option => option.value);
+    const allComponents = selectedTypes.flatMap(type => components[type] || []);
+
+    return [...new Set(allComponents)];
 }
 
 /* =========================================================
