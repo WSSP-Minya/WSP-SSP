@@ -1722,9 +1722,15 @@ const components = {
 
 function getCurrentComponents() {
 
-    const selectedTypes = Array.from(document.getElementById("type").selectedOptions).map(option => option.value);
-    const allComponents = selectedTypes.flatMap(type => components[type] || []);
-
+    const type = document.getElementById("type").value;
+    if (!type) {
+        return [];
+    }
+    // تقسيم النوع المركب
+    const types = type.split("+").map(t => t.trim());
+    // تجميع المكونات لكل الأنواع
+    const allComponents = types.flatMap(t => components[t] || []);
+    // إزالة المكونات المكررة
     return [...new Set(allComponents)];
 }
 
