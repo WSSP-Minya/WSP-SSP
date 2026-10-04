@@ -498,11 +498,9 @@
   const scriptURL = "https://script.google.com/macros/s/AKfycbzvzPSNK0-be96rrtgX0HW3tezDVOFRenoWdFUkXVnQb3RQl2aLjlV4GAQLnR4-oGGAtA/exec";
   const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
 
-   const userEmail = "mohammedalbadr20@gmail.com";
-   const department = "WSP";
-   const userRole = "admin";
-
-
+   const userEmail = sessionStorage.getItem("email");
+   const department = sessionStorage.getItem("department");
+   const userRole = sessionStorage.getItem("role");
 /* =========================================================
    ACCESS STATE
 ========================================================= */
@@ -624,19 +622,15 @@ function denyPageAccess(message) {
     // ==========================================
     // منع فتح صفحة المحطة
     // ==========================================
-
     currentStation = null;
 
     const stationPage =  document.getElementById("stationPage");
-
     if (stationPage) {
         stationPage.style.display = "none";
     }
-
     // ==========================================
     // لا نحذف Session
     // ==========================================
-
     console.warn("Data access denied:", message);
 }
 
