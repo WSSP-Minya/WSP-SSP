@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html dir="ltr">
 
 <head>
@@ -7,7 +8,6 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="wsppreparing.css">
-
 <title>WSP-Preparing</title>
 
 </head>
@@ -358,17 +358,40 @@
 
             <h3>Technical Features</h3>
 
-            <div id="technicalFeaturesContent">
+            <div id="technicalFeaturesContent" class="technical-features-container">
 
-                <!--
-                    ضع هنا Technical Features لاحقًا
-                -->
+                <!-- =====================================================
+                    TECHNICAL FEATURES EMPTY STATE
+                ====================================================== -->
 
-                <p class="tab-placeholder">
-                    Technical features information will be added here.
-                </p>
+                <div
+                    id="technicalFeaturesEmpty"
+                    class="technical-features-empty">
+
+                    <div class="technical-empty-icon">
+                        ⚙️
+                    </div>
+
+                    <h4>No Technical Features</h4>
+
+                    <p>
+                        Select an Essential Component to enter its technical features.
+                    </p>
+
+                </div>
+                <!-- =====================================================
+                    TECHNICAL FEATURES COMPONENTS
+                    JavaScript will add components here
+                ====================================================== -->
+
+                <div
+                    id="technicalFeaturesComponents"
+                    class="technical-features-components">
+                </div>
+               
 
             </div>
+
 
         </div>
     </div>
@@ -472,12 +495,12 @@
 
 </html>
 <script>
-  const scriptURL = "https://script.google.com/macros/s/AKfycbzvzPSNK0-be96rrtgX0HW3tezDVOFRenoWdFUkXVnQb3RQl2aLjlV4GAQLnR4-oGGAtA/exec";
+  const scriptURL = "https://script.google.com/macros/s/AKfycbwKI2UTXIWcF2TkkJjCJG0LeDeTq3kqXd5kTYmhaC1RklsoPFML9KhyxfPTdBU89i9-DA/exec";
   const preparingScriptURL = "https://script.google.com/macros/s/AKfycbxoEv2vMzrlj-ruteSaxzbo2uRr-xmIO2GlsgJsh8gVMPmWvF_ARhMFv3JpNzK5Hrqf/exec";
 
-   const userEmail = sessionStorage.getItem("email");
-   const department = sessionStorage.getItem("department");
-   const userRole = sessionStorage.getItem("role");
+   const userEmail = "mohammedalbadr20@gmail.com";
+   const department = "WSP";
+   const userRole = "admin";
 
 
 /* =========================================================
@@ -528,7 +551,7 @@ async function verifyPageAccess() {
         }
 
         const result = await response.json();
-        console.log("Page access result:", result);
+        
 
 
         // ======================================
@@ -539,24 +562,18 @@ async function verifyPageAccess() {
             denyPageAccess(result?.message ||  "غير مصرح لك بالدخول إلى هذا القسم.");
             return false;
         }
-
-
         // ======================================
         // تأكيد البيانات القادمة من السيرفر
         // ======================================
-
         if (String(result.email || "").trim() !== String(userEmail || "").trim()) {
             denyPageAccess("فشل التحقق من هوية المستخدم.");
             return false;
         }
 
-
         if (String(result.department || "").trim() !== String(department || "").trim()) {
             denyPageAccess("القسم غير مصرح به لهذا المستخدم.");
             return false;
         }
-
-
         // ======================================
         // Authorized
         // ======================================
@@ -658,14 +675,32 @@ function denyPageAccess(message) {
         .replace(/'/g, "&#039;");
 }
 
-  //تحميل المحطات
-function loadStations() {
+// =========================================================
+// LOAD STATIONS - FASTER VERSION
+// =========================================================
+let stationsLoading = false;
+let stationsLoadController = null;
+
+async function loadStations() {
+
     if (!pageAuthorized) {
-            console.warn(
-                "loadStations blocked: user is not authorized."
-            );
-            return;
-        }
+        console.warn("loadStations blocked: user is not authorized.");
+        return;
+    }
+
+    // منع تشغيل تحميل جديد أثناء وجود تحميل حالي
+    if (stationsLoading) {
+        return;
+    }
+
+    stationsLoading = true;
+
+    // إنشاء Controller جديد للتحميل الحالي
+    const controller = new AbortController();
+    stationsLoadController = controller;
+
+    const signal = controller.signal;
+
     const branches = [
         "العدوه",
         "مغاغة",
@@ -678,71 +713,104 @@ function loadStations() {
         "ديرمواس"
     ];
 
-    // تصفير البيانات قبل التحميل
-    stations = [];
+    try {
 
-    const requests = branches.map(branch => {
+        // =====================================================
+        // تحميل جميع الفروع بالتوازي
+        // =====================================================
+        const results = await Promise.all(
+            branches.map(branch => {
 
-        const url = scriptURL +"?action=getStations&branch=" +encodeURIComponent(branch);
+                const url =
+                    scriptURL +
+                    "?action=getStations&branch=" +
+                    encodeURIComponent(branch);
 
-        return fetch(url)
-            .then(response => response.json())
-            .then(data => {
+                return fetch(url, {
+                    method: "GET",
+                    cache: "no-store",
+                    signal: signal
+                })
+                .then(response => {
 
-                console.log(
-                    "Stations response for",
-                    branch,
-                    data
-                );
+                    if (!response.ok) {
+                        throw new Error(
+                            "HTTP " + response.status +
+                            " - " + branch
+                        );
+                    }
 
-                if (data.status !== "success") {
+                    return response.json();
+                })
+                .then(data => {
+
+                    if (!data || data.status !== "success") {
+                        return [];
+                    }
+
+                    const stationNames = Array.isArray(data.stations) ? data.stations : [];
+                    const fromDates = Array.isArray(data.fromDates) ? data.fromDates : [];
+                    const toDates = Array.isArray(data.toDates) ? data.toDates : [];
+                    const branchStations = new Array(stationNames.length);
+
+                    for (let i = 0; i < stationNames.length; i++) {
+
+                        branchStations[i] = {
+                            name: stationNames[i],
+                            branch: branch,
+                            start: convertToMonth(fromDates[i]),
+                            end: convertToMonth(toDates[i])
+                        };
+                    }
+                    return branchStations;
+                })
+                .catch(error => {
+                    // الطلب تم إلغاؤه
+                    if (error.name === "AbortError") {
+                        return [];
+                    }
+                    console.error(
+                        "Error loading branch:",
+                        branch,
+                        error
+                    );
                     return [];
-                }
-
-                const result = [];
-
-                const stationNames = data.stations || [];
-                
-                const fromDates = data.fromDates || [];
-                const toDates = data.toDates || [];
-
-                /*مصفوفة للمحطات لاستدعاء البيانات الخاصة بها */
-
-                for (let i = 0; i < stationNames.length; i++) {
-
-                    result.push({
-                        name: stationNames[i],
-                        branch: branch,
-                        start: convertToMonth(fromDates[i]),
-                        end: convertToMonth(toDates[i])
-                    });
-                }
-                return result;
+                });
             })
-            .catch(error => {
-                console.error("Error loading branch:", branch, error);
-                return [];
-            });
-    });
+        );
+        // =====================================================
+        // التأكد أن الصفحة ما زالت مصرح بها
+        // =====================================================
+        if (!pageAuthorized || signal.aborted) {
+            return;
+        }
+        // =====================================================
+        // تجميع المحطات
+        // =====================================================
+        stations = results.flat();
+        // =====================================================
+        // رسم الجدول مرة واحدة فقط
+        // =====================================================
+        renderTable();
+    }
+    catch (error) {
 
-
-    Promise.all(requests)
-        .then(results => {
-
-            // تجميع جميع الفروع
-            stations = results.flat();
-
-            console.log("All stations loaded:", stations);
-            renderTable();
-        })
-        .catch(error => {
+        if (error.name !== "AbortError") {
             console.error("Error loading all stations:", error);
+
             stations = [];
             renderTable();
-        });
+        }
+    }
+    finally {
+
+        // لا نسمح لطلب قديم بتغيير حالة طلب أحدث
+        if (stationsLoadController === controller) {
+            stationsLoadController = null;
+            stationsLoading = false;
+        }
+    }
 }
-
-
 // =========================================================
   // INITIALIZE
 //=========================================================
@@ -764,12 +832,9 @@ function initializeYearSelector() {
     }
     updateYearInfo();
 }
-
-
 /* =========================================================
    CHANGE YEAR
 ========================================================= */
-
 function changeTableYear() {
 
     currentTableYear = parseInt(document.getElementById("tableYear").value);
@@ -777,12 +842,9 @@ function changeTableYear() {
     updateYearInfo();
     renderTable();
 }
-
-
 /* =========================================================
    YEAR INFO
 ========================================================= */
-
 function updateYearInfo() {
     document.getElementById("yearInfo").textContent =
         "From July " + currentTableYear + " To June " + (currentTableYear + 1);
@@ -790,7 +852,6 @@ function updateYearInfo() {
 /* =========================================================
    GET TABLE MONTHS
 ========================================================= */
-
 function getTableMonths() {
 
     const result = [];
@@ -823,7 +884,6 @@ function getTableMonths() {
 /* =========================================================
    GET MONTHS BETWEEN TWO DATES
 ========================================================= */
-
 function getMonthsBetween(start, end) {
 
     const result = [];
@@ -838,10 +898,7 @@ function getMonthsBetween(start, end) {
     let year = startYear;
     let month = startMonth;
 
-    while (
-        year < endYear ||
-        (year === endYear && month <= endMonth)
-    ) {
+    while (year < endYear || (year === endYear && month <= endMonth)) {
         result.push({
             month: month,
             year: year,
@@ -862,7 +919,6 @@ function getMonthsBetween(start, end) {
 /* =========================================================
    GET STATION PROGRESS
 ========================================================= */
-
 async function getStationProgress(station) {
 
     if (!station || !station.branch || !station.name) {
@@ -870,7 +926,6 @@ async function getStationProgress(station) {
     }
 
     try {
-
         const url =
             preparingScriptURL +
             "?action=getStages" +
@@ -887,14 +942,9 @@ async function getStationProgress(station) {
 
         const result = await response.json();
 
-        if (
-            result &&
-            result.status === "success"
-        ) {
+        if (result && result.status === "success") {
 
-            const progress =
-                Number(result.overallProgress);
-
+            const progress = Number(result.overallProgress);
             if (Number.isFinite(progress)) {
                 return Math.max(0, Math.min(100, progress));
             }
@@ -902,95 +952,134 @@ async function getStationProgress(station) {
 
     }
     catch (error) {
-
         console.error(
             "Error loading progress:",
             station.name,
             error
         );
-
     }
-
     return 0;
 }
+// =========================================================
+// RENDER TABLE - OPTIMIZED
+// =========================================================
 
-/* =========================================================
-   RENDER TABLE
-========================================================= */
+let progressRequestId = 0;
 
 function renderTable() {
 
-    const header = document.getElementById("tableHeader");
-    const body = document.getElementById("tableBody");
+    const header =
+        document.getElementById("tableHeader");
+
+    const body =
+        document.getElementById("tableBody");
+
+    const searchInput =
+        document.getElementById("searchInput");
+
+    if (!header || !body) {
+        return;
+    }
+
 
     // =====================================================
     // SEARCH
     // =====================================================
 
-    const search = document
-        .getElementById("searchInput")
-        .value
-        .trim()
-        .toLowerCase();
+    const search =
+        searchInput
+            ? searchInput.value.trim().toLowerCase()
+            : "";
+
+
     // =====================================================
-    // تحديد المحطات
+    // FILTER STATIONS
     // =====================================================
-    let filtered = [];
-    // =====================================================
-    // Search
-    // =====================================================
+
+    let filtered;
+
+
     if (search) {
+
         filtered = stations.filter(station => {
+
             const stationName =
                 String(station.name || "")
                     .trim()
                     .toLowerCase();
+
             return stationName.includes(search);
+
         });
+
     }
-    // =====================================================
-    // العام المالي
-    // =====================================================
     else {
-        const tableStart = currentTableYear + "-07";
-        const tableEnd = (currentTableYear + 1) + "-06";
+
+        const tableStart =
+            currentTableYear + "-07";
+
+        const tableEnd =
+            (currentTableYear + 1) + "-06";
 
 
         filtered = stations.filter(station => {
-            if (!station.start || !station.end) {
+
+            if (
+                !station.start ||
+                !station.end
+            ) {
                 return false;
             }
+
             return (
                 station.start <= tableEnd &&
                 station.end >= tableStart
             );
+
         });
+
     }
+
+
     // =====================================================
-    // تحديد شهور الجدول
+    // TABLE MONTHS
     // =====================================================
-    let tableMonths = [];
-    // =====================================================
-    // SEARCH MODE
-    // =====================================================
-    if (search && filtered.length > 0) {      
+
+    let tableMonths;
+
+
+    if (
+        search &&
+        filtered.length > 0
+    ) {
+
         let minStart = null;
         let maxEnd = null;
-        filtered.forEach(station => {
-            if (station.start) {
-                if (!minStart || station.start < minStart) {
-                    minStart = station.start;
-                }
+
+
+        for (const station of filtered) {
+
+            if (
+                station.start &&
+                (!minStart ||
+                    station.start < minStart)
+            ) {
+                minStart = station.start;
             }
 
-            if (station.end) {
-                if (!maxEnd || station.end > maxEnd) {
-                    maxEnd = station.end;
-                }
-            }
-        });
 
-         if (minStart && maxEnd) {
+            if (
+                station.end &&
+                (!maxEnd ||
+                    station.end > maxEnd)
+            ) {
+                maxEnd = station.end;
+            }
+
+        }
+
+
+        if (minStart && maxEnd) {
 
             tableMonths =
                 getMonthsBetween(
@@ -998,212 +1087,395 @@ function renderTable() {
                     maxEnd
                 );
 
-        }  
-        else {
-            tableMonths = getTableMonths();
         }
+        else {
+
+            tableMonths =
+                getTableMonths();
+
+        }
+
     }
-    // =====================================================
-    // NORMAL MODE
-    // =====================================================
     else {
-        tableMonths = getTableMonths();
+
+        tableMonths =
+            getTableMonths();
+
     }
 
+
     // =====================================================
-    // HEADER
+    // BUILD HEADER
     // =====================================================
 
-    header.innerHTML = "";
+    const headerFragment =
+        document.createDocumentFragment();
 
-    const headerRow = document.createElement("tr");
-    const stationHeader = document.createElement("th");
-    stationHeader.textContent = "Station";
-    headerRow.appendChild(stationHeader);
-    tableMonths.forEach(item => {
+    const headerRow =
+        document.createElement("tr");
 
-        const th = document.createElement("th");
+
+    const stationHeader =
+        document.createElement("th");
+
+    stationHeader.textContent =
+        "Station";
+
+    headerRow.appendChild(
+        stationHeader
+    );
+
+
+    for (const item of tableMonths) {
+
+        const th =
+            document.createElement("th");
 
         th.innerHTML =
-            escapeHTML(monthNames[item.month]) +
+            escapeHTML(
+                monthNames[item.month]
+            ) +
             `<span class="year">${item.year}</span>`;
 
         headerRow.appendChild(th);
-    });
 
-    header.appendChild(headerRow);
+    }
+
+
+    headerFragment.appendChild(
+        headerRow
+    );
+
+
     // =====================================================
-    // BODY
+    // REPLACE HEADER ONCE
     // =====================================================
-    body.innerHTML = "";
+
+    header.replaceChildren(
+        headerFragment
+    );
+
+
     // =====================================================
-    // NO DATA
+    // EMPTY RESULT
     // =====================================================
+
     if (filtered.length === 0) {
 
-        const row = document.createElement("tr");
+        const row =
+            document.createElement("tr");
 
-        const cell = document.createElement("td");
+        const cell =
+            document.createElement("td");
 
-        cell.colSpan = tableMonths.length + 1;
-        cell.className = "empty-message";
-        cell.textContent = "No Station Found";
+        cell.colSpan =
+            tableMonths.length + 1;
+
+        cell.className =
+            "empty-message";
+
+        cell.textContent =
+            "No Station Found";
+
         row.appendChild(cell);
-        body.appendChild(row);
+
+        body.replaceChildren(row);
+
         return;
     }
+
+
     // =====================================================
-    // STATIONS
+    // BUILD ALL ROWS IN MEMORY
     // =====================================================
-      filtered.forEach(station => {
 
-      const row = document.createElement("tr");
-
-      // =================================================
-      // Station Name
-      // =================================================
-
-      const nameCell = document.createElement("td");
-
-      nameCell.className = "station-cell";
-
-      nameCell.innerHTML = `
-          <div class="station-name-wrapper">
-
-              <span
-                  class="station-link"
-                  onclick="openStation('${escapeHTML(station.name)}')">
-                  ${escapeHTML(station.name)}
-              </span>
-
-              <div class="station-progress">
-
-                  <div class="progress-track">
-                      <div
-                          class="progress-fill"
-                          style="width:0%">
-                      </div>
-                  </div>
-
-                  <div class="progress-info">
-
-                      <span>Progress</span>
-
-                      <span class="progress-percent">
-                          0%
-                      </span>
-
-                  </div>
-
-              </div>
-
-          </div>
-
-          <div class="actions">
-
-              <button
-                  type="button"
-                  class="btn-danger"
-                  title="Clear period"
-                  ${department !== "WSP"
-                        ? 'disabled style="opacity:0.5;pointer-events:none;"'
-                        : ''}
-                  onclick="clearStationPeriod('${escapeHTML(station.name)}')">
-                  🗑️
-              </button>
-
-          </div>
-      `;
-
-      row.appendChild(nameCell);
+    const fragment =
+        document.createDocumentFragment();
 
 
-      // =================================================
-      // MONTHS
-      // =================================================
-
-      tableMonths.forEach(item => {
-
-          const cell = document.createElement("td");
-
-          if (
-              station.start &&
-              station.end &&
-              item.key >= station.start &&
-              item.key <= station.end
-          ) {
-              cell.className = "active-month";
-          }
-
-          row.appendChild(cell);
-
-      });
+    const progressRows = [];
 
 
-      // =================================================
-      // إضافة الصف للجدول
-      // =================================================
+    for (const station of filtered) {
 
-      body.appendChild(row);
-
-
-      // =================================================
-      // تحميل Progress للمحطة
-      // =================================================
-
-      getStationProgress(station)
-          .then(progress => {
-
-              const fill =
-                  row.querySelector(".progress-fill");
-
-              const percent =
-                  row.querySelector(".progress-percent");
+        const row =
+            document.createElement("tr");
 
 
-              if (fill) {
+        // =================================================
+        // STATION CELL
+        // =================================================
 
-                  fill.style.width =
-                      Math.round(progress) + "%";
+        const nameCell =
+            document.createElement("td");
 
-              }
+        nameCell.className =
+            "station-cell";
 
 
-              if (percent) {
+        const wrapper =
+            document.createElement("div");
 
-                  percent.textContent =
-                      Math.round(progress) + "%";
+        wrapper.className =
+            "station-name-wrapper";
 
-              }
 
-          })
-          .catch(error => {
+        // =================================================
+        // STATION NAME
+        // =================================================
 
-              console.error(
-                  "Error loading station progress:",
-                  station.name,
-                  error
-              );
+        const stationLink =
+            document.createElement("span");
 
-          });
+        stationLink.className =
+            "station-link";
 
-  });
-      
+        stationLink.textContent =
+            station.name || "";
+
+
+        stationLink.addEventListener(
+            "click",
+            function () {
+
+                openStation(
+                    station.name
+                );
+
+            }
+        );
+
+
+        wrapper.appendChild(
+            stationLink
+        );
+
+
+        // =================================================
+        // PROGRESS
+        // =================================================
+
+        const progressContainer =
+            document.createElement("div");
+
+        progressContainer.className =
+            "station-progress";
+
+
+        const progressTrack =
+            document.createElement("div");
+
+        progressTrack.className =
+            "progress-track";
+
+
+        const progressFill =
+            document.createElement("div");
+
+        progressFill.className =
+            "progress-fill";
+
+        progressFill.style.width =
+            "0%";
+
+
+        progressTrack.appendChild(
+            progressFill
+        );
+
+
+        const progressInfo =
+            document.createElement("div");
+
+        progressInfo.className =
+            "progress-info";
+
+
+        const progressLabel =
+            document.createElement("span");
+
+        progressLabel.textContent =
+            "Progress";
+
+
+        const progressPercent =
+            document.createElement("span");
+
+        progressPercent.className =
+            "progress-percent";
+
+        progressPercent.textContent =
+            "0%";
+
+
+        progressInfo.appendChild(
+            progressLabel
+        );
+
+        progressInfo.appendChild(
+            progressPercent
+        );
+
+
+        progressContainer.appendChild(
+            progressTrack
+        );
+
+        progressContainer.appendChild(
+            progressInfo
+        );
+
+
+        wrapper.appendChild(
+            progressContainer
+        );
+
+
+        // =================================================
+        // ACTIONS
+        // =================================================
+
+        const actions =
+            document.createElement("div");
+
+        actions.className =
+            "actions";
+
+
+        const deleteButton =
+            document.createElement("button");
+
+        deleteButton.type =
+            "button";
+
+        deleteButton.className =
+            "btn-danger";
+
+        deleteButton.title =
+            "Clear period";
+
+        deleteButton.textContent =
+            "🗑️";
+
+
+        if (department !== "WSP") {
+
+            deleteButton.disabled =
+                true;
+
+            deleteButton.style.opacity =
+                "0.5";
+
+            deleteButton.style.pointerEvents =
+                "none";
+
+        }
+
+
+        deleteButton.addEventListener(
+            "click",
+            function () {
+
+                clearStationPeriod(
+                    station.name
+                );
+
+            }
+        );
+
+        actions.appendChild(deleteButton);
+        nameCell.appendChild(wrapper);
+        nameCell.appendChild(actions);
+        row.appendChild(nameCell);
+        // =================================================
+        // MONTH CELLS
+        // =================================================
+        for (const item of tableMonths) {
+            const cell = document.createElement("td");
+
+            if (station.start && station.end && item.key >= station.start && item.key <= station.end) {
+                cell.className = "active-month";
+            }
+            row.appendChild(cell);
+        }
+        // =================================================
+        // ADD ROW TO FRAGMENT
+        // =================================================
+        fragment.appendChild(row);
+        // حفظ عناصر الـ Progress
+        progressRows.push({
+            station: station,
+            fill: progressFill,
+            percent: progressPercent
+        });
+    }
+    // =====================================================
+    // INSERT ALL ROWS ONCE
+    // =====================================================
+    body.replaceChildren(fragment);
+    // =====================================================
+    // LOAD PROGRESS AFTER TABLE IS DISPLAYED
+    // =====================================================
+    loadTableProgress(progressRows);
 }
-/* =========================================================
-   SHOW TABLE
-========================================================= */
-function showTablePage() {
+// =========================================================
+// LOAD TABLE PROGRESS - OPTIMIZED
+// =========================================================
+async function loadTableProgress(progressRows) {
 
-    currentStationId = null;
+    if (!Array.isArray(progressRows) || progressRows.length === 0) {
+        return;
+    }
 
-    document.getElementById("stationPage").style.display = "none";
-    document.getElementById("tablePage").style.display = "block";
+    const requestId = ++progressRequestId;
+    // =====================================================
+    // تحميل Progress على دفعات
+    // =====================================================
+    const batchSize = 8;
 
-    renderTable();
+    for (let i = 0; i < progressRows.length; i += batchSize) {
+        // إذا بدأ renderTable جديد
+        // نوقف الطلب القديم
+        if (requestId !== progressRequestId) {
+            return;
+        }
 
-    window.scrollTo(0, 0);
+        const batch = progressRows.slice(i, i + batchSize);
+
+
+        await Promise.all(batch.map(async item => {
+                try {
+                    const progress = await getStationProgress(item.station);
+                    if (requestId !== progressRequestId) {
+                        return;
+                    }
+
+
+                    const value = Math.round(Number(progress) || 0);
+                    item.fill.style.width = value + "%";
+
+                    item.percent.textContent = value + "%";
+                }
+                catch (error) {
+                    console.error("Progress error:", item.station.name, error);
+                }
+
+            })
+
+        );
+
+
+        // السماح للمتصفح بعرض الجدول
+        // قبل الانتقال للدفعة التالية
+        await new Promise(
+            resolve =>
+                setTimeout(resolve, 0)
+        );
+
+    }
+
 }
+
 /* =========================================================
    SEARCH
 ========================================================= */
@@ -1460,19 +1732,14 @@ function clearStationPeriod(stationName) {
         return;
     }
 
-    const station = stations.find(s =>
-        String(s.name || "").trim() === String(stationName).trim()
-    );
-
+    const station = stations.find(s => String(s.name || "").trim() === String(stationName).trim());
     if (!station) {
         alert("لم يتم العثور على المحطة: " + stationName);
         return;
     }
 
     if (!confirm(
-        "هل أنت متأكد من مسح تاريخ البداية والنهاية للمحطة:\n\n" +
-        stationName
-    )) {
+        "هل أنت متأكد من تاريخ بداية ونهاية إعداد الخطة لمحطة:\n\n" + stationName)) {
         return;
     }
 
@@ -1506,10 +1773,23 @@ function clearStationPeriod(stationName) {
     .catch(err => {
 
         console.error("Clear period error:", err);
-
         alert("حدث خطأ أثناء مسح الفترة الزمنية");
 
     });
+}
+/* =========================================================
+   SHOW TABLE
+========================================================= */
+function showTablePage() {
+
+    currentStationId = null;
+
+    document.getElementById("stationPage").style.display = "none";
+    document.getElementById("tablePage").style.display = "block";
+
+    loadStations();
+
+    window.scrollTo(0, 0);
 }
 
 /* =========================================================
@@ -1553,31 +1833,23 @@ document.addEventListener("DOMContentLoaded", async function () {
         // ==========================================
         initializeYearSelector();
         loadStations();
-
     }
 );
-
-
-
 /* =========================================================
    OPEN STATION
 ========================================================= */
 let currentStation = null;
 
-function openStation(stationName) {
-
+async function openStation(stationName) {
     if (!stationName) {
         return;
     }
     // =====================================================
     // البحث عن المحطة
     // =====================================================
-
     const station = stations.find(s => String(s.name || "").trim() === String(stationName).trim());
 
-
     if (!station) {
-
         alert("لم يتم العثور على المحطة: " + stationName);
         return;
     }
@@ -1602,9 +1874,7 @@ function openStation(stationName) {
     // =====================================================
     // عنوان المحطة
     // =====================================================
-
-    document.getElementById("stationTitle").textContent = station.name ||
-        "بيانات المحطة";
+    document.getElementById("stationTitle").textContent = station.name || "بيانات المحطة";
     // =====================================================
     // جلب Capacity من WSSP
     // =====================================================
@@ -1618,18 +1888,11 @@ function openStation(stationName) {
     // =====================================================
     // أعلى الصفحة
     // =====================================================
-
-    window.scrollTo(
-        0,
-        0
-    );
-
+    window.scrollTo(0, 0);
 }
-
 /* =========================================================
    COMPONENT LISTS
 ========================================================= */
-
 const components = {
 
     "ترشيح سريع": [
@@ -1645,15 +1908,12 @@ const components = {
         "المرشحات",
         "منظومة الكلور",
         "منظومة الشبة",
-        "برج التعادل",
+        "منظومة التعامل مع تسريب الكلور",
         "الخزانات",
-        "عنبر طلمبات مياه الغسيل والروبة",
-        "أحواض التجفيف",
-        "وحدة Beltpress",
+        "منظومة الروبة",       
         "المبنى الإداري والمعمل",
-        "عنبر المولد الكهربائي",
-        "عنبر المحول الكهربائي"
-
+        "عنبر المحول الكهربائى",
+        "عنبر المولد الكهربائى"     
     ],
 
 
@@ -1667,15 +1927,12 @@ const components = {
         "المرشحات",
         "منظومة الكلور",
         "منظومة الشبة",
-        "برج التعادل",
+        "منظومة التعامل مع تسريب الكلور",
         "الخزانات",
-        "عنبر طلمبات مياه الغسيل والروبة",
-        "أحواض التجفيف",
-        "وحدة Beltpress",
+        "منظومة الروبة",       
         "المبنى الإداري والمعمل",
-        "عنبر المولد الكهربائي",
-        "عنبر المحول الكهربائي"
-
+        "عنبر المحول الكهربائى",
+        "عنبر المولد الكهربائى"
     ],
 
 
@@ -1684,10 +1941,9 @@ const components = {
         "منظومة الكلور",
         "الخزانات",
         "المبنى الإداري والمعمل",
-        "عنبر المولد الكهربائي",
-        "عنبر المحول الكهربائي",
+        "عنبر المحول الكهربائى",
+        "عنبر المولد الكهربائى",
         "وحدات ترشيح طبيعي"
-
     ],
 
 
@@ -1700,26 +1956,19 @@ const components = {
         "بيارة العكرة",
         "المرشحات",
         "منظومة الكلور",
-        "برج التعادل",
+        "منظومة التعامل مع تسريب الكلور",
         "الخزانات",
-        "عنبر طلمبات مياه الغسيل والروبة",
-        "أحواض التجفيف",
-        "وحدة",
+        "منظومة الروبة",               
         "المبنى الإداري والمعمل",
-        "عنبر المولد الكهربائي",
-        "عنبر المحول الكهربائي",
-        "خزانات الغسيل العكسي",
+        "عنبر المحول الكهربائى",
+        "عنبر المولد الكهربائى",
         "منظومة CIP",
         "منظومة CEB"
-
     ]
-
 };
-
 /* =========================================================
    GET CURRENT COMPONENTS
 ========================================================= */
-
 function getCurrentComponents() {
 
     const type = document.getElementById("type").value;
@@ -1733,16 +1982,13 @@ function getCurrentComponents() {
     // إزالة المكونات المكررة
     return [...new Set(allComponents)];
 }
-
 /* =========================================================
    UPDATE COMPONENTS
 ========================================================= */
-
 function updateComponents(savedSelected = null, savedData = null) {
 
     const grid = document.getElementById("componentsGrid");
     const dataArea = document.getElementById("componentDataArea");
-
 
     const list = getCurrentComponents();
     grid.innerHTML = "";
@@ -1761,34 +2007,32 @@ function updateComponents(savedSelected = null, savedData = null) {
         return;
     }
 
-
     const selected = savedSelected !== null ? savedSelected : [];
 
     list.forEach(component => {
-
             const div = document.createElement("div");
             div.className = "component-check";
 
             const checked = selected.includes(component);
-
             if (checked) {
                 div.classList.add("checked");
             }
-
+//////////////////////////////////////////////////////////////////////
             const checkbox = document.createElement("input");
 
             checkbox.type = "checkbox";
             checkbox.checked = checked;
             checkbox.value = component;
 
-            //checkbox.addEventListener("change", function() {
-            //        toggleComponent(
-            //            component,
-             //           this
-             //       );
+            checkbox.addEventListener("change", function() {
+                    toggleComponent(
+                        component,
+                        this
+                    );
 
-           //     }
-           // );
+                }
+            );
+/////////////////////////////////////////////////////////////////            
             const label = document.createElement("label");
             label.appendChild(checkbox);
 
@@ -1799,6 +2043,8 @@ function updateComponents(savedSelected = null, savedData = null) {
             grid.appendChild(div);
         }
     );
+    updateTechnicalFeatures();
+
 
     /*إعادة البيانات المحفوظة*/
     selected.forEach(component => {
@@ -1809,28 +2055,61 @@ function updateComponents(savedSelected = null, savedData = null) {
     );
 }
 /* =========================================================
+   CHECK ULTRAFILTRATION SYSTEM
+========================================================= */
+function isUltrafiltrationSystem() {
+
+    const typeElement = document.getElementById("type");
+    if (!typeElement) {
+        return false;
+    }
+
+    const type = typeElement.value || "";
+    const types = type.split("+").map(t => t.trim());
+
+    return types.includes("ترشيح فائق");
+}
+
+
+/* =========================================================
+   CHECK SELECTED COMPONENT
+========================================================= */
+function isComponentSelected(componentName) {
+
+    const checkbox = document.querySelector(`#componentsGrid input[type="checkbox"][value="${componentName}"]`);
+    return Boolean(checkbox && checkbox.checked);
+}
+//////////////////////////////
+/////البيانات Togglecomponent
+///////////////////
+function toggleComponent(component, checkbox) {
+
+    const componentDiv = checkbox.closest(".component-check");
+    if (componentDiv) {
+        componentDiv.classList.toggle("checked", checkbox.checked);
+    }
+    // تحديث Technical Features
+    updateTechnicalFeatures();
+}
+
+/* =========================================================
    LOAD STATION CAPACITY FROM WSSP
 ========================================================= */
 
 function loadStationCapacity(station) {
 
     const designCapacity = document.getElementById("designCapacity");
-
     if (!designCapacity) {
         return;
     }
 
     // مسح القيمة القديمة
     designCapacity.value = "";
-
     if (!station || !station.branch || !station.name) {
         return;
     }
 
-    const url =
-        scriptURL +
-        "?action=getStations&branch=" +
-        encodeURIComponent(station.branch);
+    const url = scriptURL + "?action=getStations&branch=" + encodeURIComponent(station.branch);
 
     fetch(url)
         .then(response => response.json())
@@ -1846,10 +2125,7 @@ function loadStationCapacity(station) {
             const capacities = data.capacity || [];
 
             // البحث عن المحطة
-            const index = stationNames.findIndex(name =>
-                    String(name || "").trim() ===
-                    String(station.name || "").trim()
-                );
+            const index = stationNames.findIndex(name => String(name || "").trim() === String(station.name || "").trim());
 
             if (index === -1) {
                 console.warn("Station not found in WSSP:", station.name);
@@ -1891,7 +2167,6 @@ function saveStationData() {
     // =====================================================
     // قراءة Basic Data
     // =====================================================
-
     const type = document.getElementById("type").value;
     const waterSource = document.getElementById("waterSource").value;
     const executingAuthority = document.getElementById("executingAuthority").value.trim();
@@ -1919,11 +2194,9 @@ function saveStationData() {
         });
 
     const componentsText = selectedComponents.join("، ");
-
     // =====================================================
     // تجهيز البيانات
     // =====================================================
-
     const params = new URLSearchParams({
 
             action: "saveGeneralData",
@@ -1947,7 +2220,6 @@ function saveStationData() {
             population:  population,
             networkLength: networkLength
         });
-
     // =====================================================
     // منع الضغط المتكرر
     // =====================================================
@@ -1983,8 +2255,7 @@ function saveStationData() {
         ) {
 
             alert(data.message || "تم حفظ البيانات بنجاح");
-        }
-        else {
+        } else {
             alert(data.message || "حدث خطأ أثناء الحفظ");
         }
     })
@@ -2001,24 +2272,125 @@ function saveStationData() {
 
 }
 
-/* =========================================================
-   LOAD GENERAL DATA
-   WSP-Preparing -> General
-========================================================= */
+// =========================================================
+// LOAD GENERAL DATA - OPTIMIZED
+// =========================================================
+
+let generalDataRequestId = 0;
 
 function loadGeneralData(station) {
 
     if (!station) {
-        return;
+        return Promise.resolve();
     }
 
-    const branch = station.branch || "";
-    const stationName = station.name || "";
 
-    if (!branch || !stationName) {
-        return;
+    const branch =
+        String(
+            station.branch || ""
+        ).trim();
+
+
+    const stationName =
+        String(
+            station.name || ""
+        ).trim();
+
+
+    if (
+        !branch ||
+        !stationName
+    ) {
+        return Promise.resolve();
     }
 
+
+    // =====================================================
+    // Request ID
+    // يمنع الطلب القديم من تحديث محطة جديدة
+    // =====================================================
+
+    const requestId =
+        ++generalDataRequestId;
+
+
+    // =====================================================
+    // CLEAR OLD DATA IMMEDIATELY
+    // =====================================================
+
+    const fields = [
+
+        "type",
+        "waterSource",
+        "executingAuthority",
+        "nearbyStations",
+        "alternativeSource",
+        "handoverStatus",
+        "constructionDate",
+        "constructionContractor",
+        "designCapacity",
+        "actualCapacity",
+        "workers",
+        "area",
+        "alternativePower",
+        "serviceArea",
+        "population",
+        "networkLength"
+
+    ];
+
+
+    fields.forEach(id => {
+
+        const element =
+            document.getElementById(id);
+
+        if (!element) {
+            return;
+        }
+
+
+        if (
+            element.tagName ===
+            "SELECT"
+        ) {
+            element.value = "";
+        }
+        else {
+            element.value = "";
+        }
+
+    });
+
+
+    // =====================================================
+    // CLEAR COMPONENTS
+    // =====================================================
+
+    const grid =
+        document.getElementById(
+            "componentsGrid"
+        );
+
+    const dataArea =
+        document.getElementById(
+            "componentDataArea"
+        );
+
+
+    if (grid) {
+        grid.innerHTML = "";
+    }
+
+
+    if (dataArea) {
+        dataArea.innerHTML = "";
+    }
+
+
+    // =====================================================
+    // API URL
+    // =====================================================
 
     const url =
         preparingScriptURL +
@@ -2029,94 +2401,197 @@ function loadGeneralData(station) {
         encodeURIComponent(stationName);
 
 
-    console.log("Loading General Data:", url);
+    console.log(
+        "Loading General Data:",
+        stationName
+    );
 
-    fetch(url)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(
-                    "HTTP Error: " +
-                    response.status
-                );
+
+    // =====================================================
+    // FETCH
+    // =====================================================
+
+    return fetch(
+        url,
+        {
+            method: "GET",
+            cache: "no-store"
+        }
+    )
+
+    .then(response => {
+
+        if (!response.ok) {
+
+            throw new Error(
+                "HTTP Error: " +
+                response.status
+            );
+
+        }
+
+        return response.json();
+
+    })
+
+
+    .then(result => {
+
+        // =================================================
+        // التأكد أن هذا الطلب يخص المحطة الحالية
+        // =================================================
+
+        if (
+            requestId !==
+            generalDataRequestId
+        ) {
+            return;
+        }
+
+
+        console.log(
+            "General Data response:",
+            result
+        );
+
+
+        // =================================================
+        // NO DATA
+        // =================================================
+
+        if (
+            !result ||
+            result.status === "not_found"
+        ) {
+
+            updateComponents(
+                []
+            );
+
+            return;
+        }
+
+
+        // =================================================
+        // ERROR
+        // =================================================
+
+        if (result.status !== "success") {
+            console.warn(result.message || "Unable to load General Data");
+            return;
+        }
+
+        const data = result.data;
+        if (!data) {
+            return;
+        }
+        // =================================================
+        // BASIC DATA
+        // =================================================
+        const type = document.getElementById("type");
+        if (type) {
+            type.value = data.type || "";
+        }
+
+        const waterSource = document.getElementById("waterSource");
+        if (waterSource) {
+            waterSource.value = data.waterSource || "";
+        }
+
+        const executingAuthority = document.getElementById("executingAuthority");
+        if (executingAuthority) {
+            executingAuthority.value = data.executingAuthority || "";
+        }
+
+        const nearbyStations = document.getElementById("nearbyStations");
+        if (nearbyStations) {
+            nearbyStations.value = data.nearbyStations || "";
+        }
+
+        const alternativeSource = document.getElementById("alternativeSource");
+        if (alternativeSource) {
+            alternativeSource.value = data.alternativeSource || "";
+        }
+
+        const handoverStatus = document.getElementById("handoverStatus");
+        if (handoverStatus) {
+            handoverStatus.value = data.handoverStatus || "";
+        }
+
+        const constructionDate = document.getElementById("constructionDate");
+        if (constructionDate) {
+            constructionDate.value = convertToDateInput(data.constructionDate);
+        }
+
+        const constructionContractor = document.getElementById("constructionContractor");
+        if (constructionContractor) {
+            constructionContractor.value = data.constructionContractor || "";
+        }
+
+        const designCapacity = document.getElementById("designCapacity");
+        if (designCapacity) {
+            designCapacity.value = data.designCapacity ?? "";
+        }
+
+        const actualCapacity = document.getElementById("actualCapacity");
+        if (actualCapacity) {
+            actualCapacity.value = data.actualCapacity ?? "";
+        }
+
+        const workers = document.getElementById("workers");
+        if (workers) {
+            workers.value = data.workers ?? "";
+        }
+
+        const area = document.getElementById("area");
+        if (area) {
+            area.value = data.area ?? "";
+        }
+
+        const alternativePower = document.getElementById("alternativePower");
+        if (alternativePower) {
+            alternativePower.value = data.alternativePower || "";
+        }
+
+        const serviceArea = document.getElementById("serviceArea");
+        if (serviceArea) {
+            serviceArea.value = data.serviceArea || "";
+        }
+
+        const population = document.getElementById("population");
+        if (population) {
+            population.value = data.population ?? "";
+        }
+
+        const networkLength = document.getElementById("networkLength");
+        if (networkLength) {
+            networkLength.value = data.networkLength ?? "";
+        }
+        // =================================================
+        // COMPONENTS
+        // =================================================
+
+        let savedComponents = [];
+
+        if (data.components) {
+
+            if (Array.isArray(data.components)) {
+                savedComponents = data.components;
+            } else {
+                savedComponents = String(data.components).split("،").map(item => item.trim()).filter(Boolean);
             }
-            return response.json();
-        })
+        }
+        // =================================================
+        // UPDATE COMPONENTS ONCE
+        // =================================================
+        updateComponents(savedComponents);
 
-        .then(result => {
-            console.log("General Data response:", result);
-            // =================================================
-            // لا توجد بيانات محفوظة
-            // =================================================
-            if (result.status === "not_found") {
+        console.log("General data loaded successfully:", stationName);
+    })
 
-                console.log("No General data found for:", stationName);
-                return;
-            }
-            // =================================================
-            // حدث خطأ
-            // =================================================
-
-            if (result.status !== "success") {
-                console.warn(result.message);
-                return;
-            }
-
-            const data = result.data;
-            if (!data) {
-                return;
-            }
-
-
-            // =================================================
-            // BASIC DATA
-            // =================================================
-
-            document.getElementById("type").value = data.type || "";
-            document.getElementById("waterSource").value = data.waterSource || "";
-            document.getElementById("executingAuthority").value = data.executingAuthority || "";    
-            document.getElementById("nearbyStations").value = data.nearbyStations || "";
-            document.getElementById("alternativeSource").value = data.alternativeSource || "";
-            document.getElementById("handoverStatus").value = data.handoverStatus || "";
-            document.getElementById("constructionDate").value = convertToDateInput(data.constructionDate);
-            document.getElementById("constructionContractor").value = data.constructionContractor || "";
-            document.getElementById("designCapacity").value = data.designCapacity ?? "";
-            document.getElementById("actualCapacity").value = data.actualCapacity ?? "";
-            document.getElementById("workers").value = data.workers ?? "";
-            document.getElementById("area").value = data.area ?? "";
-            document.getElementById("alternativePower").value = data.alternativePower || "";
-            document.getElementById("serviceArea").value = data.serviceArea || "";
-            document.getElementById("population").value = data.population ?? "";
-            document.getElementById("networkLength").value = data.networkLength ?? "";
-            // =================================================
-            // COMPONENTS
-            // =================================================
-
-            let savedComponents = [];
-
-            if (data.components) {
-                if (Array.isArray(data.components)) {
-                    savedComponents = data.components;
-                }
-                else {
-                    savedComponents = String(data.components)
-                        .split("،")
-                        .map(item =>
-                            item.trim()
-                        )
-                        .filter(Boolean);
-                }
-            }
-            // =================================================
-            // تحديث قائمة المكونات
-            // =================================================
-
-            updateComponents(savedComponents);
-            console.log("General data loaded successfully");
-        })
-
-        .catch(error => {
-            console.error("Error loading General Data:", error);
-        });
+    .catch(error => {
+        console.error("Error loading General Data:", error);
+    });
 }
 /* =========================================================
    STAGES
@@ -2156,8 +2631,7 @@ function loadStages(station) {
 
     console.log("Loading Stages:", url);
 
-    fetch(url)
-        .then(response => {
+    fetch(url).then(response => {
             if (!response.ok) {
                 throw new Error(
                     "HTTP Error: " +
@@ -2234,16 +2708,8 @@ function calculateStageProgress(items) {
     }
 
     const completed = items.filter(item => {
-
-        const status =
-            String(item.status || "")
-                .trim()
-                .toLowerCase();
-
-        const value =
-            String(item.value || "")
-                .trim()
-                .toLowerCase();
+        const status = String(item.status || "").trim().toLowerCase();
+        const value = String(item.value || "").trim().toLowerCase();
 
         return (
             status === "completed" ||
@@ -2257,49 +2723,34 @@ function calculateStageProgress(items) {
 
     }).length;
 
-    return Math.round(
-        (completed / items.length) * 100
-    );
+    return Math.round((completed / items.length) * 100);
 }
 
 /* =========================================================
    RENDER STAGES
 ========================================================= */
-
 function renderStages() {
 
     console.log("stagesData =", stagesData);
     console.log("length =", stagesData?.length);
 
-    const container =
-        document.getElementById("stagesChecklist");
+    const container = document.getElementById("stagesChecklist");
 
     if (!container) {
         console.error("❌ stagesChecklist غير موجود في HTML");
         return;
     }
-
     container.innerHTML = "";
 
     if (!Array.isArray(stagesData) || !stagesData.length) {
-
-        container.innerHTML = `
-            <div class="tab-placeholder">
-                لا توجد بنود.
-            </div>
-        `;
-
+        container.innerHTML = `<div class="tab-placeholder">لا توجد بنود.</div>`;
         return;
     }
-
-
     /* =====================================================
        FIXED STAGES
        كل Tab مرتبط بنطاق صفوف محدد في Google Sheet
     ===================================================== */
-
     const stageDefinitions = [
-
         {
             name: "المتطلبات الإدارية",
             startRow: 3,
@@ -2329,632 +2780,251 @@ function renderStages() {
             startRow: 67,
             endRow: 78
         }
-
     ];
-
-
     /* =====================================================
        STAGES TABS CONTAINER
     ===================================================== */
+    const tabsWrapper = document.createElement("div");
+    tabsWrapper.className = "stages-inner-tabs";
 
-    const tabsWrapper =
-        document.createElement("div");
+    const tabsButtons = document.createElement("div");
+    tabsButtons.className = "stages-inner-tab-buttons";
 
-    tabsWrapper.className =
-        "stages-inner-tabs";
-
-
-    const tabsButtons =
-        document.createElement("div");
-
-    tabsButtons.className =
-        "stages-inner-tab-buttons";
-
-
-    const tabsContent =
-        document.createElement("div");
-
-    tabsContent.className =
-        "stages-inner-tab-content";
-
-
+    const tabsContent = document.createElement("div");
+    tabsContent.className = "stages-inner-tab-content";
     /* =====================================================
        CREATE 5 TABS
     ===================================================== */
-
-    stageDefinitions.forEach(
-        (stageDefinition, stageIndex) => {
-
-            /*
-             * =============================================
-             * البنود الخاصة بالـ Tab الحالي
-             * =============================================
-             */
-
-            const items =
-                stagesData.filter(item => {
-
-                    const row =
-                        Number(item.row || 0);
-
-                    return (
-                        row >= stageDefinition.startRow &&
-                        row <= stageDefinition.endRow
-                    );
-
+    stageDefinitions.forEach((stageDefinition, stageIndex) => {
+            /*=============================================
+              البنود الخاصة Tab الحالي
+              ========================================*/
+            const items = stagesData.filter(item => {
+                    const row = Number(item.row || 0);
+                    return (row >= stageDefinition.startRow && row <= stageDefinition.endRow);
                 });
-
-
-            console.log(
-                stageDefinition.name,
-                "Rows:",
-                stageDefinition.startRow,
-                "-",
-                stageDefinition.endRow,
-                "Items:",
-                items.length
-            );
-
-
+            console.log(stageDefinition.name, "Rows:", stageDefinition.startRow, "-", stageDefinition.endRow, "Items:", items.length);
             /* =====================================================
               TAB BUTTON
             ===================================================== */
-
             const tabId = `stagesContent_${stageIndex}`;
-
             const tabButton = document.createElement("button");
 
             tabButton.type = "button";
             tabButton.className = "stages-inner-tab";
 
             tabButton.dataset.tab = tabId;
-
-            tabButton.textContent =
-                stageDefinition.name;
+            tabButton.textContent = stageDefinition.name;
 
             if (stageIndex === 0) {
                 tabButton.classList.add("active");
             }
-
-
             /* =====================================================
               TAB CONTENT
             ===================================================== */
-
             const tabContent = document.createElement("div");
-
-            tabContent.className =
-                "stages-inner-content";
-
-            tabContent.id =
-                tabId;
+            tabContent.className = "stages-inner-content";
+            tabContent.id = tabId;
 
             if (stageIndex === 0) {
                 tabContent.classList.add("active");
             }
-
-            /*
-             * =============================================
-             * STAGE SECTION
-             * =============================================
-             */
-
-            const sectionElement =
-                document.createElement("div");
-
-            sectionElement.className =
-                "stages-section";
-
-            /*
-             * =============================================
-             * TITLE
-             * =============================================
-             */
-
-            const sectionTitle =
-                document.createElement("div");
-
-            sectionTitle.className =
-                "stages-section-title";
-
+            /* =============================================
+              STAGE SECTION
+              ===========================================*/
+            const sectionElement = document.createElement("div");
+            sectionElement.className = "stages-section";
+            /*=============================================
+              TITLE
+             ========================================== */
+            const sectionTitle = document.createElement("div");
+            sectionTitle.className = "stages-section-title";
 
             // اسم القسم
-            const titleText =
-                document.createElement("span");
-
-            titleText.textContent =
-                stageDefinition.name;
-
+            const titleText = document.createElement("span");
+            titleText.textContent = stageDefinition.name;
 
             // حساب نسبة الإنجاز
-            const progress =
-                calculateStageProgress(items);
-
+            const progress = calculateStageProgress(items);
 
             // نسبة الإنجاز
-            const progressText =
-                document.createElement("span");
-
-            progressText.className =
-                "stage-section-progress";
-
-            progressText.textContent =
-                "نسبة الإنجاز: " + progress + "%";
-
+            const progressText = document.createElement("span");
+            progressText.className = "stage-section-progress";
+            progressText.textContent = "نسبة الإنجاز: " + progress + "%";
 
             // إضافة الاسم والنسبة للعنوان
             sectionTitle.appendChild(titleText);
-
             sectionTitle.appendChild(progressText);
-
-            sectionElement.appendChild(
-                sectionTitle
-            );
-
-
-            /*
-             * =============================================
-             * NO ITEMS
-             * =============================================
-             */
-
+            sectionElement.appendChild(sectionTitle);
+            /*=============================================
+              NO ITEMS
+              ===========================================*/
             if (items.length === 0) {
 
-                const emptyMessage =
-                    document.createElement("div");
-
-                emptyMessage.className =
-                    "tab-placeholder";
-
-                emptyMessage.textContent =
-                    "لا توجد بنود في هذا القسم.";
-
-                sectionElement.appendChild(
-                    emptyMessage
-                );
-
+                const emptyMessage = document.createElement("div");
+                emptyMessage.className = "tab-placeholder";
+                emptyMessage.textContent = "لا توجد بنود في هذا القسم.";
+                sectionElement.appendChild(emptyMessage);
             }
-
-
-            /*
-             * =============================================
-             * ITEMS
-             * =============================================
-             */
-
-            items.forEach(
-                (item, index) => {
-
-                    const itemDiv =
-                        document.createElement("div");
-
-                    itemDiv.className =
-                        "stage-item";
-
-                    itemDiv.dataset.index =
-                        index;
-
-                    itemDiv.dataset.row =
-                        item.row || "";
-
-
-                    /*
-                     * =====================================
-                     * QUESTION
-                     * =====================================
-                     */
-
-                    const question =
-                        document.createElement("div");
-
-                    question.className =
-                        "stage-question";
-
-
-                    const number =
-                        document.createElement("div");
-
-                    number.className =
-                        "stage-number";
-
-                    number.textContent =
-                        item.no || "";
-
-
-                    const text =
-                        document.createElement("div");
-
-                    text.className =
-                        "stage-text";
-
-                    text.textContent =
-                        item.checklist || "";
-
-
-                    question.appendChild(
-                        number
-                    );
-
-                    question.appendChild(
-                        text
-                    );
-
-                    itemDiv.appendChild(
-                        question
-                    );
-
-
-                    /*
-                     * =====================================
-                     * ACTIONS
-                     * =====================================
-                     */
-
-                    const actions =
-                        document.createElement("div");
-
-                    actions.className =
-                        "stage-actions";
-
-
-                    const matchButton =
-                        document.createElement("button");
-
-                    matchButton.type =
-                        "button";
-
-                    matchButton.className =
-                        "stage-status-btn match";
-
-                    matchButton.innerHTML =
-                        "✅ مطابق";
-
-
-                    const notMatchButton =
-                        document.createElement("button");
-
-                    notMatchButton.type =
-                        "button";
-
-                    notMatchButton.className =
-                        "stage-status-btn not-match";
-
-                    notMatchButton.innerHTML =
-                        "❌ غير مطابق";
-
-
-                    actions.appendChild(
-                        matchButton
-                    );
-
-                    actions.appendChild(
-                        notMatchButton
-                    );
-
-                    itemDiv.appendChild(
-                        actions
-                    );
-
-
-                    /*
-                     * =====================================
-                     * REASON
-                     * =====================================
-                     */
-
-                    const reasonDiv =
-                        document.createElement("div");
-
-                    reasonDiv.className =
-                        "stage-reason";
-
-
-                    const reasonLabel =
-                        document.createElement("label");
-
-                    reasonLabel.textContent =
-                        "سبب عدم المطابقة";
-
-
-                    const reasonInput =
-                        document.createElement("textarea");
-
-                    reasonInput.placeholder =
-                        "اكتب سبب عدم المطابقة...";
-
-
-                    reasonDiv.appendChild(
-                        reasonLabel
-                    );
-
-                    reasonDiv.appendChild(
-                        reasonInput
-                    );
-
-                    itemDiv.appendChild(
-                        reasonDiv
-                    );
-
-
-                    /*
-                     * =====================================
-                     * INITIAL STATUS
-                     * =====================================
-                     */
-
-                    const savedStatus =
-                        String(
-                            item.status || ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    const savedValue =
-                        String(
-                            item.value || ""
-                        )
-                        .trim()
-                        .toLowerCase();
-
-
-                    /*
-                     * =====================================
-                     * MATCHED
-                     * =====================================
-                     */
-
-                    if (
-
-                        savedStatus ===
-                            "completed" ||
-
-                        savedStatus ===
-                            "مطابق" ||
-
-                        savedValue ===
-                            "completed" ||
-
-                        savedValue ===
-                            "done" ||
-
-                        savedValue ===
-                            "✓" ||
-
-                        savedValue ===
-                            "✔"
-
-                    ) {
-
-                        matchButton.classList.add(
-                            "active"
-                        );
-
+            /*=============================================
+              ITEMS
+              ===========================================*/
+            items.forEach((item, index) => {
+                    const itemDiv = document.createElement("div");
+                    itemDiv.className = "stage-item";
+                    itemDiv.dataset.index = index;
+                    itemDiv.dataset.row = item.row || "";
+                    /*=====================================
+                      QUESTION
+                      ===================================*/
+                    const question = document.createElement("div");
+                    question.className = "stage-question";
+
+                    const number = document.createElement("div");
+                    number.className = "stage-number";
+                    number.textContent = item.no || "";
+
+                    const text = document.createElement("div");
+                    text.className = "stage-text";
+                    text.textContent = item.checklist || "";
+
+                    question.appendChild(number);
+                    question.appendChild(text);
+                    itemDiv.appendChild(question);
+                    /*=====================================
+                      ACTIONS
+                     ===================================*/
+                    const actions = document.createElement("div");
+                    actions.className = "stage-actions";
+
+                    const matchButton = document.createElement("button");
+                    matchButton.type = "button";
+                    matchButton.className = "stage-status-btn match";
+                    matchButton.innerHTML = "✅";
+
+                    const notMatchButton = document.createElement("button");
+                    notMatchButton.type = "button";
+                    notMatchButton.className = "stage-status-btn not-match";
+                    notMatchButton.innerHTML = "❌";
+
+                    actions.appendChild(matchButton);
+                    actions.appendChild(notMatchButton);
+                    itemDiv.appendChild(actions);
+                    /*=====================================
+                      REASON
+                     ===================================*/
+                    const reasonDiv = document.createElement("div");
+                    reasonDiv.className = "stage-reason";
+
+                    const reasonLabel = document.createElement("label");
+                    reasonLabel.textContent = "سبب عدم المطابقة";
+
+                    const reasonInput = document.createElement("textarea");
+                    reasonInput.placeholder = "اكتب سبب عدم المطابقة...";
+                    reasonDiv.appendChild(reasonLabel);
+                    reasonDiv.appendChild(reasonInput);
+                    itemDiv.appendChild(reasonDiv);
+                    /*=====================================
+                      INITIAL STATUS
+                      ==================================*/
+                    const savedStatus = String(item.status || "").trim().toLowerCase();
+                    const savedValue = String(item.value || "").trim().toLowerCase();
+                    /*====================================
+                     MATCHED
+                      ==================================*/
+                    if (savedStatus === "completed" || savedStatus === "مطابق" || savedValue === "completed" || savedValue === "done" || savedValue === "✓" || savedValue === "✔") {
+                        matchButton.classList.add("active");
                     }
-
-
-                    /*
-                     * =====================================
-                     * NOT MATCHED
-                     * =====================================
-                     */
-
-                    else if (
-
-                        savedStatus ===
-                            "note" ||
-
-                        savedStatus ===
-                            "غير مطابق"
-
-                    ) {
-
-                        notMatchButton.classList.add(
-                            "active"
-                        );
-
-                        reasonDiv.classList.add(
-                            "show"
-                        );
-
-                        reasonInput.value =
-                            item.value || "";
-
+                    /*====================================
+                      NOT MATCHED
+                      ==================================*/
+                    else if (savedStatus === "note" || savedStatus === "غير مطابق") {
+                        notMatchButton.classList.add("active");
+                        reasonDiv.classList.add("show");
+                        reasonInput.value = item.value || "";
                     }
-
-
-                    /*
-                     * =====================================
-                     * MATCH BUTTON
-                     * =====================================
-                     */
-
-                    matchButton.addEventListener(
-                        "click",
-                        () => {
-
-                            matchButton.classList.add(
-                                "active"
-                            );
-
-                            notMatchButton.classList.remove(
-                                "active"
-                            );
-
-                            reasonDiv.classList.remove(
-                                "show"
-                            );
-
+                    /*=====================================
+                      MATCH BUTTON
+                      ===================================*/
+                    matchButton.addEventListener("click", () => {
+                            matchButton.classList.add("active");
+                            notMatchButton.classList.remove("active");
+                            reasonDiv.classList.remove("show");
                             reasonInput.value = "";
-
-                            item.status =
-                                "completed";
-
-                            item.value =
-                                "✓";
-
+                            item.status = "completed";
+                            item.value = "✓";
                         }
                     );
-
-
-                    /*
-                     * =====================================
-                     * NOT MATCH BUTTON
-                     * =====================================
-                     */
-
-                    notMatchButton.addEventListener(
-                        "click",
-                        () => {
-
-                            notMatchButton.classList.add(
-                                "active"
-                            );
-
-                            matchButton.classList.remove(
-                                "active"
-                            );
-
-                            reasonDiv.classList.add(
-                                "show"
-                            );
-
-                            item.status =
-                                "note";
-
+                    /*===================================
+                      NOT MATCH BUTTON
+                     ====================================*/
+                    notMatchButton.addEventListener("click", () => {
+                            notMatchButton.classList.add("active");
+                            matchButton.classList.remove("active");
+                            reasonDiv.classList.add("show");
+                            item.status = "note";
                         }
                     );
-
-
-                    /*
-                     * =====================================
-                     * REASON CHANGE
-                     * =====================================
-                     */
-
-                    reasonInput.addEventListener(
-                        "input",
-                        () => {
-
-                            if (
-                                notMatchButton.classList.contains(
-                                    "active"
-                                )
-                            ) {
-
-                                item.status =
-                                    "note";
-
-                                item.value =
-                                    reasonInput.value.trim();
-
+                    /*=====================================
+                      REASON CHANGE
+                     ====================================*/
+                    reasonInput.addEventListener("input", () => {
+                            if (notMatchButton.classList.contains("active")) {
+                                item.status = "note";
+                                item.value = reasonInput.value.trim();
                             }
-
                         }
                     );
-
-
                     sectionElement.appendChild(
                         itemDiv
                     );
-
                 }
             );
-
-
-            /*
-             * =============================================
-             * ADD SECTION TO TAB
-             * =============================================
-             */
-
-            tabContent.appendChild(
-                sectionElement
-            );
-
-
-            /*
-              * =============================================
-              * TAB CLICK
-              * =============================================
-              */
-
+            /*=============================================
+              ADD SECTION TO TAB
+              ============================================*/
+            tabContent.appendChild(sectionElement);
+            /*=============================================
+              TAB CLICK
+               ===========================================*/
               tabButton.addEventListener("click", function () {
-
                   openStagesTab(tabId, this);
-
               });
-
-
-
-            /*
-             * =============================================
-             * ADD TAB BUTTON
-             * =============================================
-             */
-
-            tabsButtons.appendChild(
-                tabButton
-            );
-
-
-            /*
-             * =============================================
-             * ADD TAB CONTENT
-             * =============================================
-             */
-
-            tabsContent.appendChild(
-                tabContent
-            );
-
+            /*=============================================
+              ADD TAB BUTTON
+              ============================================*/
+            tabsButtons.appendChild(tabButton);
+            /*=============================================
+              ADD TAB CONTENT
+              ===========================================*/
+            tabsContent.appendChild(tabContent);
         }
     );
-
-
-    /*
-     * =====================================================
-     * ADD EVERYTHING TO PAGE
-     * =====================================================
-     */
-
-    tabsWrapper.appendChild(
-        tabsButtons
-    );
-
-    tabsWrapper.appendChild(
-        tabsContent
-    );
-
-    container.appendChild(
-        tabsWrapper
-    );
-
+    /*=====================================================
+      ADD EVERYTHING TO PAGE
+      ===================================================*/
+    tabsWrapper.appendChild(tabsButtons);
+    tabsWrapper.appendChild(tabsContent);
+    container.appendChild(tabsWrapper);
 }
 
 /* =========================================================
    STAGES INNER TABS
 ========================================================= */
-
 function openStagesTab(tabId, button) {
 
     // إخفاء جميع محتويات Stages الداخلية
-    document
-        .querySelectorAll(".stages-inner-content")
-        .forEach(content => {
+    document.querySelectorAll(".stages-inner-content").forEach(content => {
             content.classList.remove("active");
         });
 
     // إزالة Active من جميع أزرار Stages الداخلية
-    document
-        .querySelectorAll(".stages-inner-tab")
-        .forEach(tabButton => {
+    document.querySelectorAll(".stages-inner-tab").forEach(tabButton => {
             tabButton.classList.remove("active");
         });
 
     // إظهار الـ Tab المطلوب
-    const selectedTab =
-        document.getElementById(tabId);
+    const selectedTab = document.getElementById(tabId);
 
     if (selectedTab) {
         selectedTab.classList.add("active");
@@ -2965,8 +3035,6 @@ function openStagesTab(tabId, button) {
         button.classList.add("active");
     }
 }
-
-
 /* =========================================================
    CONVERT DATE TO INPUT DATE FORMAT
 ========================================================= */
@@ -3004,23 +3072,15 @@ function convertToDateInput(value) {
 function openStationTab(tabId, button) {
 
     // إخفاء جميع محتويات الـ Tabs
-    document
-        .querySelectorAll(".station-tab-content")
-        .forEach(tab => {
+    document.querySelectorAll(".station-tab-content").forEach(tab => {
             tab.classList.remove("active");
         });
-
     // إزالة Active من جميع أزرار الـ Tabs
-    document
-        .querySelectorAll(".station-tab")
-        .forEach(tabButton => {
+    document.querySelectorAll(".station-tab").forEach(tabButton => {
             tabButton.classList.remove("active");
         });
-
-
     // إظهار الـ Tab المطلوب
     const selectedTab = document.getElementById(tabId);
-
     if (selectedTab) {
         selectedTab.classList.add("active");
     }
@@ -3032,20 +3092,15 @@ function openStationTab(tabId, button) {
 /* =========================================================
    RESET STATION TAB
 ========================================================= */
-
 function resetStationTab() {
     const firstTab = document.querySelector(".station-tab[data-tab='generalTab']");
     const firstContent = document.getElementById("generalTab");
 
-    document
-        .querySelectorAll(".station-tab")
-        .forEach(tab => {
+    document.querySelectorAll(".station-tab").forEach(tab => {
             tab.classList.remove("active");
         });
 
-    document
-        .querySelectorAll(".station-tab-content")
-        .forEach(content => {
+    document.querySelectorAll(".station-tab-content").forEach(content => {
             content.classList.remove("active");
         });
 
@@ -3061,7 +3116,6 @@ function resetStationTab() {
    SAVE ALL STAGES
    حفظ جميع بنود الـ Stages بطلب واحد فقط
 ========================================================= */
-
 async function saveStages() {
     // =====================================================
     // التأكد من وجود محطة
@@ -3070,7 +3124,6 @@ async function saveStages() {
         alert("لم يتم تحديد المحطة.");
         return;
     }
-
     // =====================================================
     // التأكد من وجود بيانات Stages
     // =====================================================
@@ -3091,14 +3144,11 @@ async function saveStages() {
     // زر الحفظ
     // =====================================================
     const saveButton = document.querySelector('button[onclick="saveStages()"]');
-
     if (saveButton) {
         saveButton.disabled = true;
         saveButton.textContent = "Saving...";
     }
-
     try {
-
         // =================================================
         // تجهيز البنود
         // =================================================
@@ -3133,8 +3183,7 @@ async function saveStages() {
 
             if (matchButton && matchButton.classList.contains("active")) {
                 value = "مطابق";
-            }
-            else if (notMatchButton && notMatchButton.classList.contains("active")) {
+            } else if (notMatchButton && notMatchButton.classList.contains("active")) {
                 value = reasonInput ? reasonInput.value.trim(): "";
             }
 
@@ -3207,14 +3256,8 @@ async function saveStages() {
                 item.status = "";
             }
         });
-
-        // =================================================
-        // نجاح
-        // =================================================
+       
         alert("تم حفظ جميع بنود الـ Stages بنجاح");
-        // =================================================
-        // إعادة تحميل البيانات
-        // =================================================
         await loadStages(currentStation);
     }
     catch (error) {
@@ -3229,6 +3272,8 @@ async function saveStages() {
         }
     }
 }
+
+
     
     // الرجوع للصفحة الرئيسية
     function AccessedToPage(pagename){
@@ -3242,3 +3287,5 @@ async function saveStages() {
         window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
     }
 </script>
+<script src="TechnicalFeaturesData.js"></script>
+<script src="TechnicalFeaturesExport.js"></script>
