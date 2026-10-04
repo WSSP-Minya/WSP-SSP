@@ -1324,3 +1324,827 @@ th .year {
     }
 
 }
+/* =========================================================
+   TECHNICAL FEATURES
+========================================================= */
+
+.technical-features-container {
+    width: 100%;
+}
+
+
+/* =========================================================
+   EMPTY STATE
+========================================================= */
+
+.technical-features-empty {
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    min-height: 180px;
+
+    padding: 30px;
+
+    text-align: center;
+
+    background: #f8fafc;
+
+    border: 1px dashed #cbd5e1;
+
+    border-radius: 12px;
+
+    color: #64748b;
+}
+
+
+.technical-empty-icon {
+
+    font-size: 36px;
+
+    margin-bottom: 10px;
+
+    opacity: 0.7;
+}
+
+
+.technical-features-empty h4 {
+
+    margin: 0 0 8px;
+
+    font-size: 18px;
+
+    color: #334155;
+}
+
+
+.technical-features-empty p {
+
+    margin: 0;
+
+    font-size: 14px;
+
+    color: #64748b;
+}
+
+
+/* =========================================================
+   COMPONENTS CONTAINER
+========================================================= */
+
+.technical-features-components {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 24px;
+
+    width: 100%;
+}
+
+
+/* =========================================================
+   COMPONENT CARD
+========================================================= */
+
+.technical-component-card {
+
+    background: #ffffff;
+
+    border: 1px solid #dbe3ec;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+
+/* =========================================================
+   COMPONENT HEADER
+========================================================= */
+
+.technical-component-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 15px 18px;
+
+    background: #f1f5f9;
+
+    border-bottom: 1px solid #dbe3ec;
+}
+
+
+.technical-component-title {
+
+    margin: 0;
+
+    font-size: 18px;
+
+    font-weight: 700;
+
+    color: #1e3a5f;
+}
+
+
+.technical-component-actions {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   COMPONENT BODY
+========================================================= */
+
+.technical-component-body {
+
+    padding: 20px;
+}
+
+
+/* =========================================================
+   FORM GRID
+========================================================= */
+
+.technical-form-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(250px, 1fr)
+        );
+
+    gap: 16px;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   TECHNICAL FIELD
+========================================================= */
+
+.technical-field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+
+.technical-field label {
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    color: #334155;
+}
+
+
+.technical-field label.required::after {
+
+    content: " *";
+
+    color: #dc2626;
+}
+
+
+.technical-field input,
+.technical-field select,
+.technical-field textarea {
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    padding: 10px 12px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 7px;
+
+    background: #ffffff;
+
+    color: #1e293b;
+
+    font-size: 14px;
+
+    outline: none;
+
+    transition:
+        border-color 0.2s,
+        box-shadow 0.2s;
+}
+
+
+.technical-field input:focus,
+.technical-field select:focus,
+.technical-field textarea:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 3px
+        rgba(37, 99, 235, 0.12);
+}
+
+
+.technical-field textarea {
+
+    min-height: 90px;
+
+    resize: vertical;
+}
+
+
+/* =========================================================
+   PROTECTION CHECKBOXES
+========================================================= */
+
+.technical-subtitle {
+
+    margin: 20px 0 12px;
+
+    padding-bottom: 8px;
+
+    border-bottom: 1px solid #e2e8f0;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    color: #334155;
+}
+
+
+.technical-checkbox-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(160px, 1fr)
+        );
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+
+.technical-checkbox {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    min-height: 42px;
+
+    padding: 8px 10px;
+
+    background: #f8fafc;
+
+    border: 1px solid #e2e8f0;
+
+    border-radius: 7px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s,
+        border-color 0.2s;
+}
+
+
+.technical-checkbox:hover {
+
+    background: #eff6ff;
+
+    border-color: #93c5fd;
+}
+
+
+.technical-checkbox input {
+
+    width: 17px;
+
+    height: 17px;
+
+    margin: 0;
+
+    cursor: pointer;
+}
+
+
+.technical-checkbox span {
+
+    font-size: 13px;
+
+    color: #334155;
+}
+
+
+/* =========================================================
+   TABLE SECTION
+========================================================= */
+
+.technical-table-section {
+
+    margin-top: 22px;
+}
+
+
+.technical-table-wrapper {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    border: 1px solid #dbe3ec;
+
+    border-radius: 8px;
+}
+
+
+/* =========================================================
+   TECHNICAL TABLE
+========================================================= */
+
+.technical-table {
+
+    width: 100%;
+
+    min-width: 700px;
+
+    border-collapse: collapse;
+
+    background: #ffffff;
+}
+
+
+.technical-table th {
+
+    padding: 11px 10px;
+
+    background: #f1f5f9;
+
+    border-bottom: 1px solid #cbd5e1;
+
+    color: #334155;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    text-align: center;
+
+    white-space: nowrap;
+}
+
+
+.technical-table td {
+
+    padding: 8px;
+
+    border-bottom: 1px solid #e2e8f0;
+
+    text-align: center;
+
+    vertical-align: middle;
+}
+
+
+.technical-table tbody tr:last-child td {
+
+    border-bottom: none;
+}
+
+
+.technical-table tbody tr:hover {
+
+    background: #f8fafc;
+}
+
+
+.technical-table input,
+.technical-table select {
+
+    width: 100%;
+
+    min-width: 90px;
+
+    box-sizing: border-box;
+
+    padding: 8px;
+
+    border: 1px solid #cbd5e1;
+
+    border-radius: 6px;
+
+    background: #ffffff;
+
+    outline: none;
+
+    font-size: 13px;
+}
+
+
+.technical-table input:focus,
+.technical-table select:focus {
+
+    border-color: #2563eb;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(37, 99, 235, 0.1);
+}
+
+
+/* =========================================================
+   PIPE STATUS
+========================================================= */
+
+.technical-pipe-type {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 8px;
+}
+
+
+.technical-pipe-type label {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 4px;
+
+    cursor: pointer;
+
+    font-size: 13px;
+
+    white-space: nowrap;
+}
+
+
+.technical-pipe-type input {
+
+    width: 15px;
+
+    min-width: 15px;
+
+    height: 15px;
+
+    margin: 0;
+}
+
+
+/* =========================================================
+   TABLE ACTIONS
+========================================================= */
+
+.technical-table-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    margin-top: 12px;
+
+    gap: 8px;
+}
+
+
+/* =========================================================
+   ADD ROW BUTTON
+========================================================= */
+
+.technical-add-row {
+
+    padding: 8px 14px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #2563eb;
+
+    color: #ffffff;
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s;
+}
+
+
+.technical-add-row:hover {
+
+    background: #1d4ed8;
+}
+
+
+/* =========================================================
+   DELETE ROW BUTTON
+========================================================= */
+
+.technical-delete-row {
+
+    width: 34px;
+
+    height: 34px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    background: #fee2e2;
+
+    color: #dc2626;
+
+    cursor: pointer;
+
+    font-size: 15px;
+
+    transition:
+        background 0.2s,
+        color 0.2s;
+}
+
+
+.technical-delete-row:hover {
+
+    background: #dc2626;
+
+    color: #ffffff;
+}
+
+
+/* =========================================================
+   SAVE COMPONENT
+========================================================= */
+
+.technical-save-actions {
+
+    display: flex;
+
+    justify-content: flex-end;
+
+    gap: 10px;
+
+    margin-top: 20px;
+
+    padding-top: 15px;
+
+    border-top: 1px solid #e2e8f0;
+}
+
+
+.technical-save-button {
+
+    padding: 9px 18px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #16a34a;
+
+    color: #ffffff;
+
+    font-size: 14px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+
+.technical-save-button:hover {
+
+    background: #15803d;
+}
+
+
+/* =========================================================
+   REQUIRED ERROR
+========================================================= */
+
+.technical-field.error input,
+.technical-field.error select,
+.technical-field.error textarea {
+
+    border-color: #dc2626;
+
+    background: #fef2f2;
+}
+
+
+/* =========================================================
+   NO DATA INSIDE COMPONENT
+========================================================= */
+
+.technical-no-data {
+
+    padding: 20px;
+
+    text-align: center;
+
+    color: #64748b;
+
+    background: #f8fafc;
+
+    border-radius: 8px;
+
+    border: 1px dashed #cbd5e1;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+    .technical-component-header {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+
+    .technical-component-body {
+
+        padding: 14px;
+    }
+
+
+    .technical-form-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+
+    .technical-checkbox-grid {
+
+        grid-template-columns: 1fr 1fr;
+    }
+
+
+    .technical-table {
+
+        min-width: 650px;
+    }
+
+}
+
+
+@media (max-width: 480px) {
+
+    .technical-checkbox-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+.technical-print-actions {
+    display: flex;
+    justify-content: flex-start;
+    margin: 15px 0;
+    direction: rtl;
+}
+
+.technical-print-button {
+    background: #1e3a5f;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 22px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+.technical-print-button:hover {
+    background: #16304f;
+    transform: translateY(-1px);
+}
+
+@media print {
+
+    .technical-print-actions {
+        display: none !important;
+    }
+
+}
+
+/* =========================================================
+   TECHNICAL REPORT ACTIONS
+   ========================================================= */
+
+.technical-component-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin: 15px 0 20px;
+    direction: rtl;
+}
+
+.technical-component-card-button {
+    border: none;
+    border-radius: 8px;
+    padding: 11px 20px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    font-family: inherit;
+}
+
+.technical-print-button {
+    background: #0386f185;
+    color: #fff;
+}
+
+.technical-print-button:hover {
+    background: #3fa12c;
+    transform: translateY(-1px);
+}
+
+.technical-word-button {
+    background:  #0386f185;
+    color: #fff;
+}
+.technical-word-button img{
+   width: 35px; 
+   height: 35px; 
+}
+
+.technical-word-button:hover {
+    background: #3fa12c;
+    transform: translateY(-1px);
+}
+
+.technical-report-action-button:active {
+    transform: translateY(0);
+}
+
+.technical-report-action-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+
+/* =========================================================
+   PRINT
+   ========================================================= */
+
+@media print {
+
+    .technical-report-actions {
+        display: none !important;
+    }
+
+}
