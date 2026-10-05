@@ -1537,16 +1537,21 @@
           
                   // جلب تفاصيل كل محطة
                   const detailPromises = (data.stations || []).map(async station => {
-                  try {              
-                      const stationRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+                  try {
               
-                      if (!stationRes.ok) {
-                          const errorText = await stationRes.text();
+                      const stationResponse = await fetch(
+                          `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
+                      );
               
-                          console.error(`❌ getStationDetails failed`, {
-                                  branch,
-                                  station,
-                                  status: stationRes.status,
+                      if (!stationResponse.ok) {
+                          const errorText = await stationResponse.text();
+              
+                          console.error(
+                              `❌ getStationDetails failed`,
+                              {
+                                  branch: branch,
+                                  station: station,
+                                  status: stationResponse.status,
                                   response: errorText
                               }
                           );
@@ -1555,7 +1560,7 @@
                           return;
                       }
               
-                      const stationData = await stationRes.json();
+                      const stationData = await stationResponse.json();
               
                       branchData[branch].details[station] =
                           stationData.details || [];
@@ -1565,9 +1570,9 @@
                       console.error(
                           `❌ Error loading station details`,
                           {
-                              branch,
-                              station,
-                              error
+                              branch: branch,
+                              station: station,
+                              error: error
                           }
                       );
               
@@ -1577,8 +1582,6 @@
               
               await Promise.all(detailPromises);
 
-          
-              await Promise.all(fetchPromises);
               // بعد جمع كل بيانات الفروع والمحطات في branchData
               const branchSummary = branches.map(branch => {
                   const stations = branchData[branch].stations;
