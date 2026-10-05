@@ -2012,15 +2012,21 @@
 
               
               // -------- رسم Line Chart --------
-             const kpiResponse = await fetch(`${scriptURL}?action=getKPI`);
+            const kpiResponse = await fetch(`${scriptURL}?action=getKPI`);
+            if (!kpiResponse.ok) {
+                const errorText = await kpiResponse.text();
+            
+                console.error(
+                    "❌ getKPI failed:",
+                    kpiResponse.status,
+                    errorText
+                );
+            
+                throw new Error(`getKPI failed: HTTP ${kpiResponse.status}`);
+            }
+            
+            const sheetData = await kpiResponse.json();
 
-              if (!res.ok) {
-                  const errorText = await res.text();
-                  console.error("❌ getKPI failed:", res.status, errorText);
-                  throw new Error(`getKPI failed: HTTP ${res.status}`);
-              }
-              
-              const sheetData = await res.json();
               
               const months = sheetData.header.slice(1);
               const rows = sheetData.rows;
