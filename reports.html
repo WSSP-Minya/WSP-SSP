@@ -2009,7 +2009,7 @@
 
               
               // -------- رسم Line Chart --------
-             const res = await fetch(`${scriptURL}?action=getKPI`);
+             const kpiResponse = await fetch(`${scriptURL}?action=getKPI`);
 
               if (!res.ok) {
                   const errorText = await res.text();
