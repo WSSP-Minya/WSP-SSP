@@ -1504,8 +1504,30 @@
           
               // جلب بيانات كل فرع
               const fetchPromises = branches.map(async branch => {
-                  const res = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
+                  const res = await fetch(
+                      `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
+                  );
+                  
+                  if (!res.ok) {
+                      const errorText = await res.text();
+                      console.error(
+                          `❌ getStations failed for branch: ${branch}`,
+                          res.status,
+                          errorText
+                      );
+                  
+                      branchData[branch] = {
+                          stations: [],
+                          certifiedDates: [],
+                          capacity: [],
+                          details: {}
+                      };
+                  
+                      return;
+                  }
+                  
                   const data = await res.json();
+
                   branchData[branch] = {
                       stations: data.stations || [],
                       certifiedDates: data.certifiedDates || [],
@@ -1515,13 +1537,46 @@
           
                   // جلب تفاصيل كل محطة
                   const detailPromises = (data.stations || []).map(async station => {
+                  try {              
                       const stationRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
+              
+                      if (!stationRes.ok) {
+                          const errorText = await stationRes.text();
+              
+                          console.error(`❌ getStationDetails failed`, {
+                                  branch,
+                                  station,
+                                  status: stationRes.status,
+                                  response: errorText
+                              }
+                          );
+              
+                          branchData[branch].details[station] = [];
+                          return;
+                      }
+              
                       const stationData = await stationRes.json();
-                      branchData[branch].details[station] = stationData.details || [];
-                  });
-          
-                  await Promise.all(detailPromises);
+              
+                      branchData[branch].details[station] =
+                          stationData.details || [];
+              
+                  } catch (error) {
+              
+                      console.error(
+                          `❌ Error loading station details`,
+                          {
+                              branch,
+                              station,
+                              error
+                          }
+                      );
+              
+                      branchData[branch].details[station] = [];
+                  }
               });
+              
+              await Promise.all(detailPromises);
+
           
               await Promise.all(fetchPromises);
               // بعد جمع كل بيانات الفروع والمحطات في branchData
@@ -1938,11 +1993,30 @@
               params.append("action", "saveKPI");
               params.append("data", JSON.stringify(kpiSheetData));
               
-              await fetch(scriptURL, { method: "POST", body: params });
-              console.log("KPI saved successfully");
+              const saveResponse = await fetch(scriptURL, {
+                  method: "POST",
+                  body: params
+              });
+              
+              if (!saveResponse.ok) {
+                  const errorText = await saveResponse.text();
+              
+                  console.error("❌ KPI save failed:", saveResponse.status, errorText);
+              
+                  throw new Error(`KPI save failed: HTTP ${saveResponse.status}`);
+              }
+              console.log("✅ KPI saved successfully");
+
               
               // -------- رسم Line Chart --------
-              const res = await fetch(`${scriptURL}?action=getKPI`);
+             const res = await fetch(`${scriptURL}?action=getKPI`);
+
+              if (!res.ok) {
+                  const errorText = await res.text();
+                  console.error("❌ getKPI failed:", res.status, errorText);
+                  throw new Error(`getKPI failed: HTTP ${res.status}`);
+              }
+              
               const sheetData = await res.json();
               
               const months = sheetData.header.slice(1);
