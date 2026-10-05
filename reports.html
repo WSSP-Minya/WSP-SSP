@@ -1478,550 +1478,1372 @@
 
 
            /////////////////////////
-          // تحميل بيانات لوحة الأداء لمودال 4
-          /////////////////////////
-          async function loadDashboardData() {
-              const histogramCtx = document.getElementById("histogramChart").getContext("2d");
-              const pieCtx = document.getElementById("pieChart").getContext("2d");
-              const radarCtx = document.getElementById("radarChart").getContext("2d");
-              const radarDegreeCtx = document.getElementById("radarDegreeChart").getContext("2d");
-              const lineCtx = document.getElementById("lineChart").getContext("2d");
-          
-              // أوزان درجات الخطورة
-              const riskWeights = {
-                      "خطورة منخفضة": 0.25,
-                      "خطورة متوسطة": 0.5,
-                      "خطورة عالية": 0.75,
-                      "خطورة عالية جداً": 1
-              };          
-              // قائمة الفروع
-              const branchSelect = document.getElementById("branch_modal1");
-              const branches = Array.from(branchSelect.options)
-                                    .filter(opt => opt.value && opt.value.trim() !== "" && opt.value !== "Select Branch")
-                                    .map(opt => opt.value.trim());
-          
-              const branchData = {}; // لتخزين بيانات كل فرع
-          
-              // جلب بيانات كل فرع
-              const fetchPromises = branches.map(async branch => {
-                  const res = await fetch(`${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`);
-                  const data = await res.json();
-                  branchData[branch] = {
-                      stations: data.stations || [],
-                      certifiedDates: data.certifiedDates || [],
-                      capacity: data.capacity || [],
-                      details: {} // لتخزين تفاصيل كل محطة
-                  };
-          
-                  // جلب تفاصيل كل محطة
-                  const detailPromises = (data.stations || []).map(async station => {
-                      const stationRes = await fetch(`${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`);
-                      const stationData = await stationRes.json();
-                      branchData[branch].details[station] = stationData.details || [];
-                  });
-          
-                  await Promise.all(detailPromises);
-              });
-          
-              await Promise.all(fetchPromises);
-              // بعد جمع كل بيانات الفروع والمحطات في branchData
-              const branchSummary = branches.map(branch => {
-                  const stations = branchData[branch].stations;
-                  let branchDonePercent = 0;
-                  let stationsWithActionsCount = 0;
-              
-                  stations.forEach(station => {
-                      const details = branchData[branch].details[station] || [];
-                      if (details.length > 0) {
-                          const donePercent = details.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / details.length;
-                          branchDonePercent += donePercent;
-                          stationsWithActionsCount++;
-                      }
-                  });
-              
-                  const averageDonePercent = stationsWithActionsCount === 0 ? 0 : Math.round(branchDonePercent / stationsWithActionsCount);
-              
-                  return {
-                      branch1: branch,
-                      averageDonePercent
-                  };
-             
-              });
-                   
+// تحميل بيانات لوحة الأداء لمودال 4
+/////////////////////////
+async function loadDashboardData() {
 
-          
-              // ----------- Histogram Chart: عدد المحطات التي لها تاريخ اعتماد لكل فرع ----------
-              // الترتيب المخصص الذي تريده
-              
-              const histogramLabels = branches;  // أو array من الفروع
-              const histogramCounts = histogramLabels.map(branch => {
-                const dates = branchData[branch].certifiedDates;
-                // نفلتر التواريخ الفارغة (null, "", undefined)
-                const countCertified = dates.filter(date => date && date.toString().trim() !== "").length;
-                return countCertified;
-              });
+    const histogramCtx = document.getElementById("histogramChart").getContext("2d");
+    const pieCtx = document.getElementById("pieChart").getContext("2d");
+    const radarCtx = document.getElementById("radarChart").getContext("2d");
+    const radarDegreeCtx = document.getElementById("radarDegreeChart").getContext("2d");
+    const lineCtx = document.getElementById("lineChart").getContext("2d");
+
+    // أوزان درجات الخطورة
+    const riskWeights = {
+        "خطورة منخفضة": 0.25,
+        "خطورة متوسطة": 0.5,
+        "خطورة عالية": 0.75,
+        "خطورة عالية جداً": 1
+    };
+
+    // قائمة الفروع
+    const branchSelect = document.getElementById("branch_modal1");
+
+    const branches = Array.from(branchSelect.options)
+        .filter(opt =>
+            opt.value &&
+            opt.value.trim() !== "" &&
+            opt.value !== "Select Branch"
+        )
+        .map(opt => opt.value.trim());
+
+    const branchData = {}; // لتخزين بيانات كل فرع
 
 
-             new Chart(histogramCtx, {
-                type: "bar",
-                data: {
-                  labels: histogramLabels,
-                  datasets: [{
-                    label: "عدد المحطات المعتمدة",
-                    data: histogramCounts,
-                    borderWidth: 4,
-                    pointRadius: 8,
-                    backgroundColor: "rgba(54, 162, 235, 1.6)"
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: false,
-                      labels: {
-                        font: {
-                          size: 18
-                        }
-                      }
-                    }
-                  },
-                  scales: {
-                    x: {
-                      ticks: {
-                        font: {
-                          size: 18
-                        }
-                      },
-                      title: {
-                        display: true,
-                        text: '',
-                        font: {
-                          size: 18,
-                          weight: 'bold'
-                        }
-                      }
-                    },
-                    y: {
-                      beginAtZero: true,
-                      ticks: {
-                        font: { size: 18 },
-                        stepSize: 1,
-                        callback: value => Number(value)
-                      },
-                      title: {
-                        display: true,
-                        text: 'عدد المحطات المعتمدة',
-                        font: { size: 18, weight: 'bold' }
-                      }
-                    }
-                  }
-                }
-              });
+    ////////////////////////////////////////////////////////////////////////
+    // جلب بيانات كل فرع والمحطات
+    // تم تعديل طريقة التحميل فقط لمنع إرسال عدد ضخم من الطلبات في نفس الوقت
+    ////////////////////////////////////////////////////////////////////////
+
+    for (const branch of branches) {
+
+        try {
+
+            ////////////////////////////////////////////////////////////////
+            // جلب بيانات الفرع
+            ////////////////////////////////////////////////////////////////
+
+            const res = await fetch(
+                `${scriptURL}?action=getStations&branch=${encodeURIComponent(branch)}`
+            );
+
+            if (!res.ok) {
+                console.error(
+                    `Failed to load stations for branch "${branch}" - HTTP ${res.status}`
+                );
+
+                branchData[branch] = {
+                    stations: [],
+                    certifiedDates: [],
+                    capacity: [],
+                    details: {}
+                };
+
+                continue;
+            }
+
+            const data = await res.json();
+
+            branchData[branch] = {
+                stations: data.stations || [],
+                certifiedDates: data.certifiedDates || [],
+                capacity: data.capacity || [],
+                details: {}
+            };
 
 
-          
-              // ----------- Pie Chart: نسبة تنفيذ الإجراءات التصحيحية ----------
-              
-              const pieLabels = branchSummary.map(branch => branch.branch1); // ترتيب الفروع
-              const pieData = branchSummary.map(branch => branch.averageDonePercent); // المتوسط لكل فرع
-              
-              const pieColors = [
-                  "#4dc9f6","#f67019","#f53794","#537bc4","#acc236",
-                  "#166a8f","#00a950","#58595b","#8549ba"
-              ];
-              
-              new Chart(pieCtx, {
-                type: "doughnut",
-                data: {
-                  labels: pieLabels,
-                  datasets: [{
-                    label: "نسبة التنفيذ %",
-                    data: pieData,
-                    backgroundColor: pieColors
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: 'right',
-                      labels: {
-                        font: { size: 18 }
-                      }
-                    },
-                    tooltip: {
-                      bodyFont: { size: 18 },  // زي ما طلبت، زودنا لسهولة القراءة
-                      callbacks: {
-                        label: function(context) {
-                          return context.label + ": " + context.raw + "%";
-                        }
-                      }
-                    }
-                  }
-                }
-              });
+            ////////////////////////////////////////////////////////////////
+            // جلب تفاصيل المحطات
+            //
+            // بدلاً من إرسال كل المحطات مرة واحدة
+            // نقسمها إلى دفعات كل دفعة = 5 محطات
+            ////////////////////////////////////////////////////////////////
 
+            const stations = data.stations || [];
 
+            const BATCH_SIZE = 5;
 
+            for (let i = 0; i < stations.length; i += BATCH_SIZE) {
 
+                const batch = stations.slice(i, i + BATCH_SIZE);
 
-              // ----------- Radar Chart: الإجراءات التصحيحية حسب درجة الخطورة ----------
+                await Promise.all(
 
-              
-              // افترض أن branchData موجود ويحتوي على كل التفاصيل لكل فرع
-              // branchData = { "فرع 1": { details: { "محطة A": [ {riskdegree, statuspercent}, ...] }, ... } }
-                const piority = {}; //تخزين قيمة piority لكل فرع لاستخدامه فى KPI
-                const radarLabels = Object.keys(branchData); // أسماء الفروع
-                const radarValues = radarLabels.map(branch => {
-                    let executedWeightedSum_branch = 0;
-                    let totalWeightedSum_branch = 0;
-                    let executedActionsCount_branch = 0;
-                    let totalActions_branch = 0;
-                
-                    Object.entries(branchData[branch].details).forEach(([station, stationActions]) => {
-                        let executedWeightedSum_station = 0;
-                        let executedActionsCount_station = 0;
-                        let totalWeightedSum_station = 0;
-                        let totalActions_station = 0;
-                
-                        stationActions.forEach(action => {
-                            const weight = riskWeights[action.riskdegree] || 0;
-                            const percent = Number(action.statuspercent) || 0;
-                
-                            totalWeightedSum_station += weight;
-                            totalActions_station++;
-                
-                            
-                            executedWeightedSum_station += weight * (percent / 100);
-                            executedActionsCount_station += percent / 100; // فى حالة تنفيذ جزء من الاجراء يتم حسابه ك 1/2 اجراء او 1/4 على حسب نسبة التنفيذ
-                            
-                        });
-                
-                        console.log(
-                            "Branch:", branch,
-                            "| Station:", station,
-                            "| executedWeightedSum:", executedWeightedSum_station,
-                            "| executedActionsCount:", executedActionsCount_station,
-                            "| totalWeightedSum:", totalWeightedSum_station,
-                            "| totalActions:", totalActions_station
-                        );
-                
-                        // جمع القيم لكل فرع
-                        executedWeightedSum_branch += executedWeightedSum_station;
-                        totalWeightedSum_branch += totalWeightedSum_station;
-                        executedActionsCount_branch += executedActionsCount_station;
-                        totalActions_branch += totalActions_station;
-                    });
-                
-                    const radarScore_branch =
-                        totalWeightedSum_branch === 0
-                            ? 0
-                            : ((executedWeightedSum_branch * executedActionsCount_branch) / (totalActions_branch * totalWeightedSum_branch)) * 100;
-                    piority[branch] = parseFloat(radarScore_branch.toFixed(2));
-                    
-                    console.log("Radar % for branch", branch, ":", radarScore_branch.toFixed(2));
-                    
-                });
+                    batch.map(async station => {
 
-              
-              // رسم المخطط الشبكي
-              new Chart(document.getElementById("radarChart").getContext("2d"), {
-                type: "radar",
-                data: {
-                  labels: radarLabels,
-                  datasets: [{
-                    label: "نسبة اولية التنفيذ%",
-                    data: radarLabels.map(branch => piority[branch] || 0),
-                    backgroundColor: "rgba(54,162,235,0.2)",
-                    borderColor: "rgba(54,162,235,1)",
-                    borderWidth: 2,
-                    pointBackgroundColor: "rgba(54,162,235,1)"
-                  }]
-                },
-                options: {
-                  responsive: true,
-                  scales: {
-                    r: {
-                      beginAtZero: true,
-                      min: 0,
-                      max: 100,
-                      pointLabels: {  // تسميات الفروع حول المخطط
-                        font: { size: 18 }
-                      },
-                      ticks: {
-                        font: { size: 16 }
-                      }
-                    }
-                  },
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: "right",
-                      labels: {
-                        font: { size: 18 }
-                      }
-                    }
-                  }
-                }
-              });
+                        try {
 
-               // ---------------- Radar حسب درجات الخطورة ----------------
-              const riskCategories = ["خطورة منخفضة", "خطورة متوسطة", "خطورة عالية", "خطورة عالية جداً"];
-              const radarDegreeBranches = branches;
-              
-              const riskColors = {
-                "خطورة عالية جداً": "rgba(255, 0, 0, 0.6)",    // أحمر
-                "خطورة عالية": "rgba(255, 140, 0, 0.6)",      // برتقالي
-                "خطورة متوسطة": "rgba(255, 215, 0, 0.6)",     // أصفر
-                "خطورة منخفضة": "rgba(0, 200, 0, 0.6)"        // أخضر
-              };
-              
-              const radarDegreeData = riskCategories.map(risk => {
-                return radarDegreeBranches.map(branch => {
-                    let executedWeightedSum_branch = 0;
-                    let totalWeightedSum_branch = 0;
-              
-                    Object.entries(branchData[branch].details).forEach(([station, stationActions]) => {
-                        let executedWeightedSum_station = 0;
-                        let totalWeightedSum_station = 0;
-              
-                        stationActions.forEach(action => {
-                            if (action.riskdegree === risk) {
-                                const weight = riskWeights[risk] || 0;
-                                const percent = Number(action.statuspercent) || 0;
-              
-                                totalWeightedSum_station += weight;
-                                executedWeightedSum_station += weight * (percent / 100);
+                            const stationRes = await fetch(
+                                `${scriptURL}?action=getStationDetails&station=${encodeURIComponent(station)}`
+                            );
+
+                            //////////////////////////////////////////////////
+                            // التأكد من أن الاستجابة ناجحة قبل json()
+                            //////////////////////////////////////////////////
+
+                            if (!stationRes.ok) {
+
+                                console.warn(
+                                    `Station "${station}" returned HTTP ${stationRes.status}`
+                                );
+
+                                branchData[branch].details[station] = [];
+
+                                return;
                             }
-                        });
-              
-                        console.log(
-                            `Branch: ${branch} | Station: ${station} | Risk: ${risk} | executedWeightedSum: ${executedWeightedSum_station.toFixed(2)} | totalWeightedSum: ${totalWeightedSum_station.toFixed(2)}`
-                        );
-              
-                        executedWeightedSum_branch += executedWeightedSum_station;
-                        totalWeightedSum_branch += totalWeightedSum_station;
-                    });
-              
-                    console.log(
-                        `Branch TOTAL: ${branch} | Risk: ${risk} | executedWeightedSum: ${executedWeightedSum_branch.toFixed(2)} | totalWeightedSum: ${totalWeightedSum_branch.toFixed(2)}`
-                    );
-              
-                    return totalWeightedSum_branch === 0 ? 0 : parseFloat(((executedWeightedSum_branch / totalWeightedSum_branch) * 100).toFixed(2));
-                });
-              });
-              
-              new Chart(radarDegreeCtx, {
-                type: "radar",
-                data: {
-                  labels: radarDegreeBranches,
-                  datasets: riskCategories.map((risk, i) => ({
-                    label: risk,
-                    data: radarDegreeData[i],
-                    fill: true,
-                    backgroundColor: riskColors[risk],
-                    borderColor: riskColors[risk].replace("0.6", "1"),
-                    pointBackgroundColor: riskColors[risk].replace("0.6", "1")
-                  }))
-                },
-                options: {
-                  responsive: true,
-                  scales: {
-                    r: {
-                      min: 0,
-                      max: 100,
-                      pointLabels: {
-                        font: { size: 18 }
-                      },
-                      ticks: {
-                        font: { size: 16 }
-                      }
+
+                            const stationData = await stationRes.json();
+
+                            branchData[branch].details[station] =
+                                stationData.details || [];
+
+                        } catch (error) {
+
+                            console.error(
+                                `Error loading station "${station}" in branch "${branch}":`,
+                                error
+                            );
+
+                            branchData[branch].details[station] = [];
+                        }
+
+                    })
+
+                );
+
+            }
+
+        } catch (error) {
+
+            console.error(
+                `Error loading branch "${branch}":`,
+                error
+            );
+
+            branchData[branch] = {
+                stations: [],
+                certifiedDates: [],
+                capacity: [],
+                details: {}
+            };
+        }
+
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // بعد جمع كل بيانات الفروع والمحطات في branchData
+    ////////////////////////////////////////////////////////////////////////
+
+    const branchSummary = branches.map(branch => {
+
+        const stations = branchData[branch].stations;
+
+        let branchDonePercent = 0;
+        let stationsWithActionsCount = 0;
+
+        stations.forEach(station => {
+
+            const details =
+                branchData[branch].details[station] || [];
+
+            if (details.length > 0) {
+
+                const donePercent =
+                    details.reduce(
+                        (sum, item) =>
+                            sum + (Number(item.statuspercent) || 0),
+                        0
+                    ) / details.length;
+
+                branchDonePercent += donePercent;
+                stationsWithActionsCount++;
+            }
+
+        });
+
+        const averageDonePercent =
+            stationsWithActionsCount === 0
+                ? 0
+                : Math.round(
+                    branchDonePercent /
+                    stationsWithActionsCount
+                );
+
+        return {
+            branch1: branch,
+            averageDonePercent
+        };
+
+    });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Histogram Chart:
+    // عدد المحطات التي لها تاريخ اعتماد لكل فرع
+    ////////////////////////////////////////////////////////////////////////
+
+    const histogramLabels = branches;
+
+    const histogramCounts = histogramLabels.map(branch => {
+
+        const dates =
+            branchData[branch].certifiedDates;
+
+        const countCertified =
+            dates.filter(date =>
+                date &&
+                date.toString().trim() !== ""
+            ).length;
+
+        return countCertified;
+
+    });
+
+
+    new Chart(histogramCtx, {
+
+        type: "bar",
+
+        data: {
+
+            labels: histogramLabels,
+
+            datasets: [{
+
+                label: "عدد المحطات المعتمدة",
+
+                data: histogramCounts,
+
+                borderWidth: 4,
+
+                pointRadius: 8,
+
+                backgroundColor:
+                    "rgba(54, 162, 235, 1.6)"
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: false,
+
+                    labels: {
+
+                        font: {
+                            size: 18
+                        }
+
                     }
-                  },
-                  plugins: {
-                    legend: {
-                      position: "right",
-                      labels: { font: { size: 18 } }
-                    }
-                  }
+
                 }
-              });
 
-              /***********************
-               * KPI Quarterly Calculation
-               * Based on Device Date
-               ***********************/
-                            
-              /***********************
-               * KPI Quarterly Calculation (UPDATED)
-               ***********************/
-              
-              // -------- تعريف الشهور --------
-              const KPI_MONTHS = ["يناير", "فبراير", "مارس", "ابريل", "مايو", "يونيو", "يوليو", "اغسطس", "سبتمبر" ,"اكتوبر"];
-              
-              // -------- حساب KPI لكل فرع --------
-              const kpiPerBranch = branches.map(branch => {
-              
-                // ✅ (تعديل) أولوية التنفيذ كـ decimal (مش %)
-                const P = (piority[branch] || 0) / 100;
-              
-                // ✅ (تعديل) نسبة التنفيذ كـ decimal (مش %)
-                const branchInfo = branchSummary.find(b => b.branch1 === branch) || {};
-                const A = (branchInfo.averageDonePercent || 0) / 100;
-              
-                // ✅ (إضافة) جلب المحطات بدل certifiedDates فقط
-                const stations = branchData[branch].stations || [];
-              
-                // إجمالي الطاقة (لازم يكون عندك capacity لكل محطة)
-                const totalCapacity = stations.reduce((sum, station, i) => {
-                  const capacity = Number(branchData[branch].capacity[i]) || 0;
-                  return sum + capacity;
-                }, 0);
+            },
 
-                
-                // الطاقة للمحطات المعتمدة فقط
-               const certifiedCapacity = stations.reduce((sum, station, i) => {
-               const date = branchData[branch].certifiedDates[i];
-               const capacity = Number(branchData[branch].capacity[i]) || 0;
-                
-                  if (date && date.toString().trim() !== "") {
-                    return sum + capacity;
-                  }
-                  return sum;
-                }, 0);
-              
-                // ✅ (إضافة) تجنب القسمة على صفر
-                const capacityRatio = totalCapacity === 0
-                  ? 0
-                  : certifiedCapacity / totalCapacity;
-              
-                // ✅ (تعديل أساسي) معادلة KPI الجديدة
-                const kpiValue =
-                  (capacityRatio * 0.2) +
-                  (A * 0.3) +
-                  (P * 0.5);
-              
-                // -------- توزيع KPI على الشهور --------
-                const kpiPerMonth = {};
-              
-                KPI_MONTHS.forEach(month => {
-                  kpiPerMonth[month] = kpiValue;
-                });
-              
-                return { branch, kpiPerMonth };
-              });
-              
-              console.log("KPI per branch:", kpiPerBranch);
-              
-              // -------- تحديد الشهر الحالي --------
-              const monthIndex = new Date().getMonth() % KPI_MONTHS.length;
-              const currentMonthName = KPI_MONTHS[monthIndex];
-              
-              // -------- تجهيز البيانات للإرسال --------
-              const kpiSheetData = kpiPerBranch.map(item => {
-                const row = { branch: item.branch };
-              
-                KPI_MONTHS.forEach(m => row[m] = 0);
-              
-                // ✅ حفظ الشهر الحالي فقط
-                row[currentMonthName] = item.kpiPerMonth[currentMonthName] || 0;
-              
-                return row;
-              });
-              
-              console.log("KPI per branch for current month:", kpiSheetData);
-              
-              // -------- إرسال البيانات --------
-              const params = new URLSearchParams();
-              params.append("action", "saveKPI");
-              params.append("data", JSON.stringify(kpiSheetData));
-              
-              await fetch(scriptURL, { method: "POST", body: params });
-              console.log("KPI saved successfully");
-              
-              // -------- رسم Line Chart --------
-              const res = await fetch(`${scriptURL}?action=getKPI`);
-              const sheetData = await res.json();
-              
-              const months = sheetData.header.slice(1);
-              const rows = sheetData.rows;
-              
-              // محور X = الفروع
-              const branchLabels = rows.map(row => row[0]);
-              
-              // ألوان الشهور
-              const monthColors = {
-                "يناير": "rgba(75,192,192,1)",
-                "فبراير": "rgba(153,102,255,1)",
-                "مارس": "rgba(255,159,64,1)",
-                "ابريل": "rgba(54,162,235,1)",
-                "مايو": "rgba(255,99,132,1)",
-                "يونيو": "rgba(255,206,86,1)",
-                "يوليو": "rgba(75,192,192,1)",
-                "أغسطس": "rgba(153,102,255,1)",
-                "سبتمبر": "rgba(255,159,64,1)",
-                "أكتوبر": "rgba(54,162,235,1)",
-                "نوفمبر": "rgba(201,203,207,1)",
-                "ديسمبر": "rgba(255,99,71,1)"
-              };
-              
-              // -------- datasets --------
-              const datasets = months.map((month, monthIndex) => ({
-                label: month,
-              
-                // ✅ (اختياري) لو عايز تعرض كنسبة مئوية اضرب ×100
-                data: rows.map(row => (Number(row[monthIndex + 1]) || 0) * 100),
-              
-                borderColor: monthColors[month] || `hsl(${monthIndex * 60},70%,50%)`,
-                backgroundColor: (monthColors[month] || `hsl(${monthIndex * 60},70%,50%)`).replace("1)", "0.2)"),
-                tension: 0.3,
-                fill: false
-              }));
-              
-              // -------- إنشاء الشارت --------
-              new Chart(lineCtx, {
-                type: "line",
-                data: {
-                  labels: branchLabels,
-                  datasets
-                },
-                options: {
-                  responsive: true,
-                  scales: {
-                    y: {
-                      min: 0,
-                      max: 100, // ✅ لأننا حولنا لـ %
-                      ticks: {
-                        font: { size: 18 }
-                      },
-                      title: {
-                        display: true,
-                        text: 'KPI (%)', // ✅ تعديل العنوان
-                        font: { size: 18, weight: 'bold' }
-                      }
+            scales: {
+
+                x: {
+
+                    ticks: {
+
+                        font: {
+                            size: 18
+                        }
+
                     },
-                    x: {
-                      ticks: {
-                        font: { size: 18 }
-                      }
+
+                    title: {
+
+                        display: true,
+
+                        text: "",
+
+                        font: {
+                            size: 18,
+                            weight: "bold"
+                        }
+
                     }
-                  },
-                  plugins: {
-                    legend: {
-                      display: true,
-                      position: "top",
-                      labels: {
-                        font: { size: 18 }
-                      }
+
+                },
+
+                y: {
+
+                    beginAtZero: true,
+
+                    ticks: {
+
+                        font: {
+                            size: 18
+                        },
+
+                        stepSize: 1,
+
+                        callback: value =>
+                            Number(value)
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "عدد المحطات المعتمدة",
+
+                        font: {
+                            size: 18,
+                            weight: "bold"
+                        }
+
                     }
-                  }
+
                 }
-              });
- 
-          }
-          
+
+            }
+
+        }
+
+    });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Pie Chart:
+    // نسبة تنفيذ الإجراءات التصحيحية
+    ////////////////////////////////////////////////////////////////////////
+
+    const pieLabels =
+        branchSummary.map(
+            branch => branch.branch1
+        );
+
+    const pieData =
+        branchSummary.map(
+            branch => branch.averageDonePercent
+        );
+
+    const pieColors = [
+
+        "#4dc9f6",
+        "#f67019",
+        "#f53794",
+        "#537bc4",
+        "#acc236",
+        "#166a8f",
+        "#00a950",
+        "#58595b",
+        "#8549ba"
+
+    ];
+
+
+    new Chart(pieCtx, {
+
+        type: "doughnut",
+
+        data: {
+
+            labels: pieLabels,
+
+            datasets: [{
+
+                label: "نسبة التنفيذ %",
+
+                data: pieData,
+
+                backgroundColor: pieColors
+
+            }]
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            plugins: {
+
+                legend: {
+
+                    display: true,
+
+                    position: "right",
+
+                    labels: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    }
+
+                },
+
+                tooltip: {
+
+                    bodyFont: {
+                        size: 18
+                    },
+
+                    callbacks: {
+
+                        label: function (context) {
+
+                            return (
+                                context.label +
+                                ": " +
+                                context.raw +
+                                "%"
+                            );
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Radar Chart:
+    // الإجراءات التصحيحية حسب درجة الخطورة
+    ////////////////////////////////////////////////////////////////////////
+
+    const piority = {};
+
+    const radarLabels =
+        Object.keys(branchData);
+
+
+    const radarValues =
+        radarLabels.map(branch => {
+
+            let executedWeightedSum_branch = 0;
+            let totalWeightedSum_branch = 0;
+
+            let executedActionsCount_branch = 0;
+            let totalActions_branch = 0;
+
+
+            Object.entries(
+                branchData[branch].details
+            ).forEach(
+                ([station, stationActions]) => {
+
+                    let executedWeightedSum_station = 0;
+                    let executedActionsCount_station = 0;
+
+                    let totalWeightedSum_station = 0;
+                    let totalActions_station = 0;
+
+
+                    stationActions.forEach(action => {
+
+                        const weight =
+                            riskWeights[action.riskdegree] || 0;
+
+                        const percent =
+                            Number(action.statuspercent) || 0;
+
+
+                        totalWeightedSum_station += weight;
+
+                        totalActions_station++;
+
+
+                        executedWeightedSum_station +=
+                            weight *
+                            (percent / 100);
+
+
+                        executedActionsCount_station +=
+                            percent / 100;
+
+                    });
+
+
+                    console.log(
+                        "Branch:",
+                        branch,
+                        "| Station:",
+                        station,
+                        "| executedWeightedSum:",
+                        executedWeightedSum_station,
+                        "| executedActionsCount:",
+                        executedActionsCount_station,
+                        "| totalWeightedSum:",
+                        totalWeightedSum_station,
+                        "| totalActions:",
+                        totalActions_station
+                    );
+
+
+                    executedWeightedSum_branch +=
+                        executedWeightedSum_station;
+
+                    totalWeightedSum_branch +=
+                        totalWeightedSum_station;
+
+                    executedActionsCount_branch +=
+                        executedActionsCount_station;
+
+                    totalActions_branch +=
+                        totalActions_station;
+
+                }
+            );
+
+
+            const radarScore_branch =
+                totalWeightedSum_branch === 0
+
+                    ? 0
+
+                    : (
+                        (
+                            executedWeightedSum_branch *
+                            executedActionsCount_branch
+                        ) /
+                        (
+                            totalActions_branch *
+                            totalWeightedSum_branch
+                        )
+                    ) * 100;
+
+
+            piority[branch] =
+                parseFloat(
+                    radarScore_branch.toFixed(2)
+                );
+
+
+            console.log(
+                "Radar % for branch",
+                branch,
+                ":",
+                radarScore_branch.toFixed(2)
+            );
+
+        });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // رسم Radar Chart
+    ////////////////////////////////////////////////////////////////////////
+
+    new Chart(
+        document
+            .getElementById("radarChart")
+            .getContext("2d"),
+        {
+
+            type: "radar",
+
+            data: {
+
+                labels: radarLabels,
+
+                datasets: [{
+
+                    label: "نسبة اولية التنفيذ%",
+
+                    data:
+                        radarLabels.map(
+                            branch =>
+                                piority[branch] || 0
+                        ),
+
+                    backgroundColor:
+                        "rgba(54,162,235,0.2)",
+
+                    borderColor:
+                        "rgba(54,162,235,1)",
+
+                    borderWidth: 2,
+
+                    pointBackgroundColor:
+                        "rgba(54,162,235,1)"
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                scales: {
+
+                    r: {
+
+                        beginAtZero: true,
+
+                        min: 0,
+
+                        max: 100,
+
+                        pointLabels: {
+
+                            font: {
+                                size: 18
+                            }
+
+                        },
+
+                        ticks: {
+
+                            font: {
+                                size: 16
+                            }
+
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: true,
+
+                        position: "right",
+
+                        labels: {
+
+                            font: {
+                                size: 18
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+    );
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // Radar حسب درجات الخطورة
+    ////////////////////////////////////////////////////////////////////////
+
+    const riskCategories = [
+
+        "خطورة منخفضة",
+        "خطورة متوسطة",
+        "خطورة عالية",
+        "خطورة عالية جداً"
+
+    ];
+
+    const radarDegreeBranches =
+        branches;
+
+
+    const riskColors = {
+
+        "خطورة عالية جداً":
+            "rgba(255, 0, 0, 0.6)",
+
+        "خطورة عالية":
+            "rgba(255, 140, 0, 0.6)",
+
+        "خطورة متوسطة":
+            "rgba(255, 215, 0, 0.6)",
+
+        "خطورة منخفضة":
+            "rgba(0, 200, 0, 0.6)"
+
+    };
+
+
+    const radarDegreeData =
+        riskCategories.map(risk => {
+
+            return radarDegreeBranches.map(branch => {
+
+                let executedWeightedSum_branch = 0;
+
+                let totalWeightedSum_branch = 0;
+
+
+                Object.entries(
+                    branchData[branch].details
+                ).forEach(
+                    ([station, stationActions]) => {
+
+                        let executedWeightedSum_station = 0;
+
+                        let totalWeightedSum_station = 0;
+
+
+                        stationActions.forEach(action => {
+
+                            if (
+                                action.riskdegree === risk
+                            ) {
+
+                                const weight =
+                                    riskWeights[risk] || 0;
+
+                                const percent =
+                                    Number(
+                                        action.statuspercent
+                                    ) || 0;
+
+
+                                totalWeightedSum_station +=
+                                    weight;
+
+
+                                executedWeightedSum_station +=
+                                    weight *
+                                    (percent / 100);
+
+                            }
+
+                        });
+
+
+                        console.log(
+
+                            `Branch: ${branch} | ` +
+                            `Station: ${station} | ` +
+                            `Risk: ${risk} | ` +
+                            `executedWeightedSum: ` +
+                            `${executedWeightedSum_station.toFixed(2)} | ` +
+                            `totalWeightedSum: ` +
+                            `${totalWeightedSum_station.toFixed(2)}`
+
+                        );
+
+
+                        executedWeightedSum_branch +=
+                            executedWeightedSum_station;
+
+                        totalWeightedSum_branch +=
+                            totalWeightedSum_station;
+
+                    }
+                );
+
+
+                console.log(
+
+                    `Branch TOTAL: ${branch} | ` +
+                    `Risk: ${risk} | ` +
+                    `executedWeightedSum: ` +
+                    `${executedWeightedSum_branch.toFixed(2)} | ` +
+                    `totalWeightedSum: ` +
+                    `${totalWeightedSum_branch.toFixed(2)}`
+
+                );
+
+
+                return totalWeightedSum_branch === 0
+
+                    ? 0
+
+                    : parseFloat(
+
+                        (
+                            (
+                                executedWeightedSum_branch /
+                                totalWeightedSum_branch
+                            ) * 100
+                        ).toFixed(2)
+
+                    );
+
+            });
+
+        });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // رسم Radar حسب درجة الخطورة
+    ////////////////////////////////////////////////////////////////////////
+
+    new Chart(radarDegreeCtx, {
+
+        type: "radar",
+
+        data: {
+
+            labels: radarDegreeBranches,
+
+            datasets:
+                riskCategories.map((risk, i) => ({
+
+                    label: risk,
+
+                    data:
+                        radarDegreeData[i],
+
+                    fill: true,
+
+                    backgroundColor:
+                        riskColors[risk],
+
+                    borderColor:
+                        riskColors[risk]
+                            .replace("0.6", "1"),
+
+                    pointBackgroundColor:
+                        riskColors[risk]
+                            .replace("0.6", "1")
+
+                }))
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            scales: {
+
+                r: {
+
+                    min: 0,
+
+                    max: 100,
+
+                    pointLabels: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    },
+
+                    ticks: {
+
+                        font: {
+                            size: 16
+                        }
+
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+
+                    position: "right",
+
+                    labels: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // KPI Quarterly Calculation
+    // Based on Device Date
+    ////////////////////////////////////////////////////////////////////////
+
+    const KPI_MONTHS = [
+
+        "يناير",
+        "فبراير",
+        "مارس",
+        "ابريل",
+        "مايو",
+        "يونيو",
+        "يوليو",
+        "اغسطس",
+        "سبتمبر",
+        "اكتوبر"
+
+    ];
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // حساب KPI لكل فرع
+    ////////////////////////////////////////////////////////////////////////
+
+    const kpiPerBranch =
+        branches.map(branch => {
+
+            // أولوية التنفيذ كـ decimal
+            const P =
+                (piority[branch] || 0) / 100;
+
+
+            // نسبة التنفيذ كـ decimal
+            const branchInfo =
+                branchSummary.find(
+                    b => b.branch1 === branch
+                ) || {};
+
+
+            const A =
+                (branchInfo.averageDonePercent || 0) /
+                100;
+
+
+            // جلب المحطات
+            const stations =
+                branchData[branch].stations || [];
+
+
+            // إجمالي الطاقة
+            const totalCapacity =
+                stations.reduce(
+                    (sum, station, i) => {
+
+                        const capacity =
+                            Number(
+                                branchData[branch].capacity[i]
+                            ) || 0;
+
+                        return sum + capacity;
+
+                    },
+                    0
+                );
+
+
+            // الطاقة للمحطات المعتمدة فقط
+            const certifiedCapacity =
+                stations.reduce(
+                    (sum, station, i) => {
+
+                        const date =
+                            branchData[branch]
+                                .certifiedDates[i];
+
+                        const capacity =
+                            Number(
+                                branchData[branch]
+                                    .capacity[i]
+                            ) || 0;
+
+
+                        if (
+                            date &&
+                            date.toString().trim() !== ""
+                        ) {
+
+                            return sum + capacity;
+
+                        }
+
+                        return sum;
+
+                    },
+                    0
+                );
+
+
+            // تجنب القسمة على صفر
+            const capacityRatio =
+                totalCapacity === 0
+
+                    ? 0
+
+                    : certifiedCapacity /
+                      totalCapacity;
+
+
+            // معادلة KPI
+            const kpiValue =
+
+                (capacityRatio * 0.2) +
+
+                (A * 0.3) +
+
+                (P * 0.5);
+
+
+            // توزيع KPI على الشهور
+            const kpiPerMonth = {};
+
+
+            KPI_MONTHS.forEach(month => {
+
+                kpiPerMonth[month] =
+                    kpiValue;
+
+            });
+
+
+            return {
+
+                branch,
+
+                kpiPerMonth
+
+            };
+
+        });
+
+
+    console.log(
+        "KPI per branch:",
+        kpiPerBranch
+    );
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // تحديد الشهر الحالي
+    ////////////////////////////////////////////////////////////////////////
+
+    const monthIndex =
+        new Date().getMonth() %
+        KPI_MONTHS.length;
+
+
+    const currentMonthName =
+        KPI_MONTHS[monthIndex];
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // تجهيز البيانات للإرسال
+    ////////////////////////////////////////////////////////////////////////
+
+    const kpiSheetData =
+        kpiPerBranch.map(item => {
+
+            const row = {
+                branch: item.branch
+            };
+
+
+            KPI_MONTHS.forEach(m => {
+
+                row[m] = 0;
+
+            });
+
+
+            // حفظ الشهر الحالي فقط
+            row[currentMonthName] =
+                item.kpiPerMonth[currentMonthName] || 0;
+
+
+            return row;
+
+        });
+
+
+    console.log(
+        "KPI per branch for current month:",
+        kpiSheetData
+    );
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // إرسال البيانات
+    ////////////////////////////////////////////////////////////////////////
+
+    const params =
+        new URLSearchParams();
+
+
+    params.append(
+        "action",
+        "saveKPI"
+    );
+
+
+    params.append(
+        "data",
+        JSON.stringify(kpiSheetData)
+    );
+
+
+    try {
+
+        const saveResponse =
+            await fetch(
+                scriptURL,
+                {
+                    method: "POST",
+                    body: params
+                }
+            );
+
+
+        if (!saveResponse.ok) {
+
+            console.error(
+                "KPI save failed:",
+                saveResponse.status
+            );
+
+        } else {
+
+            console.log(
+                "KPI saved successfully"
+            );
+
+        }
+
+    } catch (error) {
+
+        console.error(
+            "Error saving KPI:",
+            error
+        );
+
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // رسم Line Chart
+    ////////////////////////////////////////////////////////////////////////
+
+    const res =
+        await fetch(
+            `${scriptURL}?action=getKPI`
+        );
+
+
+    if (!res.ok) {
+
+        console.error(
+            "Failed to get KPI data. HTTP:",
+            res.status
+        );
+
+        return;
+
+    }
+
+
+    const sheetData =
+        await res.json();
+
+
+    const months =
+        sheetData.header.slice(1);
+
+
+    const rows =
+        sheetData.rows;
+
+
+    // محور X = الفروع
+    const branchLabels =
+        rows.map(row => row[0]);
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // ألوان الشهور
+    ////////////////////////////////////////////////////////////////////////
+
+    const monthColors = {
+
+        "يناير":
+            "rgba(75,192,192,1)",
+
+        "فبراير":
+            "rgba(153,102,255,1)",
+
+        "مارس":
+            "rgba(255,159,64,1)",
+
+        "ابريل":
+            "rgba(54,162,235,1)",
+
+        "مايو":
+            "rgba(255,99,132,1)",
+
+        "يونيو":
+            "rgba(255,206,86,1)",
+
+        "يوليو":
+            "rgba(75,192,192,1)",
+
+        "أغسطس":
+            "rgba(153,102,255,1)",
+
+        "سبتمبر":
+            "rgba(255,159,64,1)",
+
+        "أكتوبر":
+            "rgba(54,162,235,1)",
+
+        "نوفمبر":
+            "rgba(201,203,207,1)",
+
+        "ديسمبر":
+            "rgba(255,99,71,1)"
+
+    };
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // datasets
+    ////////////////////////////////////////////////////////////////////////
+
+    const datasets =
+        months.map(
+            (month, monthIndex) => {
+
+                const color =
+                    monthColors[month] ||
+                    `hsl(${monthIndex * 60},70%,50%)`;
+
+
+                return {
+
+                    label: month,
+
+                    // عرض كنسبة مئوية
+                    data:
+                        rows.map(
+                            row =>
+                                (
+                                    Number(
+                                        row[monthIndex + 1]
+                                    ) || 0
+                                ) * 100
+                        ),
+
+                    borderColor:
+                        color,
+
+                    backgroundColor:
+                        color.replace(
+                            "1)",
+                            "0.2)"
+                        ),
+
+                    tension: 0.3,
+
+                    fill: false
+
+                };
+
+            }
+        );
+
+
+    ////////////////////////////////////////////////////////////////////////
+    // إنشاء Line Chart
+    ////////////////////////////////////////////////////////////////////////
+
+    new Chart(lineCtx, {
+
+        type: "line",
+
+        data: {
+
+            labels: branchLabels,
+
+            datasets: datasets
+
+        },
+
+        options: {
+
+            responsive: true,
+
+            scales: {
+
+                y: {
+
+                    min: 0,
+
+                    max: 100,
+
+                    ticks: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text: "KPI (%)",
+
+                        font: {
+                            size: 18,
+                            weight: "bold"
+                        }
+
+                    }
+
+                },
+
+                x: {
+
+                    ticks: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    }
+
+                }
+
+            },
+
+            plugins: {
+
+                legend: {
+
+                    display: true,
+
+                    position: "top",
+
+                    labels: {
+
+                        font: {
+                            size: 18
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    });
+
+}
+
           
 
            
