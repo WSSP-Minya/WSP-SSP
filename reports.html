@@ -1585,7 +1585,15 @@
 
               // بعد جمع كل بيانات الفروع والمحطات في branchData
               const branchSummary = branches.map(branch => {
-                  const stations = branchData[branch].stations;
+              const branchInfo = branchData[branch] || {
+                  stations: [],
+                  certifiedDates: [],
+                  capacity: [],
+                  details: {}
+              };
+          
+              const stations = branchInfo.stations || [];
+
                   let branchDonePercent = 0;
                   let stationsWithActionsCount = 0;
               
