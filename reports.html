@@ -1584,37 +1584,59 @@
               });
 
               // بعد جمع كل بيانات الفروع والمحطات في branchData
+              branches.forEach(branch => {
+                  if (!branchData[branch]) {
+                      branchData[branch] = {
+                          stations: [],
+                          certifiedDates: [],
+                          capacity: [],
+                          details: {}
+                      };
+              
+                      console.warn(
+                          `⚠️ No data loaded for branch: ${branch}`
+                      );
+                  }
+              });
+              
+              // بعد جمع كل بيانات الفروع والمحطات في branchData
               const branchSummary = branches.map(branch => {
-              const branchInfo = branchData[branch] || {
-                  stations: [],
-                  certifiedDates: [],
-                  capacity: [],
-                  details: {}
-              };
-          
-              const stations = branchInfo.stations || [];
-
+              
+                  const stations = branchData[branch].stations || [];
+              
                   let branchDonePercent = 0;
                   let stationsWithActionsCount = 0;
               
                   stations.forEach(station => {
-                      const details = branchData[branch].details[station] || [];
+                      const details =
+                          branchData[branch].details[station] || [];
+              
                       if (details.length > 0) {
-                          const donePercent = details.reduce((sum, item) => sum + (Number(item.statuspercent) || 0), 0) / details.length;
+                          const donePercent =
+                              details.reduce(
+                                  (sum, item) =>
+                                      sum + (Number(item.statuspercent) || 0),
+                                  0
+                              ) / details.length;
+              
                           branchDonePercent += donePercent;
                           stationsWithActionsCount++;
                       }
                   });
               
-                  const averageDonePercent = stationsWithActionsCount === 0 ? 0 : Math.round(branchDonePercent / stationsWithActionsCount);
+                  const averageDonePercent =
+                      stationsWithActionsCount === 0
+                          ? 0
+                          : Math.round(
+                              branchDonePercent /
+                              stationsWithActionsCount
+                          );
               
                   return {
                       branch1: branch,
                       averageDonePercent
                   };
-             
               });
-                   
 
           
               // ----------- Histogram Chart: عدد المحطات التي لها تاريخ اعتماد لكل فرع ----------
