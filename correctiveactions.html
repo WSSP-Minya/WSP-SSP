@@ -640,119 +640,33 @@
       }
 
     // عند تغيير المحطة
-stationSelect.addEventListener("change", () => {
+      stationSelect.addEventListener("change", () => {
+        const selectedStation = stationSelect.value;
+        const index = branchStations.indexOf(selectedStation);
+        if (index !== -1 && branchDates[index]) {
+          const date = new Date(branchDates[index]);
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          certifiedDateInput.value = `${year}-${month}-${day}`;
+        } else certifiedDateInput.value = "";
 
-  const selectedStation = stationSelect.value;
-
-  const index = branchStations.indexOf(selectedStation);
-
-  if (index !== -1 && branchDates[index]) {
-
-    const date = new Date(branchDates[index]);
-
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-
-    certifiedDateInput.value = `${year}-${month}-${day}`;
-
-  } else {
-
-    certifiedDateInput.value = "";
-
-  }
-
-
-  const url =
-    scriptURL +
-    "?action=getStationDetails&station=" +
-    encodeURIComponent(selectedStation);
-
-
-  console.log("Request URL:", url);
-
-
-  fetch(url)
-
-    .then(async res => {
-
-      console.log("HTTP Status:", res.status);
-      console.log("Final URL:", res.url);
-
-      const text = await res.text();
-
-      console.log("Server response:", text);
-
-
-      if (!res.ok) {
-
-        throw new Error(
-          `HTTP ${res.status}: ${text.substring(0, 300)}`
-        );
-
-      }
-
-
-      try {
-
-        return JSON.parse(text);
-
-      } catch (err) {
-
-        throw new Error(
-          "Server did not return valid JSON: " +
-          text.substring(0, 300)
-        );
-
-      }
-
-    })
-
-
-    .then(data => {
-
-      console.log("Station details:", data);
-
-
-      if (
-        data.status === "success" &&
-        Array.isArray(data.details) &&
-        data.details.length > 0
-      ) {
-
-        fillStationDetails(data.details);
-
-
-      } else {
-
-        locationSelect.innerHTML =
-          '<option value="" disabled selected>No locations</option>';
-
-        riskInput.value = "";
-        corractionInput.value = "";
-        durationInput.value = "";
-        statusSelect.value = "";
-
-        branchcomment.value = "";
-        wspcomment.value = "";
-
-        document.getElementById("filename").textContent = "";
-
-      }
-
-    })
-
-
-    .catch(err => {
-
-      console.error(
-        "Error fetching station details:",
-        err
-      );
-
-    });
-
-});
+        fetch(scriptURL + "?action=getStationDetails&station=" + encodeURIComponent(selectedStation))
+          .then(res => res.json())
+          .then(data => {
+           
+            if (data.status === "success" && data.details.length > 0) fillStationDetails(data.details);
+             
+            else {
+              locationSelect.innerHTML = '<option value="" disabled selected>No locations</option>';
+              riskInput.value = corractionInput.value = durationInput.value = statusSelect.value = "";
+              branchcomment.value = wspcomment.value = "";
+              document.getElementById("filename").textContent = "";
+            }
+          })
+          .catch(err => console.error("Error fetching station details:", err));
+      });
+    };
 
 
     
