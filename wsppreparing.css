@@ -2078,7 +2078,7 @@ th .year {
    TECHNICAL REPORT ACTIONS
    ========================================================= */
 
-.technical-component-card {
+.technical-report-actions {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
@@ -2135,7 +2135,69 @@ th .year {
     cursor: not-allowed;
     transform: none;
 }
+/* TECHNICAL FEATURES LAYOUT FIX */
 
+#technicalTab,
+#technicalFeaturesContent,
+#technicalFeaturesComponents {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.technical-component-card {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.technical-component-header {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.technical-component-body {
+    display: block;
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.technical-form-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+    width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.technical-field {
+    width: 100%;
+    min-width: 0;
+}
+
+.technical-field input,
+.technical-field select,
+.technical-field textarea {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.technical-table-wrapper {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.technical-table {
+    min-width: 700px;
+}
 
 /* =========================================================
    PRINT
