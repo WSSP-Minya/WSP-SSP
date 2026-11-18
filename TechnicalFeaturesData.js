@@ -263,6 +263,9 @@ function updateTechnicalFeatures() {
 
         card.className =
             "technical-component-card";
+        card.style.width = "100%";
+        card.style.minWidth = "0";
+        card.style.boxSizing = "border-box";
 
         card.dataset.component =
             component;
@@ -289,6 +292,9 @@ function updateTechnicalFeatures() {
 
         body.className =
             "technical-component-body";
+        body.style.width = "100%";
+        body.style.minWidth = "0";
+        body.style.boxSizing = "border-box";
 
         const canonicalComponent =
             getCanonicalTechnicalComponent(
