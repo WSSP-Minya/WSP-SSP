@@ -777,14 +777,22 @@
       })
       .then(res => res.text())
       .then(result => {
+           // الاحتفاظ بتاريخ العينة بعد نجاح العملية
+          const savedDate = document.getElementById("date").value;
           console.log("POST Success");
+   
+
 
           console.log("before clearForm");
+          
         alert(`تمت عملية ${action==='add'?'الإضافة':action==='update'?'التحديث':'الحذف'} بنجاح.`);
         clearForm();
           console.log("after clearForm");
 
           console.log("before fetchData");
+          // إعادة التاريخ الذي تم استخدامه في العملية
+        document.getElementById("date").value = savedDate;
+
         fetchData(email, department);
           console.log("after fetchData");
       })
