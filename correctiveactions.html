@@ -1510,6 +1510,9 @@
         const hasWSPComments = filteredData.some(detail =>
             (detail.wspcomment || "").trim() !== ""
         );
+        const hasBranchComments = filterdData.some(detail =>
+             (detail.branchcomment || "").trim() !== ""
+        );
     
         let rowsHtml = filteredData.map(detail => `
             <tr>
@@ -1517,10 +1520,14 @@
                 <td>${detail.risk || ""}</td>
                 <td>${detail.corraction || ""}</td>
                 <td>${detail.status || ""}</td>
-                
+
+                 ${hasBranchComments ? `
+                <td>${detail.branchcomment || ""}</td>
+            ` : ""}
                      ${hasWSPComments ? `
                 <td>${detail.wspcomment || ""}</td>
             ` : ""}
+            
                 <td>${detail.notes || ""}</td>
             </tr>
         `).join("");
@@ -1539,8 +1546,9 @@
                     th:nth-child(2), td:nth-child(2) { width: 20%; }
                     th:nth-child(3), td:nth-child(3) { width: 20%; }
                     th:nth-child(4), td:nth-child(4) { width: 5%; }
-                    th:nth-child(5), td:nth-child(5) { width: 25%; }
-                    th:nth-child(6), td:nth-child(6) { width: 20%; }
+                    th:nth-child(5), td:nth-child(5) { width: 20%; }
+                    th:nth-child(6), td:nth-child(6) { width: 15%; }
+                    th:nth-child(6), td:nth-child(6) { width: 10%; }
                 </style>
             </head>
             <body>
@@ -1560,9 +1568,13 @@
                             <th>الخطر</th>
                             <th>الإجراء التصحيحي</th>
                              <th>الموقف التنفيذى</th>
+                              ${hasBranchComments ? `
+                             <th>ملاحظات الجهه المنفذه</th>
+                          ` : ""}
                               ${hasWSPComments ? `
                              <th>ملاحظات WSP</th>
                           ` : ""}
+                         
                              <th>ملاحظات</th>
                         </tr>
                     </thead>
