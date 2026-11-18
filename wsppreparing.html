@@ -3275,12 +3275,18 @@ async function saveStages() {
                 
                 window.location.href= pagename+".html";
             }
-    //  تسجيل الخروج
-    function logout() {
-        sessionStorage.clear(); // مسح بيانات الجلسة
-        alert("You have been logged out");
-        window.location.href = "index.html"; // إعادة توجيه لصفحة تسجيل الدخول
-    }
+   // تسجيل الخروج
+     function logout() {
+           
+        const confirmLogout = confirm("Are you sure you want to logout?");
+          
+        if (confirmLogout) {
+          sessionStorage.clear();
+          alert("You have been logged out");
+          window.location.href = "index.html";
+         }            
+         // في حالة Cancel لن يتم تنفيذ أي شيء
+     }
 </script>
 <script src="TechnicalFeaturesData.js"></script>
 <script src="TechnicalFeaturesExport.js"></script>
